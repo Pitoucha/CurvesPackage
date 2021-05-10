@@ -115,6 +115,8 @@ proc ::testpackagepy::chargement {} {
   mol new $newMol
 }
 
+}
+
 proc testpackage_tk {} {
 
   ::testpackagepy::packageui
