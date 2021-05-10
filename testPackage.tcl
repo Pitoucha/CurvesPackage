@@ -46,11 +46,11 @@ proc ::testpackagepy::packageui {} {
   set w [toplevel .packageui]
   wm title $w "CARV+"
   
-  grid [frame $w.menubar -relief raised -bd 2]
+  frame $w.menubar -relief raised -bd 2
   pack $w.menubar -padx 1 -fill x
-  grid [menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu] -row 1 -column 1
+  menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
-  grid [menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu] -row 1 -column 2
+  menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
   menu $w.menubar.edit.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
