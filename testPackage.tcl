@@ -50,11 +50,15 @@ proc ::testpackagepy::packageui {} {
   pack $w.menubar -padx 1 -fill x
   menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
+  menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
+  menu $w.menubar.edit.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
-  $w.menubar.file.menu add command -label "Loading mol" -command ::testpackagepy::char
+  $w.menubar.edit.menu add command -label "Loading mol" -command ::testpackagepy::char
+  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
-  pack $w.menubar.file
+  $w.menubar.edit config -width 5
+  pack $w.menubar.file $w.menubar.edit 
   
   grid [frame $w.func]
   grid [label $w.label1  -text "Fonction à plotter"]
