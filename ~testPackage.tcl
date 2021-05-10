@@ -27,14 +27,18 @@ namespace eval ::testpackagepy:: {
 
   variable w 
   
-  variable funcVal "sin"
+  variable title [list "this is a selection"\
+"hey"\
+"I'm"\
+"testing"\
+"your patience"]
 
 }
 
 
 proc ::testpackagepy::packageui {} {
-  variable w 
-
+  variable w
+  
   global env 
 
   if [winfo exists .packageui] {
@@ -51,19 +55,28 @@ proc ::testpackagepy::packageui {} {
   menu $w.menubar.file.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
-  $w.menubar.file.menu add command -label "Loading mol" -command ::testpackagepy::char
   $w.menubar.file config -width 5
-  pack $w.menubar.file
+  pack $w.menubar.file -side left
   
-  grid [frame $w.func]
-  grid [label $w.label1  -text "Fonction à plotter"]
-  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "setselected {sin} $w"] -row 1 -column 1
-  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "setselected {cos} $w"] -row 1 -column 2
-  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "setselected {tan} $w"] -row 1 -column 3
-  grid [button $w.func.selectBtn -text "Plotter cette fonction" -command "plotting {sin}"] -row 2 -column 2
-  $w.func.sinBtn select
+  frame $w.mainframe
+  tk_optionm
   
-  pack $w.menubar $w.label1 $w.func
+  pack $w.menubar $w.mainframe
+  
+  #set wif [frame $w.interface_frame]
+  #tk_optionMenu $wif.list ::testpackagepy::which_mode
+  #$wif.list.menu delete 0
+  #$wif.list.menu add radiobutton -label [lindex $titles 0] \
+    -variable ::testpackagepy::which_mode \
+    -command {::testpackagepy::Switch_mode "selection"} 
+  #$wif.list.menu add radiobutton -label [lindex $titles 1] \
+    -variable ::testpackagepy::which_mode \
+    -command {::testpackagepy::Switch_mode "selection"} 
+
+  #set mf [frame $w.main_frame]
+
+  #pack $wif.list -side left -expand 1 -fill x
+  #pack $wif -pady 2 -expand 1 -fill x
   
   set testMenu [frame $w.interface_frame]
   
@@ -80,33 +93,12 @@ proc ::testpackagepy::hellopy {} {
   puts "[$pyprefix -command helloworld()]"
 }
 
-proc setselected {rad w} {
-  switch $rad {
-    "sin" {
-      $w.func.selectBtn configure -command "plotting {sin}"
-    }
-    "cos" {
-      $w.func.selectBtn configure -command "plotting {cos}"
-    }
-    "tan" {
-      $w.func.selectBtn configure -command "plotting {tan}"
-    }
-    default {
-    }
-  }
-}
-
-proc plotting {func} { 
-  puts $func
-}
-
-
-proc ::testpackagepy::char {} {
-  tk_getOpenFile
-}
 
 proc testpackage_tk {} {
 
   ::testpackagepy::packageui
+  #set ::druggability::which_mode [lindex $::druggability::titles [lsearch $::druggability::interfaces $::druggability::interface]]
+  #::druggability::Switch_mode $::druggability::interface
+  #return $::druggability::w
   puts "yaya"
 }
