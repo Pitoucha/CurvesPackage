@@ -46,7 +46,7 @@ proc ::testpackagepy::packageui {} {
   set w [toplevel .packageui]
   wm title $w "CARV+"
   
-  frame $w.menubar -relief raised -bd 2;
+  frame $w.menubar -relief raised -bd 2
   pack $w.menubar -padx 1 -fill x
   menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
