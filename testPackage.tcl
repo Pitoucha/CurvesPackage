@@ -142,6 +142,12 @@ proc ::testpackagepy::chargement {} {
   set newMol [tk_getOpenFile]
   puts $newMol
   mol new $newMol
+
+  mol representation CPK
+  mol addrep [molinfo 0 get id]
+
+  #set traject [mol addfile [tk_getOpenFile]]
+
 }
 
 proc testpackage_tk {} {
