@@ -28,13 +28,12 @@ namespace eval ::testpackagepy:: {
 
   variable w 
   
-  variable funcVal "sin"
-
+  variable e
 }
 
 
 proc ::testpackagepy::packageui {} {
-  variable w 
+  variable w
 
   global env 
 
@@ -64,14 +63,16 @@ proc ::testpackagepy::packageui {} {
   
   grid [frame $w.func]
   grid [label $w.label1  -text "Function to plot"]
-  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "setselected {sin} $w"] -row 1 -column 1
-  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "setselected {cos} $w"] -row 1 -column 2
-  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "setselected {tan} $w"] -row 1 -column 3
-  grid [button $w.func.selectBtn -text "Plot this function" -command "plotting {sin}"] -row 2 -column 2
+  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::testpackagepy::setselected {sin} $w"] -row 0 -column 0
+  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::testpackagepy::setselected {cos} $w"] -row 0 -column 1
+  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::testpackagepy::setselected {tan} $w"] -row 0 -column 2
+  grid [radiobutton $w.func.other -text "other (var is x)" -variable func -value "other" -command "::testpackagepy::setselected {other} $w"] -row 1 -column 0
+  grid [entry $w.func.otherFunc -textvar ::testpackagepy::e] -row 1 -column 1
+  grid [button $w.func.selectBtn -text "Plot this function" -command "::testpackagepy::plotting {sin}"] -row 2 -column 1
   $w.func.sinBtn select
   
   grid [frame $w.dist]
-  grid [button $w.dist.plot -text "Plot the distance between two atoms" -command "plotAtoms"] -row 0 -column 0
+  grid [button $w.dist.plot -text "Plot the distance between two atoms" -command "::testpackagepy::plotAtoms"] -row 0 -column 0
   
   pack $w.menubar $w.label1 $w.func $w.dist
   
@@ -88,23 +89,27 @@ proc ::testpackagepy::hellopy {} {
   puts "[$pyprefix -command helloworld()]"
 }
 
-proc setselected {rad w} {
+proc ::testpackagepy::setselected {rad w} {
   switch $rad {
     "sin" {
-      $w.func.selectBtn configure -command "plotting {sin}"
+      $w.func.selectBtn configure -command "::testpackagepy::plotting {sin}"
     }
     "cos" {
-      $w.func.selectBtn configure -command "plotting {cos}"
+      $w.func.selectBtn configure -command "::testpackagepy::plotting {cos}"
     }
     "tan" {
-      $w.func.selectBtn configure -command "plotting {tan}"
+      $w.func.selectBtn configure -command "::testpackagepy::plotting {tan}"
+    }
+    "other" {
+      $w.func.selectBtn configure -command "::testpackagepy::plotOther"
     }
     default {
+      $w.func.selectBtn configure -command "::testpackagepy::plotting {sin}"
     }
   }
 }
 
-proc plotting {func} { 
+proc ::testpackagepy::plotting {func} { 
   puts "plotting $func\(x)"
   set xlist {}
   set ylist {}
@@ -154,6 +159,32 @@ proc ::testpackagepy::chargement {} {
 
 proc plotAtoms {} {
   puts "TODO"
+}
+
+proc ::testpackagepy::plotOther {} {
+  puts $::testpackagepy::e
+  set res [split $::testpackagepy::e "x"]
+  set f " {"
+  set i 0
+  foreach s $res {
+    incr i
+    if {[expr {$i != [llength $res]}]} {
+      append f $s
+      append f {$x}
+    }
+  }
+  append f "}"
+  set xlist {}
+  set ylist {}
+  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
+    lappend xlist $x
+    lappend ylist [expr $f]
+  }
+  set plothandle [multiplot -x $xlist -y $ylist \
+                -xlabel "x" -ylabel "$::testpackagepy::e" -title "Function $::testpackagepy::e" \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Function $::testpackagepy::e" -plot];
+  puts [lindex ylist 15]
 }
 
 proc testpackage_tk {} {
