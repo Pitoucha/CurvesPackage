@@ -153,12 +153,16 @@ proc ::testpackagepy::chargement {} {
   mol representation CPK
   mol addrep [molinfo 0 get id]
 
+  mol delrep 0 [molinfo 0 get id]
+
   #set traject [mol addfile [tk_getOpenFile]]
 
 }
 
 proc plotAtoms {} {
-  puts "TODO"
+  set sel [atomselect top "resid 48 76 and name CA"]
+  set listDist [measure bond {{48 [molinfo 0 get id]} {76 [molinfo 0 get id]}} first 0]
+  puts $listDist
 }
 
 proc ::testpackagepy::plotOther {} {
