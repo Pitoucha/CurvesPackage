@@ -1,5 +1,6 @@
 package provide testPackage 0.1
-package require Tk 
+package require Tk
+package require multiplot
 
 set TESTPACKAGE_PATH $env(TESTPACKAGE_PATH)
 set PACKAGE_PATH "$TESTPACKAGE_PATH"
@@ -45,15 +46,19 @@ proc ::testpackagepy::packageui {} {
   set w [toplevel .packageui]
   wm title $w "CARV+"
   
-  frame $w.menubar -relief raised -bd 2;
+  grid [frame $w.menubar -relief raised -bd 2]
   pack $w.menubar -padx 1 -fill x
-  menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
+  grid [menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu] -row 1 -column 1
   menu $w.menubar.file.menu -tearoff no
+  grid [menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu] -row 1 -column 2
+  menu $w.menubar.edit.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
-  $w.menubar.file.menu add command -label "Loading mol" -command ::testpackagepy::chargement
+  $w.menubar.edit.menu add command -label "Loading mol" -command ::testpackagepy::chargement
+  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
-  pack $w.menubar.file
+  $w.menubar.edit config -width 5
+  pack $w.menubar.file $w.menubar.edit 
   
   grid [frame $w.func]
   grid [label $w.label1  -text "Fonction à plotter"]
@@ -97,24 +102,44 @@ proc setselected {rad w} {
 }
 
 proc plotting {func} { 
-  puts $func
+  puts "plotting $func\(x)"
+  #set plothandle [multiplot reset]
+  set xlist {}
+  set ylist {}
+  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
+    switch $func {
+      "sin" {
+        lappend xlist $x
+  lappend ylist [::tcl::mathfunc::sin $x]
+        #$plothandle add $x [::tcl::mathfunc::sin $x]
+      }
+      "cos" {
+        lappend xlist $x
+  lappend ylist [::tcl::mathfunc::cos $x]
+        #$plothandle add $x [::tcl::mathfunc::cos $x]
+      }
+      "tan" {
+        lappend xlist $x
+  lappend ylist [::tcl::mathfunc::tan $x]
+        #$plothandle add $x [::tcl::mathfunc::tan $x]
+      }
+    }
+  }
+  #puts "liste x : $xlist"
+  #puts "liste y : $ylist"
+  set plothandle [multiplot -x $xlist -y $ylist \
+                -xlabel "x" -ylabel "$func\(x)" -title "Fonction $func" \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Fonction $func" -plot];
 }
 
-proc ::testpackagepy::changement {} {
-  set crystal [atomselect top "all"] 
-  $crystal set beta 0  
-  set sel [atomselect top "hydrophobic"]
-  $sel set beta 1 
 
-}
 proc ::testpackagepy::chargement {} {
   mol delete all 
 
   set newMol [tk_getOpenFile]
   puts $newMol
   mol new $newMol
-}
-
 }
 
 proc testpackage_tk {} {
