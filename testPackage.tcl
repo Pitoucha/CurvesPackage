@@ -54,7 +54,7 @@ proc ::testpackagepy::packageui {} {
   menu $w.menubar.edit.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
-  $w.menubar.edit.menu add command -label "Loading mol" -command ::testpackagepy::char
+  $w.menubar.edit.menu add command -label "Loading mol" -command ::testpackagepy::chargement
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
@@ -110,17 +110,17 @@ proc plotting {func} {
     switch $func {
       "sin" {
         lappend xlist $x
-	lappend ylist [::tcl::mathfunc::sin $x]
+  lappend ylist [::tcl::mathfunc::sin $x]
         #$plothandle add $x [::tcl::mathfunc::sin $x]
       }
       "cos" {
         lappend xlist $x
-	lappend ylist [::tcl::mathfunc::cos $x]
+  lappend ylist [::tcl::mathfunc::cos $x]
         #$plothandle add $x [::tcl::mathfunc::cos $x]
       }
       "tan" {
         lappend xlist $x
-	lappend ylist [::tcl::mathfunc::tan $x]
+  lappend ylist [::tcl::mathfunc::tan $x]
         #$plothandle add $x [::tcl::mathfunc::tan $x]
       }
     }
@@ -134,8 +134,12 @@ proc plotting {func} {
 }
 
 
-proc ::testpackagepy::char {} {
-  tk_getOpenFile
+proc ::testpackagepy::chargement {} {
+  mol delete all 
+
+  set newMol [tk_getOpenFile]
+  puts $newMol
+  mol new $newMol
 }
 
 proc testpackage_tk {} {
