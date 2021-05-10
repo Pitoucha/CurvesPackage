@@ -51,7 +51,7 @@ proc ::testpackagepy::packageui {} {
   menu $w.menubar.file.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
-  $w.menubar.file.menu add command -label "Loading mol" -command ::testpackagepy::char
+  $w.menubar.file.menu add command -label "Loading mol" -command ::testpackagepy::chargement
   $w.menubar.file config -width 5
   pack $w.menubar.file
   
@@ -100,9 +100,19 @@ proc plotting {func} {
   puts $func
 }
 
+proc ::testpackagepy::changement {} {
+  set crystal [atomselect top "all"] 
+  $crystal set beta 0  
+  set sel [atomselect top "hydrophobic"]
+  $sel set beta 1 
 
-proc ::testpackagepy::char {} {
-  tk_getOpenFile
+}
+proc ::testpackagepy::chargement {} {
+  mol delete all 
+
+  set newMol [tk_getOpenFile]
+  puts $newMol
+  mol new $newMol
 }
 
 proc testpackage_tk {} {
