@@ -61,19 +61,19 @@ proc ::testpackagepy::packageui {} {
   $w.menubar.edit config -width 5
   grid $w.menubar.file -row 0 -column 0 -sticky w
   grid $w.menubar.edit -row 0 -column 1 -sticky e
-  #pack $w.menubar.file $w.menubar.edit 
   
   grid [frame $w.func]
-  grid [label $w.label1  -text "Fonction à plotter"]
+  grid [label $w.label1  -text "Function to plot"]
   grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "setselected {sin} $w"] -row 1 -column 1
   grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "setselected {cos} $w"] -row 1 -column 2
   grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "setselected {tan} $w"] -row 1 -column 3
-  grid [button $w.func.selectBtn -text "Plotter cette fonction" -command "plotting {sin}"] -row 2 -column 2
+  grid [button $w.func.selectBtn -text "Plot this function" -command "plotting {sin}"] -row 2 -column 2
   $w.func.sinBtn select
   
-  pack $w.menubar $w.label1 $w.func
+  grid [frame $w.dist]
+  grid [button $w.dist.plot -text "Plot the distance between two atoms" -command "plotAtoms"] -row 0 -column 0
   
-  set testMenu [frame $w.interface_frame]
+  pack $w.menubar $w.label1 $w.func $w.dist
   
   return $w
 }
@@ -106,34 +106,28 @@ proc setselected {rad w} {
 
 proc plotting {func} { 
   puts "plotting $func\(x)"
-  #set plothandle [multiplot reset]
   set xlist {}
   set ylist {}
   for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
     switch $func {
       "sin" {
         lappend xlist $x
-  lappend ylist [::tcl::mathfunc::sin $x]
-        #$plothandle add $x [::tcl::mathfunc::sin $x]
+  	lappend ylist [::tcl::mathfunc::sin $x]
       }
       "cos" {
         lappend xlist $x
-  lappend ylist [::tcl::mathfunc::cos $x]
-        #$plothandle add $x [::tcl::mathfunc::cos $x]
+  	lappend ylist [::tcl::mathfunc::cos $x]
       }
       "tan" {
         lappend xlist $x
-  lappend ylist [::tcl::mathfunc::tan $x]
-        #$plothandle add $x [::tcl::mathfunc::tan $x]
+  	lappend ylist [::tcl::mathfunc::tan $x]
       }
     }
   }
-  #puts "liste x : $xlist"
-  #puts "liste y : $ylist"
   set plothandle [multiplot -x $xlist -y $ylist \
-                -xlabel "x" -ylabel "$func\(x)" -title "Fonction $func" \
+                -xlabel "x" -ylabel "$func\(x)" -title "Function $func" \
                 -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Fonction $func" -plot];
+                -marker none -legend "Function $func" -plot];
 }
 
 
@@ -156,6 +150,10 @@ proc ::testpackagepy::chargement {} {
 
   #set traject [mol addfile [tk_getOpenFile]]
 
+}
+
+proc plotAtoms {} {
+  puts "TODO"
 }
 
 proc testpackage_tk {} {
