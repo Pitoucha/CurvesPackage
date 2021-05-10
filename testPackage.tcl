@@ -46,11 +46,11 @@ proc ::testpackagepy::packageui {} {
   set w [toplevel .packageui]
   wm title $w "CARV+"
   
-  frame $w.menubar -relief raised -bd 2
-  pack $w.menubar -padx 1 -fill x
+  grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew
+  pack $w.menubar -fill x
   menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
-  menu $w.menubar.file.menu -tearoff no
   menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
+  menu $w.menubar.file.menu -tearoff no
   menu $w.menubar.edit.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
@@ -58,14 +58,16 @@ proc ::testpackagepy::packageui {} {
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
-  pack $w.menubar.file $w.menubar.edit 
+  grid $w.menubar.file -row 0 -column 0 -sticky w
+  grid $w.menubar.edit -row 0 -column 1 -sticky e
+  #pack $w.menubar.file $w.menubar.edit
   
   grid [frame $w.func]
   grid [label $w.label1  -text "Fonction à plotter"]
-  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "setselected {sin} $w"] -row 1 -column 1
-  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "setselected {cos} $w"] -row 1 -column 2
-  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "setselected {tan} $w"] -row 1 -column 3
-  grid [button $w.func.selectBtn -text "Plotter cette fonction" -command "plotting {sin}"] -row 2 -column 2
+  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "setselected {sin} $w"] -row 0 -column 0
+  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "setselected {cos} $w"] -row 0 -column 1
+  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "setselected {tan} $w"] -row 0 -column 2
+  grid [button $w.func.selectBtn -text "Plotter cette fonction" -command "plotting {sin}"] -row 1 -column 1
   $w.func.sinBtn select
   
   pack $w.menubar $w.label1 $w.func
