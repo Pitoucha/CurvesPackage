@@ -46,11 +46,11 @@ proc ::testpackagepy::packageui {} {
   set w [toplevel .packageui]
   wm title $w "CARV+"
   
-  grid [frame $w.menubar -relief raised -bd 2]
+  grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
   pack $w.menubar -padx 1 -fill x
-  grid [menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu] -row 1 -column 1
+  menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
-  grid [menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu] -row 1 -column 2
+  menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
   menu $w.menubar.edit.menu -tearoff no
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
   $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
@@ -59,7 +59,9 @@ proc ::testpackagepy::packageui {} {
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
-  pack $w.menubar.file $w.menubar.edit 
+  grid $w.menubar.file -row 0 -column 0 -sticky w
+  grid $w.menubar.edit -row 0 -column 1 -sticky e
+  #pack $w.menubar.file $w.menubar.edit 
   
   grid [frame $w.func]
   grid [label $w.label1  -text "Fonction à plotter"]
