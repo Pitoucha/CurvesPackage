@@ -159,10 +159,20 @@ proc ::testpackagepy::chargement {} {
 
 }
 
-proc plotAtoms {} {
+proc ::testpackagepy::plotAtoms {} {
   set sel [atomselect top "resid 48 76 and name CA"]
   set listDist [measure bond {{48 [molinfo 0 get id]} {76 [molinfo 0 get id]}} first 0]
   puts $listDist
+  set i 0
+  set xlist {}
+  foreach d $listDist {
+    lappend xlist $i
+    incr i
+  }
+  set plothandle [multiplot -x $xlist -y $listDist \
+                -xlabel "time" -ylabel "Distance" -title "Distance between " \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Distance" -plot];
 }
 
 proc ::testpackagepy::plotOther {} {
