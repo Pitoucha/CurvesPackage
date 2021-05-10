@@ -1,5 +1,6 @@
 package provide testPackage 0.1
-package require Tk 
+package require Tk
+package require multiplot
 
 set TESTPACKAGE_PATH $env(TESTPACKAGE_PATH)
 set PACKAGE_PATH "$TESTPACKAGE_PATH"
@@ -97,7 +98,35 @@ proc setselected {rad w} {
 }
 
 proc plotting {func} { 
-  puts $func
+  puts "plotting $func\(x)"
+  #set plothandle [multiplot reset]
+  set xlist {}
+  set ylist {}
+  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
+    switch $func {
+      "sin" {
+        lappend xlist $x
+	lappend ylist [::tcl::mathfunc::sin $x]
+        #$plothandle add $x [::tcl::mathfunc::sin $x]
+      }
+      "cos" {
+        lappend xlist $x
+	lappend ylist [::tcl::mathfunc::cos $x]
+        #$plothandle add $x [::tcl::mathfunc::cos $x]
+      }
+      "tan" {
+        lappend xlist $x
+	lappend ylist [::tcl::mathfunc::tan $x]
+        #$plothandle add $x [::tcl::mathfunc::tan $x]
+      }
+    }
+  }
+  #puts "liste x : $xlist"
+  #puts "liste y : $ylist"
+  set plothandle [multiplot -x $xlist -y $ylist \
+                -xlabel "x" -ylabel "$func\(x)" -title "Fonction $func" \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Fonction $func" -plot];
 }
 
 
