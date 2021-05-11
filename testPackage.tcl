@@ -64,8 +64,8 @@ proc ::testpackagepy::packageui {} {
   grid $w.menubar.file -row 0 -column 0 -sticky w
   grid $w.menubar.edit -row 0 -column 1 -sticky e
   
-  label $w.labelFunc  -text "Function to plot"
-  grid [frame $w.func]
+  
+  grid [labelframe $w.func  -text "Function plotting" -bd 2]
   grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::testpackagepy::setselected {sin} $w"] -row 0 -column 0
   grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::testpackagepy::setselected {cos} $w"] -row 0 -column 1
   grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::testpackagepy::setselected {tan} $w"] -row 0 -column 2
@@ -74,25 +74,25 @@ proc ::testpackagepy::packageui {} {
   grid [button $w.func.selectBtn -text "Plot this function" -command "::testpackagepy::plotting {sin}"] -row 2 -column 1
   $w.func.sinBtn select
   
-  label $w.labelPlot2 -text "Plot the distance between two atoms"
-  grid [frame $w.dist2]
-  grid [label $w.dist2.labelA1 -text "First atom to select (id) : "] -row 0 -column 0
+  
+  grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2]
+  grid [label $w.dist2.labelA1 -text "First atom to select (index) : "] -row 0 -column 0
   grid [entry $w.dist2.atom1 -textvar ::testpackagepy::atom1] -row 0 -column 1
-  grid [label $w.dist2.labelA2 -text "Second atom to select (id) : "] -row 1 -column 0
+  grid [label $w.dist2.labelA2 -text "Second atom to select (index) : "] -row 1 -column 0
   grid [entry $w.dist2.atom2 -textvar ::testpackagepy::atom2] -row 1 -column 1
-  button $w.plot2 -text "Plot the distance between two atoms" -command "::testpackagepy::plotAtoms"
-  button $w.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::testpackagepy::plotAtoms"
+  grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::testpackagepy::plotAtoms"]
+  grid [button $w.dist2.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::testpackagepy::plotAtoms"]
   
-  label $w.labelPlotG -text "Plot the distance between two groups of atoms"
-  grid [frame $w.distG]
-  grid [label $w.distG.labelG1 -text "First group of atoms to select (id, id, ...) : "] -row 0 -column 0
+  
+  grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2]
+  grid [label $w.distG.labelG1 -text "First group of atoms to select (index, index, ...) : "] -row 0 -column 0
   grid [entry $w.distG.atom1 -textvar ::testpackagepy::lAtoms1] -row 0 -column 1
-  grid [label $w.distG.labelG2 -text "Second group of atoms to select (id, id, ...) : "] -row 1 -column 0
+  grid [label $w.distG.labelG2 -text "Second group of atoms to select (index, index, ...) : "] -row 1 -column 0
   grid [entry $w.distG.atom2 -textvar ::testpackagepy::lAtoms2] -row 1 -column 1
-  button $w.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"
-  button $w.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"
+  grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
+  grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
   
-  pack $w.menubar $w.labelFunc $w.func $w.labelPlot2 $w.dist2 $w.plot2 $w.plot2Visu $w.labelPlotG $w.distG $w.plotG $w.plotGVisu
+  pack $w.menubar $w.func $w.dist2 $w.distG
   
   return $w
 }
@@ -194,6 +194,10 @@ proc ::testpackagepy::plotAtoms {} {
                 -xlabel "time" -ylabel "Distance" -title "Distance between " \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
+}
+
+proc ::testpackagepy::plotAtomsGroups {} {
+
 }
 
 proc ::testpackagepy::plotOther {} {
