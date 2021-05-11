@@ -179,7 +179,10 @@ proc ::testpackagepy::chargement {} {
 #takes the index not th id of the atom
 proc ::testpackagepy::plotAtoms {} {
   set sel [atomselect top "resid $::testpackagepy::atom1  $::testpackagepy::atom2"]
-  puts [list $sel] 
+  set stc [list]
+  foreach atom $sel {
+    
+  }
   set listDist [measure bond [list $::testpackagepy::atom1 $::testpackagepy::atom2] molid [molinfo 0 get id] frame all]
 
   #puts $listDist
