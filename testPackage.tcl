@@ -162,7 +162,7 @@ proc ::testpackagepy::chargement {} {
 proc ::testpackagepy::plotAtoms {} {
   set sel [atomselect top "resid 48 76 and name CA"]
   set listDist [measure bond {{48 [molinfo 0 get id]} {76 [molinfo 0 get id]}} first 0]
-  puts $listDist
+  #puts $listDist
   set i 0
   set xlist {}
   foreach d $listDist {
@@ -178,7 +178,7 @@ proc ::testpackagepy::plotAtoms {} {
 proc ::testpackagepy::plotOther {} {
   puts $::testpackagepy::e
   set res [split $::testpackagepy::e "x"]
-  set f " {"
+  set f " "
   set i 0
   foreach s $res {
     incr i
@@ -187,18 +187,21 @@ proc ::testpackagepy::plotOther {} {
       append f {$x}
     }
   }
-  append f "}"
+  puts 
   set xlist {}
   set ylist {}
-  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
-    lappend xlist $x
-    lappend ylist [expr $f]
+  for {set x -10} {$x <= 10} {set x [expr {$x + 1}]} {
+    if {$x != 0} {
+      lappend xlist $x
+      lappend ylist [expr {[expr $f]*1.0}]
+      puts [expr {[expr $f]*1.0}]
+    }
   }
+  puts [lindex ylist 15]
   set plothandle [multiplot -x $xlist -y $ylist \
                 -xlabel "x" -ylabel "$::testpackagepy::e" -title "Function $::testpackagepy::e" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Function $::testpackagepy::e" -plot];
-  puts [lindex ylist 15]
 }
 
 proc testpackage_tk {} {
