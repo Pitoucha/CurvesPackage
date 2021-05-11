@@ -189,7 +189,7 @@ proc ::testpackagepy::plotAtoms {} {
     incr i
   }
   set plothandle [multiplot -x $xlist -y $listDist \
-                -xlabel "time" -ylabel "Distance" -title "Distance between " \
+                -xlabel "Frame" -ylabel "Distance" -title "Distance between the atoms" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
 }
@@ -211,7 +211,7 @@ proc ::testpackagepy::plotAtomsGroups {} {
   set com1 [measure center $res1]
   set com2 [measure center $res2]
 
-  set distance [vecdist $com1 $com2]
+  set distance [vecdist $com1 $com2]pl
   
   set lDist [::testpackagepy::computeFrames "dist" $res1 $res2]
   
@@ -222,7 +222,7 @@ proc ::testpackagepy::plotAtomsGroups {} {
   }
   
   set plothandle [multiplot -x $xlist -y $lDist \
-                -xlabel "frame" -ylabel "Distance" -title "Distance between the groups" \
+                -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
 }
