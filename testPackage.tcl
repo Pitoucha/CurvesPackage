@@ -140,6 +140,7 @@ proc ::testpackagepy::plotting {func} {
 proc ::testpackagepy::trajectLoad {} {
   set newTrajectory [tk_getOpenFile]
   mol addfile $newTrajectory
+  pbc unwrap -all 
 
 }
 
@@ -158,10 +159,11 @@ proc ::testpackagepy::chargement {} {
   #set traject [mol addfile [tk_getOpenFile]]
 
 }
-
+#-molid [molinfo 0 get id]
 proc ::testpackagepy::plotAtoms {} {
   set sel [atomselect top "resid 48 76 and name CA"]
-  set listDist [measure bond {{48 [molinfo 0 get id]} {76 [molinfo 0 get id]}} first 0]
+  set listDist [measure bond {770 1242} molid [molinfo 0 get id] frame all]
+
   #puts $listDist
   set i 0
   set xlist {}
