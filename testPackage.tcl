@@ -164,10 +164,11 @@ proc ::testpackagepy::chargement {} {
   #set traject [mol addfile [tk_getOpenFile]]
 
 }
-#-molid [molinfo 0 get id]
+#takes the index not th id of the atom
 proc ::testpackagepy::plotAtoms {} {
-  set sel [atomselect top "resid 48 76 and name CA"]
-  set listDist [measure bond {770 1242} molid [molinfo 0 get id] frame all]
+  set sel [atomselect top "resid $::testpackagepy::atom1  $::testpackagepy::atom2"]
+  puts [list $sel] 
+  set listDist [measure bond [list $::testpackagepy::atom1 $::testpackagepy::atom2] molid [molinfo 0 get id] frame all]
 
   #puts $listDist
   set i 0
