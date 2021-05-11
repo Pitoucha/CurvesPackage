@@ -195,11 +195,24 @@ proc ::testpackagepy::plotAtoms {} {
 }
 
 proc ::testpackagepy::plotAtomsGroups {} {
-  set list1 [$::testpackagepy::latom1]
-  set list2 [$::testpackagepy::latom2]
+  set list1 [split $::testpackagepy::lAtoms1 ,]
+  set list2 [split $::testpackagepy::lAtoms2 ,]
 
 
+  set str "resid\ "
+  append str $list1
+  set res1 [atomselect top $str]
 
+
+  set str "resid\ "
+  append str $list2
+  set res2 [atomselect top $str]
+
+  set com1 [measure center $res1 weight 1]
+  set com2 [measure center $res2 weight 1]
+
+  set distance [vecdist $com1 $com2]
+  puts $distance
 }
 
 proc ::testpackagepy::plotOther {} {
