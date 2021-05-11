@@ -213,10 +213,7 @@ proc ::testpackagepy::plotAtomsGroups {} {
 
   set distance [vecdist $com1 $com2]
   
-  puts $distance
-  
   set lDist [::testpackagepy::computeFrames "dist" $res1 $res2]
-  puts $lDist
   
   set xlist {}
   set nFrames [molinfo top get numframes]
@@ -231,9 +228,7 @@ proc ::testpackagepy::plotAtomsGroups {} {
 }
 
 proc ::testpackagepy::computeFrames { type res1 res2 } {
-  set curFrame 0
   set nFrames [molinfo top get numframes]
-  puts $nFrames
   switch $type {
     "dist" {
       set lDist {}
