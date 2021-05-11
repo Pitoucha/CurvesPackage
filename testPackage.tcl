@@ -84,9 +84,9 @@ proc ::testpackagepy::packageui {} {
   
   
   grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2]
-  grid [label $w.distG.labelG1 -text "First group of atoms to select (index, index, ...) : "] -row 0 -column 0
+  grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0
   grid [entry $w.distG.atom1 -textvar ::testpackagepy::lAtoms1] -row 0 -column 1
-  grid [label $w.distG.labelG2 -text "Second group of atoms to select (index, index, ...) : "] -row 1 -column 0
+  grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0
   grid [entry $w.distG.atom2 -textvar ::testpackagepy::lAtoms2] -row 1 -column 1
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
   grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
@@ -199,50 +199,86 @@ proc ::testpackagepy::plotAtomsGroups {} {
   set list2 [split $::testpackagepy::lAtoms2 ,]
 
 
-  set str "resid\ "
-  append str $list1
-  set res1 [atomselect top $str]
+  set l1 "resid\ "
+  append l1 $list1
+  set res1 [atomselect top $l1]
 
 
-  set str "resid\ "
-  append str $list2
-  set res2 [atomselect top $str]
+  set l2 "resid\ "
+  append l2 $list2
+  set res2 [atomselect top $l2]
 
-  set com1 [measure center $res1 weight 1]
-  set com2 [measure center $res2 weight 1]
+  set com1 [measure center $res1]
+  set com2 [measure center $res2]
 
   set distance [vecdist $com1 $com2]
+  
   puts $distance
+  
+  set lDist [::testpackagepy::computeFrames "dist" $res1 $res2]
+  puts $lDist
+  
+  set xlist {}
+  set nFrames [molinfo top get numframes]
+  for { set i 0 } { $i < $nFrames } { incr i } {
+    lappend xlist $i
+  }
+  
+  set plothandle [multiplot -x $xlist -y $lDist \
+                -xlabel "frame" -ylabel "Distance" -title "Distance between the groups" \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Distance" -plot];
 }
 
-proc ::testpackagepy::plotOther {} {
-  puts $::testpackagepy::e
-  set res [split $::testpackagepy::e "x"]
-  set f " "
-  set i 0
-  foreach s $res {
-    incr i
-    if {[expr {$i != [llength $res]}]} {
-      append f $s
-      append f {$x}
+proc ::testpackagepy::computeFrames { type res1 res2 } {
+  set curFrame 0
+  set nFrames [molinfo top get numframes]
+  puts $nFrames
+  switch $type {
+    "dist" {
+      set lDist {}
+      for { set i 0 } { $i < $nFrames } { incr i } {
+	$res1 frame $i
+	$res2 frame $i
+	$res1 update
+	$res2 update
+	set com1 [measure center $res1]
+        set com2 [measure center $res2]
+	lappend lDist [vecdist $com1 $com2]
+      }
+      return $lDist
     }
-  }
-  puts 
-  set xlist {}
-  set ylist {}
-  for {set x -10} {$x <= 10} {set x [expr {$x + 1}]} {
-    if {$x != 0} {
-      lappend xlist $x
-      lappend ylist [expr {[expr $f]*1.0}]
-      puts [expr {[expr $f]*1.0}]
-    }
-  }
-  puts [lindex ylist 15]
-  set plothandle [multiplot -x $xlist -y $ylist \
-                -xlabel "x" -ylabel "$::testpackagepy::e" -title "Function $::testpackagepy::e" \
-                -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Function $::testpackagepy::e" -plot];
+  } 
 }
+
+#proc ::testpackagepy::plotOther {} {
+#  puts $::testpackagepy::e
+#  set res [split $::testpackagepy::e "x"]
+#  set f " "
+#  set i 0
+#  foreach s $res {
+#    incr i
+#    if {[expr {$i != [llength $res]}]} {
+#      append f $s
+#      append f {$x}
+#    }
+#  }
+#  puts 
+#  set xlist {}
+#  set ylist {}
+#  for {set x -10} {$x <= 10} {set x [expr {$x + 1}]} {
+#    if {$x != 0} {
+#      lappend xlist $x
+#      lappend ylist [expr {[expr $f]*1.0}]
+#      puts [expr {[expr $f]*1.0}]
+#    }
+#  }
+#  puts [lindex ylist 15]
+#  set plothandle [multiplot -x $xlist -y $ylist \
+#                -xlabel "x" -ylabel "$::testpackagepy::e" -title "Function $::testpackagepy::e" \
+#                -lines -linewidth 1 -linecolor red \
+#                -marker none -legend "Function $::testpackagepy::e" -plot];
+#}
 
 proc testpackage_tk {} {
   ::testpackagepy::packageui
