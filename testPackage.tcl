@@ -28,7 +28,8 @@ namespace eval ::testpackagepy:: {
 
   variable w 
   
-  variable e
+  variable atom1
+  variable atom2
 }
 
 
@@ -66,13 +67,17 @@ proc ::testpackagepy::packageui {} {
   grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::testpackagepy::setselected {sin} $w"] -row 0 -column 0
   grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::testpackagepy::setselected {cos} $w"] -row 0 -column 1
   grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::testpackagepy::setselected {tan} $w"] -row 0 -column 2
-  grid [radiobutton $w.func.other -text "other (var is x)" -variable func -value "other" -command "::testpackagepy::setselected {other} $w"] -row 1 -column 0
-  grid [entry $w.func.otherFunc -textvar ::testpackagepy::e] -row 1 -column 1
+  #grid [radiobutton $w.func.other -text "other (var is x)" -variable func -value "other" -command "::testpackagepy::setselected {other} $w"] -row 1 -column 0
+  #grid [entry $w.func.otherFunc -textvar ::testpackagepy::e] -row 1 -column 1
   grid [button $w.func.selectBtn -text "Plot this function" -command "::testpackagepy::plotting {sin}"] -row 2 -column 1
   $w.func.sinBtn select
   
   grid [frame $w.dist]
-  grid [button $w.dist.plot -text "Plot the distance between two atoms" -command "::testpackagepy::plotAtoms"] -row 0 -column 0
+  grid [label $w.dist.labelA1 -text "First atom to select : "] -row 0 -column 0
+  grid [entry $w.dist.atom1 -textvar ::testpackagepy::atom1] -row 0 -column 1
+  grid [label $w.dist.labelA2 -text "Second atom to select : "] -row 1 -column 0
+  grid [entry $w.dist.atom2 -textvar ::testpackagepy::atom2] -row 1 -column 1
+  grid [button $w.dist.plot -text "Plot the distance between two atoms" -command "::testpackagepy::plotAtoms"] -row 2 -column 0
   
   pack $w.menubar $w.label1 $w.func $w.dist
   
