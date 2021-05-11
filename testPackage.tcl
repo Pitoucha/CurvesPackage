@@ -19,7 +19,6 @@ switch $platform {
       catch {set TMPDIR $::env(TEMP)}
   }
 }
-puts "setup"
 
 namespace eval ::testpackagepy:: {
   namespace export testpackagepy
@@ -46,7 +45,7 @@ proc ::testpackagepy::packageui {} {
   }
   
   set w [toplevel .packageui]
-  wm title $w "CARV+"
+  wm title $w "CURV+"
   
   grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
   pack $w.menubar -padx 1 -fill x
@@ -196,6 +195,10 @@ proc ::testpackagepy::plotAtoms {} {
 }
 
 proc ::testpackagepy::plotAtomsGroups {} {
+  set list1 [$::testpackagepy::latom1]
+  set list2 [$::testpackagepy::latom2]
+
+
 
 }
 
@@ -229,7 +232,5 @@ proc ::testpackagepy::plotOther {} {
 }
 
 proc testpackage_tk {} {
-
   ::testpackagepy::packageui
-  puts "yaya"
 }

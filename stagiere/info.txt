@@ -1,0 +1,27 @@
+L'article des paramètres G4 est https://doi.org/10.1080/07391102.2015.1055303
+Parfois il vont un peut vite en explication donc il ne fait pas hésiter à lire leur sources ou lire le script.
+En SI, il y a les script VMD pour des G4 ayant un nombre de tetrade différents.
+Ils ont deux problème qu'il faut résoudre :
+- Il y a un script pour chaque type de G4. Donc il faudrait un application générale pour tous type de G4 (2,3,4,etc tétrades)
+- il ont un probleme de gestion de mémoire pour les dynamiques longues > 300ns, il faut utiliser k-80 sinon le script utilise toute la mémoire puis bug.
+
+
+
+Un article générale sur la structure des G4. (Fundamentals of Quadruplex Structures)
+Parcontre il ne schématise pas bien les types de loops. Donc voici un article (10.1002/0471142700.nc1705s50) qui assez moyen, par contre la figure 1 illuste plutot bien les différents types de loops.
+Là dessus, je pourrais faire des recherche avec un meilleur article si il en on besoins, là je l'ai fait repidement.
+
+
+
+La structure des G4 est souvent repéré par la séquence, donc : /10.1093/bioinformatics/btz738
+
+
+
+J'ai aussi ajouter la version 2.4 du logiciel DSSR avec le manuel (qu j'ai ajouter) et la documentation qui était jointe avec.
+PS: dans le dossier src il y a le code source en C (c'est pa bien de copier ), si cela peut les orienter.
+
+
+
+Voic des bases de données dans lesquel ils peuvent trouver différentes structures G4 pour mettre à l'épreuve leur grand chef-d'oeuvre:
+http://g4.x3dna.org/
+http://ndbserver.rutgers.edu/
