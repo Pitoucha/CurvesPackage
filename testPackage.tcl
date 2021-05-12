@@ -89,7 +89,7 @@ proc ::testpackagepy::packageui {} {
   grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0
   grid [entry $w.distG.atom2 -textvar ::testpackagepy::lAtoms2] -row 1 -column 1
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
-  grid [button $w.gistG.angleG -text "Plot the angles between two groups of atoms" -command "::testpackagepy::plotAngleGroups"]
+  grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::testpackagepy::plotAngleGroups"]
   #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
   
   pack $w.menubar $w.func $w.dist2 $w.distG
@@ -125,10 +125,6 @@ proc ::testpackagepy::setselected {rad w} {
       $w.func.selectBtn configure -command "::testpackagepy::plotting {sin}"
     }
   }
-}
-
-proc ::testpackagepy::plotAngleGroups {} {
-
 }
 
 proc ::testpackagepy::plotting {func} { 
@@ -230,6 +226,10 @@ proc ::testpackagepy::plotAtomsGroups {} {
                 -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
+}
+
+proc ::testpackagepy::plotAngleGroups {} {
+  
 }
 
 proc ::testpackagepy::computeFrames { type res1 res2 } {
