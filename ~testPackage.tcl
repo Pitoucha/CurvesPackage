@@ -283,7 +283,7 @@ proc ::testpackagepy::computeFrames { type res1 res2 } {
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
 	lappend lAngl $ang
       }
-      return $lAngl
+      return $lAngl 
     }
   }
 }
