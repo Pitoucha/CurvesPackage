@@ -174,9 +174,15 @@ proc ::testpackagepy::chargement {} {
 
   mol delrep 0 [molinfo 0 get id]
 
-  #set traject [mol addfile [tk_getOpenFile]]
+  set sel [atomselect top "all"]
 
+  variable names [$sel get resname]
+  set names [lsort -unique $names]
+  puts $names 
+
+  $sel delete
 }
+
 #takes the index not th id of the atom
 proc ::testpackagepy::plotAtoms {} {
   set sel [atomselect top "resid $::testpackagepy::atom1  $::testpackagepy::atom2"]
