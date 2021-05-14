@@ -174,29 +174,8 @@ proc ::testpackagepy::chargement {} {
 
   mol delrep 0 [molinfo 0 get id]
 
-  # Make a dictionary to map extensions to descriptions
-  set filetypes [dict create .txt "Text File" .tcl "Tcl File"]
-
-  # Add/update the dictionary
-  dict set filetypes .tcl "Tcl Script"
-  dict set filetypes .tm  "Tcl Module"
-  dict set filetypes .gif "GIF Image"
-  dict set filetypes .png "PNG Image"
-
-  # Simple read from the dictionary
-  set ext ".tcl"
-  set desc [dict get $filetypes $ext]
-  puts "$ext is for a $desc"
-
-  # Somewhat more complex, with existence test
-  foreach filename [glob *] {
-      set ext [file extension $filename]
-      if {[dict exists $filetypes $ext]} {
-          puts "$filename is a [dict get $filetypes $ext]"
-      }
-  }
-  ::testpackagepy::listeResname
-  
+  set listBases [::testpackagepy::listeResname]
+  ::testpackagepy::selectWithList $listBases "HOH"
 }
 
 proc ::testpackagepy::listeResname {} {
@@ -225,9 +204,28 @@ proc ::testpackagepy::listeResname {} {
         dict lappend listBases $rsn $rsi 
       }
     }
+    $sel delete
+  return $listBases
+}
 
-  puts $listBases
-} 
+proc ::testpackagepy::selectWithList {listeSel name} {
+  puts $listeSel
+  dict for {id info} $listeSel {
+    puts "resname = $id"
+    puts "resid = $info" 
+    if {$id eq $name} {
+      set selIds $info
+    }
+  }
+
+  if {[string trim $selIds] != ""} {
+    set sel [atomselect top "resid $selIds"]  
+    mol representation NewCartoon
+    mol addrep [molinfo 0 get id]
+  } else {
+    puts "uhoh"
+  }
+}
 
 #takes the index not th id of the atom
 proc ::testpackagepy::plotAtoms {} {
