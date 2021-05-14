@@ -174,14 +174,60 @@ proc ::testpackagepy::chargement {} {
 
   mol delrep 0 [molinfo 0 get id]
 
-  set sel [atomselect top "all"]
+  # Make a dictionary to map extensions to descriptions
+  set filetypes [dict create .txt "Text File" .tcl "Tcl File"]
 
-  variable names [$sel get resname]
-  set names [lsort -unique $names]
-  puts $names 
+  # Add/update the dictionary
+  dict set filetypes .tcl "Tcl Script"
+  dict set filetypes .tm  "Tcl Module"
+  dict set filetypes .gif "GIF Image"
+  dict set filetypes .png "PNG Image"
 
-  $sel delete
+  # Simple read from the dictionary
+  set ext ".tcl"
+  set desc [dict get $filetypes $ext]
+  puts "$ext is for a $desc"
+
+  # Somewhat more complex, with existence test
+  foreach filename [glob *] {
+      set ext [file extension $filename]
+      if {[dict exists $filetypes $ext]} {
+          puts "$filename is a [dict get $filetypes $ext]"
+      }
+  }
+  ::testpackagepy::listeResname
+  
 }
+
+proc ::testpackagepy::listeResname {} {
+  set sel [atomselect top "all"]
+  #puts [$sel get {resname resid index}]
+  #variable names [$sel get resname]
+  #set names [lsort -unique $names]
+  #puts $names 
+
+  #$sel delete
+  set listBases [dict create]
+
+  set names [$sel get {resname resid}]
+  set names [lsort -unique $names]
+
+  foreach name $names  {
+      #recupère resname et resid
+      set rsn [split $name "\ "]
+      set rsi [lindex $rsn 1]
+      set rsn [lindex $rsn 0]
+
+      #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
+      if {![dict exist $listBases $rsn]} {
+        dict set listBases $rsn $rsi 
+      } else {
+        dict lappend listBases $rsn $rsi 
+      }
+    }
+
+  puts $listBases
+} 
 
 #takes the index not th id of the atom
 proc ::testpackagepy::plotAtoms {} {
