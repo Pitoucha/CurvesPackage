@@ -31,6 +31,7 @@ namespace eval ::testpackagepy:: {
   variable atom2
   variable lAtoms1
   variable lAtoms2
+  variable selectList 
 }
 
 
@@ -49,15 +50,18 @@ proc ::testpackagepy::packageui {} {
   
   grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
   pack $w.menubar -padx 1 -fill x
+  
   menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
+  
   menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
   menu $w.menubar.edit.menu -tearoff no
+
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
-  $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
+  $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy 
+  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.edit.menu add command -label "Load new Mol" -command ::testpackagepy::chargement
   $w.menubar.edit.menu add command -label "Load new trajectory" -command ::testpackagepy::trajectLoad
-  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
   grid $w.menubar.file -row 0 -column 0 -sticky w
@@ -174,13 +178,58 @@ proc ::testpackagepy::chargement {} {
 
   mol delrep 0 [molinfo 0 get id]
 
+  set selectList [::testpackagepy::listeResname]
+  ::testpackagepy::selectWithList $selectList "HOH"
+}
+
+proc ::testpackagepy::listeResname {} {
+
   set sel [atomselect top "all"]
 
-  variable names [$sel get resname]
-  set names [lsort -unique $names]
-  puts $names 
+  set listBases [dict create]
 
-  $sel delete
+  set names [$sel get {resname resid}]
+  set names [lsort -unique $names]
+
+  foreach name $names  {
+      #recupère resname et resid
+      set rsn [split $name "\ "]
+      set rsi [lindex $rsn 1]
+      set rsn [lindex $rsn 0]
+
+      #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
+      if {![dict exist $listBases $rsn]} {
+        dict set listBases $rsn $rsi 
+      } else {
+        dict lappend listBases $rsn $rsi 
+      }
+    }
+    $sel delete
+
+    dict for {id info} $listBases {
+    puts "resname = $id"
+    puts "resid = $info" 
+  }
+  return $listBases
+}
+
+proc ::testpackagepy::selectWithList {listeSel name} {
+  puts $listeSel
+  dict for {id info} $listeSel {
+    puts "resname = $id"
+    puts "resid = $info" 
+    if {$id eq $name} {
+      set selIds $info
+    }
+  }
+
+  if {[string trim $selIds] != ""} {
+    set sel [atomselect top "resid $selIds"]  
+    mol representation NewCartoon
+    mol addrep [molinfo 0 get id]
+  } else {
+    puts "uhoh"
+  }
 }
 
 #takes the index not th id of the atom
