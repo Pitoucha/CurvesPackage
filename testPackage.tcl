@@ -46,7 +46,7 @@ proc ::testpackagepy::packageui {} {
   }
   
   set w [toplevel .packageui]
-  wm title $w "CURV+"
+  wm title $w "CURVES+"
   
   grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
   pack $w.menubar -padx 1 -fill x
