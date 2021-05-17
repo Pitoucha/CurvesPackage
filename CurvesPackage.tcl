@@ -1,4 +1,4 @@
-package provide testPackage 0.1
+package provide CurvesPackage 0.1
 package require Tk
 package require multiplot
 
@@ -112,7 +112,7 @@ proc ::curvespackage::packageui {} {
   
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"]
   grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"]
-  #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
+  #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
   
   pack $w.menubar $w.func $w.dist2 $w.distG
   
