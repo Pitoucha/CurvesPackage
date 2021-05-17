@@ -69,9 +69,9 @@ proc ::testpackagepy::packageui {} {
   
   
   grid [labelframe $w.func  -text "Function plotting" -bd 2]
-  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::testpackagepy::setselected {sin} $w"] -row 0 -column 0
-  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::testpackagepy::setselected {cos} $w"] -row 0 -column 1
-  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::testpackagepy::setselected {tan} $w"] -row 0 -column 2
+  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::testpackagepy::setselected {sin}"] -row 0 -column 0
+  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::testpackagepy::setselected {cos}"] -row 0 -column 1
+  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::testpackagepy::setselected {tan}"] -row 0 -column 2
   #grid [radiobutton $w.func.other -text "other (var is x)" -variable func -value "other" -command "::testpackagepy::setselected {other} $w"] -row 1 -column 0
   #grid [entry $w.func.otherFunc -textvar ::testpackagepy::e] -row 1 -column 1
   grid [button $w.func.selectBtn -text "Plot this function" -command "::testpackagepy::plotting {sin}"] -row 2 -column 1
@@ -92,6 +92,8 @@ proc ::testpackagepy::packageui {} {
   grid [entry $w.distG.atom1 -textvar ::testpackagepy::lAtoms1] -row 0 -column 1
   grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0
   grid [entry $w.distG.atom2 -textvar ::testpackagepy::lAtoms2] -row 1 -column 1
+  grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 2
+  grid [ttk::combobox $w.distG.resSel.resName1] -row 0 -column 0
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
   grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::testpackagepy::plotAngleGroups"]
   #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
@@ -111,7 +113,8 @@ proc ::testpackagepy::hellopy {} {
   puts "[$pyprefix -command helloworld()]"
 }
 
-proc ::testpackagepy::setselected {rad w} {
+proc ::testpackagepy::setselected {rad} {
+  variable w
   switch $rad {
     "sin" {
       $w.func.selectBtn configure -command "::testpackagepy::plotting {sin}"
@@ -183,6 +186,7 @@ proc ::testpackagepy::chargement {} {
 }
 
 proc ::testpackagepy::listeResname {} {
+  variable w
 
   set sel [atomselect top "all"]
 
@@ -208,12 +212,18 @@ proc ::testpackagepy::listeResname {} {
         puts $rsi 
       }
     }
-    $sel delete
 
     dict for {id info} $::testpackagepy::selectList {
-    puts "resname = $id"
-    puts "resid = $info" 
-  }
+      puts "resname = $id"
+      puts "resid = $info" 
+    }
+    
+    set names [$sel get resname]
+    set names [lsort -unique $names]
+    
+    $w.distG.resName1 configure -values $names
+    
+    $sel delete
 }
 
 proc ::testpackagepy::selectWithList {name} {
