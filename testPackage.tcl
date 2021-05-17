@@ -96,18 +96,18 @@ proc ::testpackagepy::packageui {} {
   grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 2
   grid [label $w.distG.resSel.labelBase -text "Select the atom groups to use as base"] -row 0
   grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
-  grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 1 -column 1
+  grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::testpackagepy::selectWithList 0"] -row 1 -column 1
   grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
   grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
-  grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 2 -column 1
+  grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::testpackagepy::selectWithList 1"] -row 2 -column 1
   grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2
   
   grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 3
   grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 4 -column 0
-  grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 4 -column 1
+  grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::testpackagepy::selectWithList 2"] -row 4 -column 1
   grid [ttk::combobox $w.distG.resSel.resIdComp1] -row 4 -column 2
   grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 5 -column 0
-  grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 5 -column 1
+  grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::testpackagepy::selectWithList 3"] -row 5 -column 1
   grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
   
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
@@ -245,10 +245,23 @@ proc ::testpackagepy::listeResname {} {
     $sel delete
 }
 
-proc ::testpackagepy::selectWithList {} {
+proc ::testpackagepy::selectWithList {b} {
   variable w
   #puts $::testpackagepy::selectList
-  set name [$w.distG.resSel.resNameBase1 get]
+  switch $b {
+    0 {
+      set name [$w.distG.resSel.resNameBase1 get]
+    }
+    1 {
+      set name [$w.distG.resSel.resNameBase2 get]
+    }
+    2 {
+      set name [$w.distG.resSel.resNameComp1 get]
+    }
+    3 {
+      set name [$w.distG.resSel.resNameComp2 get]
+    }
+  }
   puts $name
   dict for {id info} $::testpackagepy::selectList {
     #puts "resname = $id"
