@@ -179,24 +179,40 @@ proc ::testpackagepy::plotting {func} {
 
 
 proc ::testpackagepy::trajectLoad {} {
+  #recupère la trajectoire à charger
   set newTrajectory [tk_getOpenFile]
-  mol addfile $newTrajectory
-  pbc unwrap -all 
-
+  
+  #verifie que le chemin a bien été pris en compte
+  if {$newTrajectory != ""} {
+    #ajoute la trajecroire à la mol en court
+    mol addfile $newTrajectory
+    pbc unwrap -all 
+  }
 }
 
 proc ::testpackagepy::chargement {} {
+  #supprime 
   mol delete all 
 
+  #on recupère le fichier à charger
   set newMol [tk_getOpenFile]
-  mol new $newMol
 
-  mol delrep 0 [molinfo 0 get id]
+  #verifie que le chemin a bien été pris en compte
+  if {$newMol != ""} {
+    #chargement
+    mol new $newMol
 
-  mol representation CPK
-  mol addrep [molinfo 0 get id]
+    #supprime la representation actuelle 
+    mol delrep 0 [molinfo 0 get id]
+    
+    #crée une nouvelle representation et l'ajoute
+    mol representation CPK
+    mol addrep [molinfo 0 get id]
 
-  ::testpackagepy::listeResname
+    #appelle la creation de la liste des resnames disponibles 
+    ::testpackagepy::listeResname
+  }
+  
 }
 
 proc ::testpackagepy::listeResname {} {
@@ -242,6 +258,7 @@ proc ::testpackagepy::listeResname {} {
 proc ::testpackagepy::selectWithList {b} {
   variable w
 
+  #quel liste déroulante appelle pour savoir chez qui récupérer le name 
   switch $b {
     0 {
       set name [$w.distG.resSel.resNameBase1 get]
@@ -259,6 +276,8 @@ proc ::testpackagepy::selectWithList {b} {
       puts "there is a problem, call us!" 
     }
   }
+  
+  #defini la liste de resid
   set list stc
 
   dict for {id info} $::testpackagepy::selectList {
