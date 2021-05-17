@@ -2,9 +2,9 @@ package provide CurvesPackage 0.1
 package require Tk
 package require multiplot
 
-set CURVESPACKAGE_PATH $env(CURVES_PATH)
-set PACKAGE_PATH "$TESTPACKAGE_PATH"
-set PACKAGEPATH "$TESTPACKAGE_PATH"
+set CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
+set PACKAGE_PATH "$CURVESPACKAGE_PATH"
+set PACKAGEPATH "$CURVESPACKAGE_PATH"
 
 variable platform $tcl_platform(platform)
 
