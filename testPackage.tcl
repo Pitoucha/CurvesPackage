@@ -31,7 +31,7 @@ namespace eval ::testpackagepy:: {
   variable atom2
   variable lAtoms1
   variable lAtoms2
-  variable selectList 
+  variable selectList
 }
 
 
@@ -178,15 +178,15 @@ proc ::testpackagepy::chargement {} {
 
   mol delrep 0 [molinfo 0 get id]
 
-  set selectList [::testpackagepy::listeResname]
-  ::testpackagepy::selectWithList $selectList "HOH"
+  ::testpackagepy::listeResname
+  ::testpackagepy::selectWithList "HOH"
 }
 
 proc ::testpackagepy::listeResname {} {
 
   set sel [atomselect top "all"]
 
-  set listBases [dict create]
+  set ::testpackagepy::selectList [dict create]
 
   set names [$sel get {resname resid}]
   set names [lsort -unique $names]
@@ -198,24 +198,27 @@ proc ::testpackagepy::listeResname {} {
       set rsn [lindex $rsn 0]
 
       #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
-      if {![dict exist $listBases $rsn]} {
-        dict set listBases $rsn $rsi 
+      if {![dict exist $::testpackagepy::selectList $rsn]} {
+        puts $rsn
+        puts $rsi 
+        dict set ::testpackagepy::selectList $rsn $rsi 
       } else {
-        dict lappend listBases $rsn $rsi 
+        dict lappend ::testpackagepy::selectList $rsn $rsi 
+        puts $rsn
+        puts $rsi 
       }
     }
     $sel delete
 
-    dict for {id info} $listBases {
+    dict for {id info} $::testpackagepy::selectList {
     puts "resname = $id"
     puts "resid = $info" 
   }
-  return $listBases
 }
 
-proc ::testpackagepy::selectWithList {listeSel name} {
-  puts $listeSel
-  dict for {id info} $listeSel {
+proc ::testpackagepy::selectWithList {name} {
+  puts $::testpackagepy::selectList
+  dict for {id info} $::testpackagepy::selectList {
     puts "resname = $id"
     puts "resid = $info" 
     if {$id eq $name} {
