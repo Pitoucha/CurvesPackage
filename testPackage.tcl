@@ -94,6 +94,7 @@ proc ::testpackagepy::packageui {} {
   grid [entry $w.distG.atom2 -textvar ::testpackagepy::lAtoms2] -row 1 -column 1
   grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 2
   grid [ttk::combobox $w.distG.resSel.resName1] -row 0 -column 0
+  grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 0 -column 1
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
   grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::testpackagepy::plotAngleGroups"]
   #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
@@ -182,7 +183,7 @@ proc ::testpackagepy::chargement {} {
   mol delrep 0 [molinfo 0 get id]
 
   ::testpackagepy::listeResname
-  ::testpackagepy::selectWithList "HOH"
+  #::testpackagepy::selectWithList "HOH"
 }
 
 proc ::testpackagepy::listeResname {} {
@@ -203,20 +204,20 @@ proc ::testpackagepy::listeResname {} {
 
       #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
       if {![dict exist $::testpackagepy::selectList $rsn]} {
-        puts $rsn
-        puts $rsi 
+        #puts $rsn
+        #puts $rsi 
         dict set ::testpackagepy::selectList $rsn $rsi 
       } else {
         dict lappend ::testpackagepy::selectList $rsn $rsi 
-        puts $rsn
-        puts $rsi 
+        #puts $rsn
+        #puts $rsi 
       }
     }
 
-    dict for {id info} $::testpackagepy::selectList {
-      puts "resname = $id"
-      puts "resid = $info" 
-    }
+    #dict for {id info} $::testpackagepy::selectList {
+    #  puts "resname = $id"
+    #  puts "resid = $info" 
+    #}
     
     set names [$sel get resname]
     set names [lsort -unique $names]
@@ -226,11 +227,14 @@ proc ::testpackagepy::listeResname {} {
     $sel delete
 }
 
-proc ::testpackagepy::selectWithList {name} {
-  puts $::testpackagepy::selectList
+proc ::testpackagepy::selectWithList {} {
+  variable w
+  #puts $::testpackagepy::selectList
+  set name [$w.distG.resSel.resName1 get]
+  puts $name
   dict for {id info} $::testpackagepy::selectList {
-    puts "resname = $id"
-    puts "resid = $info" 
+    #puts "resname = $id"
+    #puts "resid = $info" 
     if {$id eq $name} {
       set selIds $info
     }
