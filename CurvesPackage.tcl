@@ -109,6 +109,7 @@ proc ::curvespackage::packageui {} {
   grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 5 -column 0
   grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 5 -column 1
   grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
+  grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleGroups"] -row 6
   
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"]
   grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"]
