@@ -31,6 +31,7 @@ namespace eval ::testpackagepy:: {
   variable atom2
   variable lAtoms1
   variable lAtoms2
+  variable selectList 
 }
 
 
@@ -49,15 +50,18 @@ proc ::testpackagepy::packageui {} {
   
   grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
   pack $w.menubar -padx 1 -fill x
+  
   menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
+  
   menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
   menu $w.menubar.edit.menu -tearoff no
+
   $w.menubar.file.menu add command -label "Hello" -command  ::testpackagepy::hello
-  $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy
+  $w.menubar.file.menu add command -label "Hello but in python" -command ::testpackagepy::hellopy 
+  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.edit.menu add command -label "Load new Mol" -command ::testpackagepy::chargement
   $w.menubar.edit.menu add command -label "Load new trajectory" -command ::testpackagepy::trajectLoad
-  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
   grid $w.menubar.file -row 0 -column 0 -sticky w
@@ -174,18 +178,14 @@ proc ::testpackagepy::chargement {} {
 
   mol delrep 0 [molinfo 0 get id]
 
-  set listBases [::testpackagepy::listeResname]
-  ::testpackagepy::selectWithList $listBases "HOH"
+  set selectList [::testpackagepy::listeResname]
+  ::testpackagepy::selectWithList $selectList "HOH"
 }
 
 proc ::testpackagepy::listeResname {} {
-  set sel [atomselect top "all"]
-  #puts [$sel get {resname resid index}]
-  #variable names [$sel get resname]
-  #set names [lsort -unique $names]
-  #puts $names 
 
-  #$sel delete
+  set sel [atomselect top "all"]
+
   set listBases [dict create]
 
   set names [$sel get {resname resid}]
@@ -205,6 +205,11 @@ proc ::testpackagepy::listeResname {} {
       }
     }
     $sel delete
+
+    dict for {id info} $listBases {
+    puts "resname = $id"
+    puts "resid = $info" 
+  }
   return $listBases
 }
 
