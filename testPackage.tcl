@@ -189,16 +189,14 @@ proc ::testpackagepy::chargement {} {
   mol delete all 
 
   set newMol [tk_getOpenFile]
-  puts $newMol
   mol new $newMol
+
+  mol delrep 0 [molinfo 0 get id]
 
   mol representation CPK
   mol addrep [molinfo 0 get id]
 
-  mol delrep 0 [molinfo 0 get id]
-
   ::testpackagepy::listeResname
-  #::testpackagepy::selectWithList "HOH"
 }
 
 proc ::testpackagepy::listeResname {} {
@@ -219,13 +217,9 @@ proc ::testpackagepy::listeResname {} {
 
       #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
       if {![dict exist $::testpackagepy::selectList $rsn]} {
-        #puts $rsn
-        #puts $rsi 
         dict set ::testpackagepy::selectList $rsn $rsi 
       } else {
         dict lappend ::testpackagepy::selectList $rsn $rsi 
-        #puts $rsn
-        #puts $rsi
       }
     }
 
@@ -234,20 +228,20 @@ proc ::testpackagepy::listeResname {} {
     #  puts "resid = $info" 
     #}
     
-    set names [$sel get resname]
-    set names [lsort -unique $names]
+    set stc [$sel get resname]
+    set stc [lsort -unique $stc]
     
-    $w.distG.resSel.resNameBase1 configure -values $names
-    $w.distG.resSel.resNameBase2 configure -values $names
-    $w.distG.resSel.resNameComp1 configure -values $names
-    $w.distG.resSel.resNameComp2 configure -values $names
+    $w.distG.resSel.resNameBase1 configure -values $stc
+    $w.distG.resSel.resNameBase2 configure -values $stc
+    $w.distG.resSel.resNameComp1 configure -values $stc
+    $w.distG.resSel.resNameComp2 configure -values $stc
     
     $sel delete
 }
 
 proc ::testpackagepy::selectWithList {b} {
   variable w
-  #puts $::testpackagepy::selectList
+
   switch $b {
     0 {
       set name [$w.distG.resSel.resNameBase1 get]
@@ -261,22 +255,35 @@ proc ::testpackagepy::selectWithList {b} {
     3 {
       set name [$w.distG.resSel.resNameComp2 get]
     }
+    default {
+      puts "there is a problem, call us!" 
+    }
   }
-  puts $name
+  set list stc
+
   dict for {id info} $::testpackagepy::selectList {
-    #puts "resname = $id"
-    #puts "resid = $info" 
     if {$id eq $name} {
-      set selIds $info
+      set stc [split $info "\ "]
+      break 
     }
   }
 
-  if {[string trim $selIds] != ""} {
-    set sel [atomselect top "resid $selIds"]  
-    mol representation NewCartoon
-    mol addrep [molinfo 0 get id]
-  } else {
-    puts "uhoh"
+  switch $b {
+    0 {
+      $w.distG.resSel.resIdBase1 configure -values $stc
+    }
+    1 {
+      $w.distG.resSel.resIdBase2 configure -values $stc
+    }
+    2 {
+      $w.distG.resSel.resIdComp1 configure -values $stc
+    }
+    3 {
+      $w.distG.resSel.resIdComp2 configure -values $stc
+    }
+    default {
+      puts "there is a problem, call us!" 
+    }
   }
 }
 
@@ -296,6 +303,7 @@ proc ::testpackagepy::plotAtoms {} {
                 -xlabel "Frame" -ylabel "Distance" -title "Distance between the atoms" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
+  $sel delete
 }
 
 proc ::testpackagepy::plotAtomsGroups {} {
@@ -352,6 +360,10 @@ proc ::testpackagepy::plotAngleGroups {} {
                 -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
+
+
+  $res1 delete
+  $res2 delete
 }
 
 proc ::testpackagepy::computeFrames { type res1 res2 } {
