@@ -92,9 +92,24 @@ proc ::testpackagepy::packageui {} {
   grid [entry $w.distG.atom1 -textvar ::testpackagepy::lAtoms1] -row 0 -column 1
   grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0
   grid [entry $w.distG.atom2 -textvar ::testpackagepy::lAtoms2] -row 1 -column 1
+  
   grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 2
-  grid [ttk::combobox $w.distG.resSel.resName1] -row 0 -column 0
-  grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 0 -column 1
+  grid [label $w.distG.resSel.labelBase -text "Select the atom groups to use as base"] -row 0
+  grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
+  grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 1 -column 1
+  grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
+  grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
+  grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 2 -column 1
+  grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2
+  
+  grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 3
+  grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 4 -column 0
+  grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 4 -column 1
+  grid [ttk::combobox $w.distG.resSel.resIdComp1] -row 4 -column 2
+  grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 5 -column 0
+  grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::testpackagepy::selectWithList"] -row 5 -column 1
+  grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
+  
   grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::testpackagepy::plotAtomsGroups"]
   grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::testpackagepy::plotAngleGroups"]
   #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::testpackagepy::plotAtomsGroups"]
@@ -210,7 +225,7 @@ proc ::testpackagepy::listeResname {} {
       } else {
         dict lappend ::testpackagepy::selectList $rsn $rsi 
         #puts $rsn
-        #puts $rsi 
+        #puts $rsi
       }
     }
 
@@ -222,7 +237,10 @@ proc ::testpackagepy::listeResname {} {
     set names [$sel get resname]
     set names [lsort -unique $names]
     
-    $w.distG.resSel.resName1 configure -values $names
+    $w.distG.resSel.resNameBase1 configure -values $names
+    $w.distG.resSel.resNameBase2 configure -values $names
+    $w.distG.resSel.resNameComp1 configure -values $names
+    $w.distG.resSel.resNameComp2 configure -values $names
     
     $sel delete
 }
@@ -230,7 +248,7 @@ proc ::testpackagepy::listeResname {} {
 proc ::testpackagepy::selectWithList {} {
   variable w
   #puts $::testpackagepy::selectList
-  set name [$w.distG.resSel.resName1 get]
+  set name [$w.distG.resSel.resNameBase1 get]
   puts $name
   dict for {id info} $::testpackagepy::selectList {
     #puts "resname = $id"
