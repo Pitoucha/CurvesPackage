@@ -284,6 +284,8 @@ proc ::testpackagepy::computeFrames { type res1 res2 } {
         set com2 [measure center $res2]
 	set len1 [veclength $com1]
 	set len2 [veclength $com2]
+	puts "com1 = $com1"
+	puts "com2 = $com2"
 	set dotprod [vecdot $com1 $com2]
 	set dotprodcor [expr $dotprod / ($len1 * $len2)]
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
