@@ -221,7 +221,7 @@ proc ::testpackagepy::listeResname {} {
     set names [$sel get resname]
     set names [lsort -unique $names]
     
-    $w.distG.resName1 configure -values $names
+    $w.distG.resSel.resName1 configure -values $names
     
     $sel delete
 }
