@@ -34,6 +34,7 @@ namespace eval ::curvespackage:: {
   variable selectList
   variable frameStart
   variable frameEnd
+  variable step
 }
 
 
@@ -70,13 +71,13 @@ proc ::curvespackage::packageui {} {
   grid $w.menubar.edit -row 0 -column 1 -sticky e
   
   
-  grid [labelframe $w.func  -text "Function plotting" -bd 2]
+  grid [labelframe $w.func  -text "Function plotting" -bd 2] -columnspan 6
   grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::curvespackage::setselected {sin}"] -row 0 -column 0
   grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::curvespackage::setselected {cos}"] -row 0 -column 1
   grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::curvespackage::setselected {tan}"] -row 0 -column 2
   #grid [radiobutton $w.func.other -text "other (var is x)" -variable func -value "other" -command "::curvespackage::setselected {other} $w"] -row 1 -column 0
   #grid [entry $w.func.otherFunc -textvar ::curvespackage::e] -row 1 -column 1
-  grid [button $w.func.selectBtn -text "Plot this function" -command "::curvespackage::plotting {sin}"] -row 2 -column 1
+  grid [button $w.func.selectBtn -text "Plot this function" -command "::curvespackage::plotting {sin}"] -row 2 -columnspan 3
   $w.func.sinBtn select
   
   pack $w.menubar $w.func
@@ -108,25 +109,25 @@ proc ::curvespackage::chargement {} {
     
   
   
-    grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2]
+    grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2] -columnspan 6
     grid [label $w.dist2.labelA1 -text "First atom to select (index) : "] -row 0 -column 0
     grid [entry $w.dist2.atom1 -textvar ::curvespackage::atom1] -row 0 -column 1
     grid [label $w.dist2.labelA2 -text "Second atom to select (index) : "] -row 1 -column 0
     grid [entry $w.dist2.atom2 -textvar ::curvespackage::atom2] -row 1 -column 1
-    grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::curvespackage::plotAtoms"]
+    grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::curvespackage::plotAtoms"] -columnspan 2
     #grid [button $w.dist2.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::curvespackage::plotAtoms"]
     
   
-    grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2]
-    grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0 -columnspan 2
-    grid [entry $w.distG.atom1 -textvar ::curvespackage::lAtoms1] -row 0 -column 2 -columnspan 2
-    grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0 -columnspan 2
-    grid [entry $w.distG.atom2 -textvar ::curvespackage::lAtoms2] -row 1 -column 2 -columnspan 2
-    grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"] -row 3 -columnspan 4
-    grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"] -row 4 -columnspan 4
+    grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2] -columnspan 6
+    grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0 -columnspan 3
+    grid [entry $w.distG.atom1 -textvar ::curvespackage::lAtoms1] -row 0 -column 3 -columnspan 3
+    grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0 -columnspan 3
+    grid [entry $w.distG.atom2 -textvar ::curvespackage::lAtoms2] -row 1 -column 3 -columnspan 3
+    grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"] -row 3 -columnspan 6
+    grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"] -row 4 -columnspan 6
     #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
   
-    grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 4
+    grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 6
     grid [label $w.distG.resSel.labelBase -text "Select the atom groups to use as base"] -row 0 -columnspan 3
     grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
     grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
@@ -143,11 +144,13 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
     grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 6 -columnspan 3
   
-    grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot (leave empty for all frames)"] -row 6 -columnspan 4
+    grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
     grid [entry $w.distG.frameStart -textvar ::curvespackage::frameStart] -row 7 -column 1
     grid [label $w.distG.frameELab -text "Last frame :"] -row 7 -column 2
     grid [entry $w.distG.frameEnd -textvar ::curvespackage::frameEnd] -row 7 -column 3
+    grid [label $w.distG.stepLab -text "Step :"] -row 7 -column 4
+    grid [entry $w.distG.step -textvar ::curvespackage::step] -row 7 -column 5
   
     pack $w.dist2 $w.distG
 
@@ -339,6 +342,7 @@ proc ::curvespackage::plotAtoms {} {
 proc ::curvespackage::plotAtomsGroups {} {
   variable frameStart
   variable frameEnd
+  variable step
   
   set list1 [split $::curvespackage::lAtoms1 ,]
   set list2 [split $::curvespackage::lAtoms2 ,]
@@ -370,8 +374,13 @@ proc ::curvespackage::plotAtomsGroups {} {
   } else {
     set frameEnd [expr int($frameEnd)]
   }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
   
-  for { set i $frameStart } { $i < $frameEnd } { incr i } {
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
     lappend xlist $i
   }
   
@@ -384,6 +393,7 @@ proc ::curvespackage::plotAtomsGroups {} {
 proc ::curvespackage::plotAngleGroups {} {
   variable frameStart
   variable frameEnd
+  variable step
   
   set list1 [split $::curvespackage::lAtoms1 ,]
   set list2 [split $::curvespackage::lAtoms2 ,]
@@ -412,23 +422,29 @@ proc ::curvespackage::plotAngleGroups {} {
   } else {
     set frameEnd [expr int($frameEnd)]
   }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
   
   set xlist {}
   
-  for { set i $frameStart } { $i < $frameEnd } { incr i } {
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
     lappend xlist $i
   }
   
   set plothandle [multiplot -x $xlist -y $lAngl \
-                -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
+                -xlabel "Frame" -ylabel "Angle (degrees)" -title "Angle between the groups" \
                 -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Distance" -plot];
+                -marker none -legend "Angle" -plot];
 }
 
 proc ::curvespackage::plotAngleVectors {} {
   variable w
   variable frameStart
   variable frameEnd
+  variable step
   
   set startBase [$w.distG.resSel.resIdBase1 get]
   set endBase [$w.distG.resSel.resIdBase2 get]
@@ -463,17 +479,22 @@ proc ::curvespackage::plotAngleVectors {} {
     } else {
       set frameEnd [expr int($frameEnd)]
     }
+    if {$step eq ""} {
+      set step 1
+    } else {
+      set step [expr int($step)]
+    }
   
     set xlist {}
   
-    for { set i $frameStart } { $i < $frameEnd } { incr i } {
+    for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
       lappend xlist $i
     }
   
     set plothandle [multiplot -x $xlist -y $lAngl \
-                  -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
+                  -xlabel "Frame" -ylabel "Angle" -title "Angle between the groups" \
                   -lines -linewidth 1 -linecolor red \
-                  -marker none -legend "Distance" -plot];
+                  -marker none -legend "Angle" -plot];
   } else {
     puts "Error, some fields are empty"
   }
@@ -482,6 +503,7 @@ proc ::curvespackage::plotAngleVectors {} {
 proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
   variable frameStart
   variable frameEnd
+  variable step
   
   if {$frameStart eq ""} {
     set frameStart 0
@@ -493,11 +515,16 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
   } else {
     set frameEnd [expr int($frameEnd)]
   }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
   
   switch $type {
     "dist" {
       set lDist {}
-      for { set i $frameStart } { $i < $frameEnd } { incr i } {
+      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
 	$res1 frame $i
 	$res2 frame $i
 	$res1 update
@@ -510,7 +537,7 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
     }
     "ang" {
       set lAngl {}
-      for { set i $frameStart } { $i < $frameEnd } { incr i } {
+      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
         $res1 frame $i
 	$res2 frame $i
 	$res1 update
@@ -530,7 +557,7 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
     }
     "angV" {
       set lAngl {}
-      for {set i $frameStart } { $i < $frameEnd } { incr i } {
+      for {set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
         $res1 frame $i
 	$res2 frame $i
 	$res3 frame $i
@@ -555,7 +582,6 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
 	if {$dotprodcor < -1.0} {
 	  set dotprodcor -1.0
 	}
-	#puts $dotprodcor
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
 	lappend lAngl $ang
       }
