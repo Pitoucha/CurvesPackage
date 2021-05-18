@@ -2,6 +2,6 @@ INSTALLATION TESTPACKAGE
 
 Extract contents of the archive and copy CurvesPackage folder to VMD TCL plugins directory, i.e. $VMDDIR/plugins/noarch/tcl/.
 
-Then, insert following line into $VMDDIR/scripts/vmd/loadplugins.tcl at line 186:
+Then, insert following line into $VMDDIR/scripts/vmd/loadplugins.tcl at line 135:
 
-vmd_install_extension CurvesPackage curvespackage_tk  "Data/testEmilia"
+vmd_install_extension CurvesPackage curvespackage_tk  "CURVES+"
