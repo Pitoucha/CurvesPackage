@@ -56,7 +56,7 @@ proc ::curvespackage::packageui {} {
   menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
   menu $w.menubar.file.menu -tearoff no
   
-  menubutton $w.menubar.edit -text Edit -underline 0 -menu $w.menubar.edit.menu
+  menubutton $w.menubar.edit -text Load -underline 0 -menu $w.menubar.edit.menu
   menu $w.menubar.edit.menu -tearoff no
 
   $w.menubar.file.menu add command -label "Hello" -command  ::curvespackage::hello
@@ -82,77 +82,6 @@ proc ::curvespackage::packageui {} {
   pack $w.menubar $w.func
   
   return $w
-}
-
-proc ::curvespackage::hello {} {
-  puts "Hello world"
-}
-
-proc ::curvespackage::hellopy {} {
-  set pyprefix {gopython}
-  puts "[$pyprefix "hello.py"]"
-  puts "[$pyprefix -command helloworld()]"
-}
-
-proc ::curvespackage::setselected {rad} {
-  variable w
-  switch $rad {
-    "sin" {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {sin}"
-    }
-    "cos" {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {cos}"
-    }
-    "tan" {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {tan}"
-    }
-    "other" {
-      $w.func.selectBtn configure -command "::curvespackage::plotOther"
-    }
-    default {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {sin}"
-    }
-  }
-}
-
-proc ::curvespackage::plotting {func} { 
-  puts "plotting $func\(x)"
-  set xlist {}
-  set ylist {}
-  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
-    switch $func {
-      "sin" {
-        lappend xlist $x
-  	lappend ylist [::tcl::mathfunc::sin $x]
-      }
-      "cos" {
-        lappend xlist $x
-  	lappend ylist [::tcl::mathfunc::cos $x]
-      }
-      "tan" {
-        lappend xlist $x
-  	lappend ylist [::tcl::mathfunc::tan $x]
-      }
-    }
-  }
-  set plothandle [multiplot -x $xlist -y $ylist \
-                -xlabel "x" -ylabel "$func\(x)" -title "Function $func" \
-                -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Function $func" -plot];
-}
-
-
-
-proc ::curvespackage::trajectLoad {} {
-  #recupère la trajectoire à charger
-  set newTrajectory [tk_getOpenFile]
-  
-  #verifie que le chemin a bien été pris en compte
-  if {$newTrajectory != ""} {
-    #ajoute la trajecroire à la mol en court
-    mol addfile $newTrajectory
-    pbc unwrap -all 
-  }
 }
 
 proc ::curvespackage::chargement {} {
@@ -224,6 +153,77 @@ proc ::curvespackage::chargement {} {
 
     #appelle la creation de la liste des resnames disponibles 
     ::curvespackage::listeResname
+  }
+}
+
+proc ::curvespackage::hello {} {
+  puts "Hello world"
+}
+
+proc ::curvespackage::hellopy {} {
+  set pyprefix {gopython}
+  puts "[$pyprefix "hello.py"]"
+  puts "[$pyprefix -command helloworld()]"
+}
+
+proc ::curvespackage::setselected {rad} {
+  variable w
+  switch $rad {
+    "sin" {
+      $w.func.selectBtn configure -command "::curvespackage::plotting {sin}"
+    }
+    "cos" {
+      $w.func.selectBtn configure -command "::curvespackage::plotting {cos}"
+    }
+    "tan" {
+      $w.func.selectBtn configure -command "::curvespackage::plotting {tan}"
+    }
+    "other" {
+      $w.func.selectBtn configure -command "::curvespackage::plotOther"
+    }
+    default {
+      $w.func.selectBtn configure -command "::curvespackage::plotting {sin}"
+    }
+  }
+}
+
+proc ::curvespackage::plotting {func} { 
+  puts "plotting $func\(x)"
+  set xlist {}
+  set ylist {}
+  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
+    switch $func {
+      "sin" {
+        lappend xlist $x
+  	lappend ylist [::tcl::mathfunc::sin $x]
+      }
+      "cos" {
+        lappend xlist $x
+  	lappend ylist [::tcl::mathfunc::cos $x]
+      }
+      "tan" {
+        lappend xlist $x
+  	lappend ylist [::tcl::mathfunc::tan $x]
+      }
+    }
+  }
+  set plothandle [multiplot -x $xlist -y $ylist \
+                -xlabel "x" -ylabel "$func\(x)" -title "Function $func" \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Function $func" -plot];
+}
+
+
+
+proc ::curvespackage::trajectLoad {} {
+  #recupère la trajectoire à charger
+  set newTrajectory [tk_getOpenFile]
+  
+  #verifie que le chemin a bien été pris en compte
+  if {$newTrajectory != ""} {
+    #ajoute la trajecroire à la mol en court
+    mol addfile $newTrajectory
+    pbc unwrap -all 
   }
 }
 
@@ -318,7 +318,7 @@ proc ::curvespackage::selectWithList {b} {
   }
 }
 
-#takes the index not th id of the atom
+#takes the index not the id of the atom
 proc ::curvespackage::plotAtoms {} {
   set sel [atomselect top "resid $::curvespackage::atom1  $::curvespackage::atom2"]
   set listDist [measure bond [list $::curvespackage::atom1 $::curvespackage::atom2] molid [molinfo 0 get id] frame all]
@@ -354,6 +354,9 @@ proc ::curvespackage::plotAtomsGroups {} {
   set res2 [atomselect top $l2]
   
   set lDist [::curvespackage::computeFrames "dist" $res1 $res2]
+
+  $res1 delete
+  $res2 delete
   
   set xlist {}
   
@@ -395,8 +398,9 @@ proc ::curvespackage::plotAngleGroups {} {
   set res2 [atomselect top $l2]
   
   set lAngl [::curvespackage::computeFrames "ang" $res1 $res2]
-  
-  set xlist {}
+
+  $res1 delete
+  $res2 delete
   
   if {$frameStart eq ""} {
     set frameStart 0
@@ -409,6 +413,8 @@ proc ::curvespackage::plotAngleGroups {} {
     set frameEnd [expr int($frameEnd)]
   }
   
+  set xlist {}
+  
   for { set i $frameStart } { $i < $frameEnd } { incr i } {
     lappend xlist $i
   }
@@ -417,10 +423,6 @@ proc ::curvespackage::plotAngleGroups {} {
                 -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
                 -lines -linewidth 1 -linecolor red \
                 -marker none -legend "Distance" -plot];
-
-
-  $res1 delete
-  $res2 delete
 }
 
 proc ::curvespackage::plotAngleVectors {} {
@@ -434,13 +436,50 @@ proc ::curvespackage::plotAngleVectors {} {
   set endComp [$w.distG.resSel.resIdComp2 get]
   
   if { $startBase ne "" && $endBase ne "" && $startComp ne "" && $endComp ne ""} {
-    puts Okay
+    set startBase [expr int($startBase)]
+    set endBase [expr int($endBase)]
+    set startComp [expr int($startComp)]
+    set endComp [expr int($endComp)]
+    
+    set res1 [atomselect top "resid $startBase"]
+    set res2 [atomselect top "resid $endBase"]
+    set res3 [atomselect top "resid $startComp"]
+    set res4 [atomselect top "resid $endComp"]
+    
+    set lAngl [::curvespackage::computeFrames "angV" $res1 $res2 $res3 $res4]
+    
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    
+    if {$frameStart eq ""} {
+      set frameStart 0
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+    } else {
+      set frameEnd [expr int($frameEnd)]
+    }
+  
+    set xlist {}
+  
+    for { set i $frameStart } { $i < $frameEnd } { incr i } {
+      lappend xlist $i
+    }
+  
+    set plothandle [multiplot -x $xlist -y $lAngl \
+                  -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
+                  -lines -linewidth 1 -linecolor red \
+                  -marker none -legend "Distance" -plot];
   } else {
     puts "Error, some fields are empty"
   }
 }
 
-proc ::curvespackage::computeFrames { type res1 res2 } {
+proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
   variable frameStart
   variable frameEnd
   
@@ -488,6 +527,42 @@ proc ::curvespackage::computeFrames { type res1 res2 } {
 	lappend lAngl $ang
       }
       return $lAngl
+    }
+    "angV" {
+      set lAngl {}
+      for {set i $frameStart } { $i < $frameEnd } { incr i } {
+        $res1 frame $i
+	$res2 frame $i
+	$res3 frame $i
+	$res4 frame $i
+	$res1 update
+	$res2 update
+	$res3 update
+	$res4 update
+	set com1 [measure center $res1]
+	set com2 [measure center $res2]
+	set vectBase [vecsub $com2 $com1]
+	set com1 [measure center $res3]
+	set com2 [measure center $res4]
+	set vectComp [vecsub $com2 $com1]
+	set lenB [veclength $vectBase]
+	set lenC [veclength $vectComp]
+	set dotprod [vecdot $vectBase $vectComp]
+	set dotprodcor [expr $dotprod / ($lenB * $lenC)]
+	if {$dotprodcor > 1.0} {
+	  set dotprodcor 1.0
+	}
+	if {$dotprodcor < -1.0} {
+	  set dotprodcor -1.0
+	}
+	#puts $dotprodcor
+	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	lappend lAngl $ang
+      }
+      return $lAngl
+    }
+    default {
+      puts uss
     }
   }
 }
