@@ -132,17 +132,18 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
     grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
     grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
-    grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
-    grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 2 -column 1
-    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2  
-    grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 3 -columnspan 3
-    grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 4 -column 0
-    grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 4 -column 1
-    grid [ttk::combobox $w.distG.resSel.resIdComp1] -row 4 -column 2
-    grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 5 -column 0
-    grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 5 -column 1
-    grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
-    grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 6 -columnspan 3
+    grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId"] -row 2 -columnspan 3
+    grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 3 -column 0
+    grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 3 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 3 -column 2  
+    grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
+    grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 5 -column 0
+    grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 5 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdComp1] -row 5 -column 2
+    grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 6 -column 0
+    grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 6 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 6 -column 2
+    grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 7 -columnspan 3
   
     grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
