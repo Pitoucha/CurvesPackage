@@ -91,7 +91,7 @@ proc ::curvespackage::chargement {} {
   #supprime 
   mol delete all 
 
-  #on recupère le fichier à  charger
+  #on recup?e le fichier ?charger
   set newMol [tk_getOpenFile]
 
   #verifie que le chemin a bien Ã©tÃ© pris en compte
@@ -132,7 +132,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
     grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
     grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
-    grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId"] -row 2 -columnspan 3
+    grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId" -command "::curvespackage::matchList"] -row 2 -columnspan 3
     grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 3 -column 0
     grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 3 -column 1
     grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 3 -column 2  
@@ -320,6 +320,63 @@ proc ::curvespackage::selectWithList {b} {
       puts "there is a problem, call us!" 
     }
   }
+}
+
+proc ::curvespackage::matchList {} {
+  variable selectList
+  variable w
+
+  set name1 [$w.distG.resSel.resNameBase1 get]
+  set idSel1 [$w.distG.resSel.resIdBase1 get]
+
+  #set name2 [$w.distG.resSel.resNameBase2 get]
+  #set idSel2 [$w.distG.resSel.resIdBase2 get]
+  
+  set list stc
+  
+  if {[regexp {^DA} $name1]} {
+    puts "DA"
+    puts $name1 
+    puts $idSel1
+    $w.distG.resSel.resNameBase2 set "DT"
+    dict for {id info} $selectList {
+    if {$id eq "DT"} {
+      set stc [split $info "\ "]
+    }
+  }
+
+  foreach l $stc {
+    if {$l < $idSel1} {
+      set stc lremove [lsearch -exact $l]
+    }
+  }  
+
+    $w.distG.resSel.resIdBase2 configure -values $stc
+  }
+
+  if {[regexp {^DT} $name1]} {
+      puts "DT"
+      puts $name1 
+      puts $idSel1
+  }
+
+  if {[regexp {^DC} $name1]} {
+      puts "DC"
+      puts $name1
+      puts $idSel1
+  }
+
+  if {[regexp {^DG} $name1]} {
+      puts "DG"
+      puts $name1
+      puts $idSel1
+  }
+
+  #dict for {id info} $selectList {
+  #  if {$id eq $name} {
+  #     
+  #  }
+  #}
 }
 
 #takes the index not the id of the atom
