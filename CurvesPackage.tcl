@@ -79,49 +79,7 @@ proc ::curvespackage::packageui {} {
   grid [button $w.func.selectBtn -text "Plot this function" -command "::curvespackage::plotting {sin}"] -row 2 -column 1
   $w.func.sinBtn select
   
-  
-  grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2]
-  grid [label $w.dist2.labelA1 -text "First atom to select (index) : "] -row 0 -column 0
-  grid [entry $w.dist2.atom1 -textvar ::curvespackage::atom1] -row 0 -column 1
-  grid [label $w.dist2.labelA2 -text "Second atom to select (index) : "] -row 1 -column 0
-  grid [entry $w.dist2.atom2 -textvar ::curvespackage::atom2] -row 1 -column 1
-  grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::curvespackage::plotAtoms"]
-  #grid [button $w.dist2.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::curvespackage::plotAtoms"]
-  
-  
-  grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2]
-  grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0 -columnspan 2
-  grid [entry $w.distG.atom1 -textvar ::curvespackage::lAtoms1] -row 0 -column 2 -columnspan 2
-  grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0 -columnspan 2
-  grid [entry $w.distG.atom2 -textvar ::curvespackage::lAtoms2] -row 1 -column 2 -columnspan 2
-  grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"] -row 3 -columnspan 4
-  grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"] -row 4 -columnspan 4
-  #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
-  
-  grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 4
-  grid [label $w.distG.resSel.labelBase -text "Select the atom groups to use as base"] -row 0 -columnspan 3
-  grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
-  grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
-  grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
-  grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
-  grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 2 -column 1
-  grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2  
-  grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 3 -columnspan 3
-  grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 4 -column 0
-  grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 4 -column 1
-  grid [ttk::combobox $w.distG.resSel.resIdComp1] -row 4 -column 2
-  grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 5 -column 0
-  grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 5 -column 1
-  grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
-  grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 6 -columnspan 3
-  
-  grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot (leave empty for all frames)"] -row 6 -columnspan 4
-  grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
-  grid [entry $w.distG.frameStart -textvar ::curvespackage::frameStart] -row 7 -column 1
-  grid [label $w.distG.frameELab -text "Last frame :"] -row 7 -column 2
-  grid [entry $w.distG.frameEnd -textvar ::curvespackage::frameEnd] -row 7 -column 3
-  
-  pack $w.menubar $w.func $w.dist2 $w.distG
+  pack $w.menubar $w.func
   
   return $w
 }
@@ -198,6 +156,8 @@ proc ::curvespackage::trajectLoad {} {
 }
 
 proc ::curvespackage::chargement {} {
+  variable w
+  
   #supprime 
   mol delete all 
 
@@ -215,11 +175,56 @@ proc ::curvespackage::chargement {} {
     #crée une nouvelle representation et l'ajoute
     mol representation CPK
     mol addrep [molinfo 0 get id]
+    
+    
+  
+  
+    grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2]
+    grid [label $w.dist2.labelA1 -text "First atom to select (index) : "] -row 0 -column 0
+    grid [entry $w.dist2.atom1 -textvar ::curvespackage::atom1] -row 0 -column 1
+    grid [label $w.dist2.labelA2 -text "Second atom to select (index) : "] -row 1 -column 0
+    grid [entry $w.dist2.atom2 -textvar ::curvespackage::atom2] -row 1 -column 1
+    grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::curvespackage::plotAtoms"]
+    #grid [button $w.dist2.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::curvespackage::plotAtoms"]
+    
+  
+    grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2]
+    grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0 -columnspan 2
+    grid [entry $w.distG.atom1 -textvar ::curvespackage::lAtoms1] -row 0 -column 2 -columnspan 2
+    grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0 -columnspan 2
+    grid [entry $w.distG.atom2 -textvar ::curvespackage::lAtoms2] -row 1 -column 2 -columnspan 2
+    grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"] -row 3 -columnspan 4
+    grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"] -row 4 -columnspan 4
+    #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
+  
+    grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 4
+    grid [label $w.distG.resSel.labelBase -text "Select the atom groups to use as base"] -row 0 -columnspan 3
+    grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
+    grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
+    grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
+    grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 2 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2  
+    grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 3 -columnspan 3
+    grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 4 -column 0
+    grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 4 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdComp1] -row 4 -column 2
+    grid [ttk::combobox $w.distG.resSel.resNameComp2] -row 5 -column 0
+    grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 5 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 5 -column 2
+    grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 6 -columnspan 3
+  
+    grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot (leave empty for all frames)"] -row 6 -columnspan 4
+    grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
+    grid [entry $w.distG.frameStart -textvar ::curvespackage::frameStart] -row 7 -column 1
+    grid [label $w.distG.frameELab -text "Last frame :"] -row 7 -column 2
+    grid [entry $w.distG.frameEnd -textvar ::curvespackage::frameEnd] -row 7 -column 3
+  
+    pack $w.dist2 $w.distG
 
     #appelle la creation de la liste des resnames disponibles 
     ::curvespackage::listeResname
   }
-  
 }
 
 proc ::curvespackage::listeResname {} {
