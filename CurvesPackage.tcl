@@ -328,7 +328,7 @@ proc ::curvespackage::selectWithList {b} {
 proc ::curvespackage::matchList {} {
   variable selectList
   variable w
-  variable topDNA
+  variable maxDNA
 
   set name1 [$w.distG.resSel.resNameBase1 get]
   set idSel1 [$w.distG.resSel.resIdBase1 get]
@@ -353,7 +353,6 @@ proc ::curvespackage::matchList {} {
       puts $stc
     }
   } 
-  puts $topDNA
     $w.distG.resSel.resIdBase2 configure -values $stc
   }
 
