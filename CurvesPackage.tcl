@@ -235,6 +235,7 @@ proc ::curvespackage::trajectLoad {} {
 proc ::curvespackage::listeResname {} {
   variable w
   variable maxDNA
+  variable minDNA
 
   set sel [atomselect top "all"]
 
@@ -329,31 +330,54 @@ proc ::curvespackage::matchList {} {
   variable selectList
   variable w
   variable maxDNA
+  variable minDNA
 
   set name1 [$w.distG.resSel.resNameBase1 get]
-  set idSel1 [$w.distG.resSel.resIdBase1 get]
+  set idSel1 [expr {int([$w.distG.resSel.resIdBase1 get])}]
 
   #set name2 [$w.distG.resSel.resNameBase2 get]
   #set idSel2 [$w.distG.resSel.resIdBase2 get]
   
   set list stc
   
-  if {[regexp {^DA} $name1]} {
+  set mid [expr ($maxDNA - ($minDNA -1))/2]
+
+  if {[regexp {^DA} $name1] && $idSel1 <= $mid } {
+    
     $w.distG.resSel.resNameBase2 set "DT"
+
     dict for {id info} $selectList {
     if {$id eq "DT"} {
       set stc [split $info "\ "]
     }
   }
+  
+  
+  set diff [expr $mid - $idSel1]
+  set match [expr {$mid + 1 + $diff}]
 
-  foreach l $stc {
-    if {$l < $idSel1} {
-      set idx [lsearch $stc $l]
-      set stc [lreplace $stc $idx $idx]
-      puts $stc
-    }
-  } 
-    $w.distG.resSel.resIdBase2 configure -values $stc
+  if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+    $w.distG.resSel.resIdBase2 set $match 
+  } else {
+     $w.distG.resSel.resIdBase2 set "-1"
+  }
+
+  
+  #set val [list]
+
+  #foreach l $stc {
+    #if {$l < $match} {
+    #  set idx [lsearch $stc $l]
+    #  set stc [lreplace $stc $idx $idx]
+    #  puts $stc
+    #}
+    #if {[expr {int($l)}] > $match} {
+     # lappend val $l
+
+    #}
+  #}
+
+   # $w.distG.resSel.resIdBase2 configure -values $val
   }
 
   if {[regexp {^DT} $name1]} {
