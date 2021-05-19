@@ -36,6 +36,8 @@ namespace eval ::curvespackage:: {
   variable frameEnd
   variable step
   variable topDNA
+  variable atomsDNA
+  set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
 }
 
 
