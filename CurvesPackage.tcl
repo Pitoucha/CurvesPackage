@@ -35,7 +35,8 @@ namespace eval ::curvespackage:: {
   variable frameStart
   variable frameEnd
   variable step
-  variable topDNA
+  variable maxDNA
+  variable minDNA
   variable atomsDNA
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
 }
@@ -233,7 +234,7 @@ proc ::curvespackage::trajectLoad {} {
 
 proc ::curvespackage::listeResname {} {
   variable w
-  variable topDNA
+  variable maxDNA
 
   set sel [atomselect top "all"]
 
@@ -258,7 +259,8 @@ proc ::curvespackage::listeResname {} {
 
     set selNucleic [atomselect top "nucleic"]
     set listNucleic [$selNucleic get resid]
-    set topDNA [tcl::mathfunc::max {*}$listNucleic]
+    set maxDNA [tcl::mathfunc::max {*}$listNucleic]
+    set minDNA [tcl::mathfunc::min {*}$listNucleic]
     $selNucleic delete
     
     set stc [$sel get resname]
