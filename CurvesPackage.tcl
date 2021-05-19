@@ -35,6 +35,7 @@ namespace eval ::curvespackage:: {
   variable frameStart
   variable frameEnd
   variable step
+  variable topDNA
 }
 
 
@@ -105,10 +106,8 @@ proc ::curvespackage::chargement {} {
     #crée une nouvelle representation et l'ajoute
     mol representation CPK
     mol addrep [molinfo 0 get id]
-    
-    
-  
-  
+
+    #crée les buttons correspondants 
     grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2] -columnspan 6
     grid [label $w.dist2.labelA1 -text "First atom to select (index) : "] -row 0 -column 0
     grid [entry $w.dist2.atom1 -textvar ::curvespackage::atom1] -row 0 -column 1
@@ -117,7 +116,6 @@ proc ::curvespackage::chargement {} {
     grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::curvespackage::plotAtoms"] -columnspan 2
     #grid [button $w.dist2.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::curvespackage::plotAtoms"]
     
-  
     grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2] -columnspan 6
     grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0 -columnspan 3
     grid [entry $w.distG.atom1 -textvar ::curvespackage::lAtoms1] -row 0 -column 3 -columnspan 3
@@ -233,6 +231,7 @@ proc ::curvespackage::trajectLoad {} {
 
 proc ::curvespackage::listeResname {} {
   variable w
+  variable topDNA
 
   set sel [atomselect top "all"]
 
@@ -255,10 +254,10 @@ proc ::curvespackage::listeResname {} {
       }
     }
 
-    #dict for {id info} $::curvespackage::selectList {
-    #  puts "resname = $id"
-    #  puts "resid = $info" 
-    #}
+    set selNucleic [atomselect top "nucleic"]
+    set listNucleic [$selNucleic get resid]
+    set topDNA [tcl::mathfunc::max {*}$listNucleic]
+    $selNucleic delete
     
     set stc [$sel get resname]
     set stc [lsort -unique $stc]
@@ -325,6 +324,7 @@ proc ::curvespackage::selectWithList {b} {
 proc ::curvespackage::matchList {} {
   variable selectList
   variable w
+  variable topDNA
 
   set name1 [$w.distG.resSel.resNameBase1 get]
   set idSel1 [$w.distG.resSel.resIdBase1 get]
@@ -335,9 +335,6 @@ proc ::curvespackage::matchList {} {
   set list stc
   
   if {[regexp {^DA} $name1]} {
-    puts "DA"
-    puts $name1 
-    puts $idSel1
     $w.distG.resSel.resNameBase2 set "DT"
     dict for {id info} $selectList {
     if {$id eq "DT"} {
@@ -347,10 +344,12 @@ proc ::curvespackage::matchList {} {
 
   foreach l $stc {
     if {$l < $idSel1} {
-      set stc lremove [lsearch -exact $l]
+      set idx [lsearch $stc $l]
+      set stc [lreplace $stc $idx $idx]
+      puts $stc
     }
-  }  
-
+  } 
+  puts $topDNA
     $w.distG.resSel.resIdBase2 configure -values $stc
   }
 
