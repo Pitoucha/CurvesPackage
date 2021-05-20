@@ -335,10 +335,6 @@ proc ::curvespackage::matchList {} {
   set name1 [$w.distG.resSel.resNameBase1 get]
   set idSel1 [expr {int([$w.distG.resSel.resIdBase1 get])}]
 
-  #set name2 [$w.distG.resSel.resNameBase2 get]
-  #set idSel2 [$w.distG.resSel.resIdBase2 get]
-  
-
   set mid [expr ($maxDNA - ($minDNA -1))/2]
   set diff [expr $mid - $idSel1]
   set match [expr {$mid + 1 + $diff}]
@@ -349,6 +345,7 @@ proc ::curvespackage::matchList {} {
       dict for {id info} $selectList {
       if {[regexp {^DT} $id]} {
         append stc [split $info "\ "]
+        append stc "\ "
       }
     }
     
@@ -362,23 +359,7 @@ proc ::curvespackage::matchList {} {
       }
     } else {
         $w.distG.resSel.resIdBase2 set "-1"
-    }
-    
-    #set val [list]
-
-    #foreach l $stc {
-      #if {$l < $match} {
-      #  set idx [lsearch $stc $l]
-      #  set stc [lreplace $stc $idx $idx]
-      #  puts $stc
-      #}
-      #if {[expr {int($l)}] > $match} {
-       # lappend val $l
-
-      #}
-    #}
-
-     # $w.distG.resSel.resIdBase2 configure -values $val
+      }
     }
 
     if {[regexp {^DT} $name1]} {
@@ -386,6 +367,7 @@ proc ::curvespackage::matchList {} {
       dict for {id info} $selectList {
       if {[regexp {^DA} $id]} {
         append stc [split $info "\ "]
+        append stc "\ "
       }
     }
     
@@ -406,8 +388,6 @@ proc ::curvespackage::matchList {} {
       
       dict for {id info} $selectList {
       if {[regexp {^DG} $id]} {
-        puts $id
-        puts $info 
         append stc [split $info "\ "]
         append stc "\ "
       }
@@ -432,9 +412,8 @@ proc ::curvespackage::matchList {} {
       
       dict for {id info} $selectList {
         if {[regexp {^DC} $id]} {
-          puts $id
-          puts $info 
           append stc [split $info "\ "]
+          append stc "\ "
         }
       }
 
