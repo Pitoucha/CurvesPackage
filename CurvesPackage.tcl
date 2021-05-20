@@ -367,13 +367,15 @@ proc ::curvespackage::matchList {} {
           }
         }
       } else {
-         $w.distG.resSel.resIdBase2 set -1
-         $w.distG.resSel.resNameBase2 set "NO MATCH"
+          $w.distG.resSel.resIdBase2 set -1
+          $w.distG.resSel.resNameBase2 set "NO MATCH"
+          tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } else {
       $w.distG.resSel.resIdBase2 set -1
       $w.distG.resSel.resNameBase2 set "NO MATCH"
+      tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     }
 }
 
