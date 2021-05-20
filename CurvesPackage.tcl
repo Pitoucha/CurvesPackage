@@ -295,12 +295,12 @@ proc ::curvespackage::selectWithList {b} {
     1 {
       set name [$w.distG.resSel.resNameBase2 get]
     }
-    2 {
-      set name [$w.distG.resSel.resNameComp1 get]
-    }
-    3 {
-      set name [$w.distG.resSel.resNameComp2 get]
-    }
+    #2 {
+    #  set name [$w.distG.resSel.resNameComp1 get]
+    #}
+    #3 {
+    #  set name [$w.distG.resSel.resNameComp2 get]
+    #}
     default {
       puts "there is a problem, call us!" 
     }
@@ -323,17 +323,19 @@ proc ::curvespackage::selectWithList {b} {
     1 {
       $w.distG.resSel.resIdBase2 configure -values $stc
     }
-    2 {
-      $w.distG.resSel.resIdComp1 configure -values $stc
-    }
-    3 {
-      $w.distG.resSel.resIdComp2 configure -values $stc
-    }
+    #2 {
+    #  $w.distG.resSel.resIdComp1 configure -values $stc
+    #}
+    #3 {
+    #  $w.distG.resSel.resIdComp2 configure -values $stc
+    #}
     default {
         puts "there is a problem, call us!" 
       }
     }
-  }  
+  } else {
+    tk_messageBox -message "Please make a selection"
+  } 
 }
 
 proc ::curvespackage::matchList {} {
