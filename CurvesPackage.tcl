@@ -338,65 +338,120 @@ proc ::curvespackage::matchList {} {
   #set name2 [$w.distG.resSel.resNameBase2 get]
   #set idSel2 [$w.distG.resSel.resIdBase2 get]
   
-  set list stc
-  
+
   set mid [expr ($maxDNA - ($minDNA -1))/2]
+  set diff [expr $mid - $idSel1]
+  set match [expr {$mid + 1 + $diff}]
+  puts $match
 
-  if {[regexp {^DA} $name1] && $idSel1 <= $mid } {
+  if {$idSel1 <= $mid} {
+    if {[regexp {^DA} $name1] } {
+      dict for {id info} $selectList {
+      if {[regexp {^DT} $id]} {
+        append stc [split $info "\ "]
+      }
+    }
     
-    $w.distG.resSel.resNameBase2 set "DT"
+    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+      $w.distG.resSel.resIdBase2 set $match 
+      dict for {id info} $selectList {
+        if {[lsearch -exact $info $match] >= 0} {
+          $w.distG.resSel.resNameBase2 set $id
+          break
+        }
+      }
+    } else {
+        $w.distG.resSel.resIdBase2 set "-1"
+    }
+    
+    #set val [list]
 
-    dict for {id info} $selectList {
-    if {$id eq "DT"} {
-      set stc [split $info "\ "]
+    #foreach l $stc {
+      #if {$l < $match} {
+      #  set idx [lsearch $stc $l]
+      #  set stc [lreplace $stc $idx $idx]
+      #  puts $stc
+      #}
+      #if {[expr {int($l)}] > $match} {
+       # lappend val $l
+
+      #}
+    #}
+
+     # $w.distG.resSel.resIdBase2 configure -values $val
+    }
+
+    if {[regexp {^DT} $name1]} {
+        
+      dict for {id info} $selectList {
+      if {[regexp {^DA} $id]} {
+        append stc [split $info "\ "]
+      }
+    }
+    
+    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+      $w.distG.resSel.resIdBase2 set $match 
+      dict for {id info} $selectList {
+        if {[lsearch -exact $info $match] >= 0} {
+          $w.distG.resSel.resNameBase2 set $id
+          break
+        }
+      }
+    } else {
+        $w.distG.resSel.resIdBase2 set "-1"
+      }
+    }
+
+    if {[regexp {^DC} $name1]} {
+      
+      dict for {id info} $selectList {
+      if {[regexp {^DG} $id]} {
+        puts $id
+        puts $info 
+        append stc [split $info "\ "]
+        append stc "\ "
+      }
+    }
+
+    puts $stc 
+    
+    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+      $w.distG.resSel.resIdBase2 set $match 
+      dict for {id info} $selectList {
+        if {[lsearch -exact $info $match] >= 0} {
+          $w.distG.resSel.resNameBase2 set $id
+          break
+        }
+      }
+    } else {
+        $w.distG.resSel.resIdBase2 set "-1"
+      }
+    }
+
+    if {[regexp {^DG} $name1]} {
+      
+      dict for {id info} $selectList {
+        if {[regexp {^DC} $id]} {
+          puts $id
+          puts $info 
+          append stc [split $info "\ "]
+        }
+      }
+
+    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+      $w.distG.resSel.resIdBase2 set $match 
+      dict for {id info} $selectList {
+        if {[lsearch -exact $info $match] >= 0} {
+          $w.distG.resSel.resNameBase2 set $id
+          break
+        }
+      }
+    } else {
+        $w.distG.resSel.resIdBase2 set "-1"
+      }
     }
   }
   
-  
-  set diff [expr $mid - $idSel1]
-  set match [expr {$mid + 1 + $diff}]
-
-  if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-    $w.distG.resSel.resIdBase2 set $match 
-  } else {
-     $w.distG.resSel.resIdBase2 set "-1"
-  }
-
-  
-  #set val [list]
-
-  #foreach l $stc {
-    #if {$l < $match} {
-    #  set idx [lsearch $stc $l]
-    #  set stc [lreplace $stc $idx $idx]
-    #  puts $stc
-    #}
-    #if {[expr {int($l)}] > $match} {
-     # lappend val $l
-
-    #}
-  #}
-
-   # $w.distG.resSel.resIdBase2 configure -values $val
-  }
-
-  if {[regexp {^DT} $name1]} {
-      puts "DT"
-      puts $name1 
-      puts $idSel1
-  }
-
-  if {[regexp {^DC} $name1]} {
-      puts "DC"
-      puts $name1
-      puts $idSel1
-  }
-
-  if {[regexp {^DG} $name1]} {
-      puts "DG"
-      puts $name1
-      puts $idSel1
-  }
 
   #dict for {id info} $selectList {
   #  if {$id eq $name} {
