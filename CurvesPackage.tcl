@@ -37,6 +37,7 @@ namespace eval ::curvespackage:: {
   variable step
   variable maxDNA
   variable minDNA
+  variable mid
   variable atomsDNA
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
 }
@@ -239,6 +240,7 @@ proc ::curvespackage::listeResname {} {
   variable w
   variable maxDNA
   variable minDNA
+  variable mid 
 
   set sel [atomselect top "all"]
 
@@ -265,6 +267,7 @@ proc ::curvespackage::listeResname {} {
     set listNucleic [$selNucleic get resid]
     set maxDNA [tcl::mathfunc::max {*}$listNucleic]
     set minDNA [tcl::mathfunc::min {*}$listNucleic]
+    set mid [expr ($maxDNA - ($minDNA -1))/2]
     $selNucleic delete
     
     set stc [$sel get resname]
@@ -334,11 +337,11 @@ proc ::curvespackage::matchList {} {
   variable w
   variable maxDNA
   variable minDNA
+  variable mid 
 
   set name1 [$w.distG.resSel.resNameBase1 get]
   set idSel1 [expr {int([$w.distG.resSel.resIdBase1 get])}]
 
-  set mid [expr ($maxDNA - ($minDNA -1))/2]
   set diff [expr $mid - $idSel1]
   set match [expr {$mid + 1 + $diff}]
 
@@ -362,7 +365,11 @@ proc ::curvespackage::matchList {} {
                 $w.distG.resSel.resNameBase2 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
                 $w.distG.resSel.resNameBase2 set $id
-            } 
+            } else {
+                $w.distG.resSel.resIdBase2 set -1
+                $w.distG.resSel.resNameBase2 set "NO MATCH"
+                tk_messageBox -message "No match, your DNA is damaged"
+              }
             break
           }
         }
