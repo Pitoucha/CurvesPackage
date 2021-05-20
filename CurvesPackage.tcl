@@ -566,29 +566,112 @@ proc ::curvespackage::plotAngleBases {} {
 
   variable w
   variable atomsDNA
+  variable frameStart
+  variable frameEnd
+  variable step
   
   set base1 [$w.distG.resSel.resNameBase1 get]
   set idBase1 [$w.distG.resSel.resIdBase1 get]
   set base2 [$w.distG.resSel.resNameBase2 get]
   set idBase2 [$w.distG.resSel.resIdBase2 get]
+  puts $atomsDNA
+  set res1 ""
+  set res2 ""
+  if {$base1 ne "" && $base2 ne "" && $idBase1 ne "" && $idBase2 ne ""} {
+    if {[regexp {^DA} $base1]} {
+      set atoms [split [dict get $atomsDNA {DA}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res1 [atomselect top "resid $idBase1 and name $atom1"]
+      set COMMENT {
+      set xyz [split [string range [$sel get {x y z}] 1 end-1] "\ "]
+      set xA1 [lindex $xyz 0]
+      set yA1 [lindex $xyz 1]
+      set zA1 [lindex $xyz 2]
+      $sel delete
+      }
+      set res2 [atomselect top "resid $idBase1 and name $atom2"]
+    } elseif {[regexp {^DT} $base1]} {
+      set atoms [split [dict get $atomsDNA {DT}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res1 [atomselect top "resid $idBase1 and name $atom1"]
+      set res2 [atomselect top "resid $idBase1 and name $atom2"]
+    } elseif {[regexp {^DC} $base1]} {
+      set atoms [split [dict get $atomsDNA {DC}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res1 [atomselect top "resid $idBase1 and name $atom1"]
+      set res2 [atomselect top "resid $idBase1 and name $atom2"]
+    } elseif {[regexp {^DG} $base1]} {
+      set atoms [split [dict get $atomsDNA {DG}] "\ "]
+      puts "DG : $atoms"
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res1 [atomselect top "resid $idBase1 and name $atom1"]
+      set res2 [atomselect top "resid $idBase1 and name $atom2"]
+    }
+    if {[regexp {^DA} $base2]} {
+      set atoms [split [dict get $atomsDNA {DA}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res3 [atomselect top "resid $idBase2 and name $atom1"]
+      set res4 [atomselect top "resid $idBase2 and name $atom2"]
+    } elseif {[regexp {^DT} $base2]} {
+      set atoms [split [dict get $atomsDNA {DT}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res3 [atomselect top "resid $idBase2 and name $atom1"]
+      set res4 [atomselect top "resid $idBase2 and name $atom2"]
+    } elseif {[regexp {^DC} $base2]} {
+      set atoms [split [dict get $atomsDNA {DC}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res3 [atomselect top "resid $idBase2 and name $atom1"]
+      set res4 [atomselect top "resid $idBase2 and name $atom2"]
+    } elseif {[regexp {^DG} $base2]} {
+      set atoms [split [dict get $atomsDNA {DG}] "\ "]
+      set atom1 [lindex $atoms 0]
+      set atom2 [lindex $atoms 1]
+      set res3 [atomselect top "resid $idBase2 and name $atom1"]
+      set res4 [atomselect top "resid $idBase2 and name $atom2"]
+    }
   
-  if {[regexp {^DA} $base1]} {
-    set atoms [split [dict get $atomsDNA {DA}] "\ "]
-    set atom1 [lindex $atoms 0]
-    set atom2 [lindex $atoms 1]
-    set sel [atomselect top "resid $idBase1 and name $atom1"]
-    set xyz [split [string range [$sel get {x y z}] 1 end-1] "\ "]
-    set xA1 [lindex $xyz 0]
-    set yA1 [lindex $xyz 1]
-    set zA1 [lindex $xyz 2]
-    $sel delete
-    set sel [atomselect top "resid $idBase1 and name $atom2"]
-    set xyz [split [string range [$sel get {x y z}] 1 end-1] "\ "]
-    set xA2 [lindex $xyz 0]
-    set yA2 [lindex $xyz 1]
-    set zA2 [lindex $xyz 2]
-    $sel delete
-    puts " $xA1 ; $yA1 ; $zA1 && $xA2 ; $yA2 ; $zA2 "
+    set lAngl [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
+  
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    
+    if {$frameStart eq ""} {
+      set frameStart 0
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+    } else {
+      set frameEnd [expr int($frameEnd)]
+    }
+    if {$step eq ""} {
+      set step 1
+    } else {
+      set step [expr int($step)]
+    }
+  
+    set xlist {}
+  
+    for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+      lappend xlist $i
+    }
+  
+    set plothandle [multiplot -x $xlist -y $lAngl \
+                  -xlabel "Frame" -ylabel "Angle" -title "Angle between the groups" \
+                  -lines -linewidth 1 -linecolor red \
+                  -marker none -legend "Angle" -plot];
+  } else {
+    puts "Error, some fields are empty"
   }
 }
 
@@ -668,6 +751,38 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
 	set lenC [veclength $vectComp]
 	set dotprod [vecdot $vectBase $vectComp]
 	set dotprodcor [expr $dotprod / ($lenB * $lenC)]
+	if {$dotprodcor > 1.0} {
+	  set dotprodcor 1.0
+	}
+	if {$dotprodcor < -1.0} {
+	  set dotprodcor -1.0
+	}
+	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	lappend lAngl $ang
+      }
+      return $lAngl
+    }
+    "angB" {
+      set lAngl {}
+      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        $res1 frame $i
+	$res2 frame $i
+	$res3 frame $i
+	$res4 frame $i
+	$res1 update
+	$res2 update
+	$res3 update
+	$res4 update
+	set xyzA1 [split [string range [$res1 get {x y z}] 1 end-1] "\ "]
+	set xyzA2 [split [string range [$res2 get {x y z}] 1 end-1] "\ "]
+	set vect1 [vecsub $xyzA1 $xyzA2]
+	set xyzA1 [split [string range [$res3 get {x y z}] 1 end-1] "\ "]
+	set xyzA2 [split [string range [$res4 get {x y z}] 1 end-1] "\ "]
+	set vect2 [vecsub $xyzA1 $xyzA2]
+	set lenV1 [veclength $vect1]
+	set lenV2 [veclength $vect2]
+	set dotprod [vecdot $vect1 $vect2]
+	set dotprodcor [expr $dotprod / ($lenV1 * $lenV2)]
 	if {$dotprodcor > 1.0} {
 	  set dotprodcor 1.0
 	}
