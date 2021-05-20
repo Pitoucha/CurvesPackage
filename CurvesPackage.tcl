@@ -341,105 +341,40 @@ proc ::curvespackage::matchList {} {
   set mid [expr ($maxDNA - ($minDNA -1))/2]
   set diff [expr $mid - $idSel1]
   set match [expr {$mid + 1 + $diff}]
-  puts $match
 
   if {$idSel1 <= $mid} {
-    if {[regexp {^DA} $name1] } {
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
       dict for {id info} $selectList {
-      if {[regexp {^DT} $id]} {
-        append stc [split $info "\ "]
-        append stc "\ "
-      }
-    }
-    
-    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resIdBase2 set $match 
-      dict for {id info} $selectList {
-        if {[lsearch -exact $info $match] >= 0} {
-          $w.distG.resSel.resNameBase2 set $id
-          break
-        }
-      }
-    } else {
-        $w.distG.resSel.resIdBase2 set "-1"
-      }
-    }
-
-    if {[regexp {^DT} $name1]} {
-        
-      dict for {id info} $selectList {
-      if {[regexp {^DA} $id]} {
-        append stc [split $info "\ "]
-        append stc "\ "
-      }
-    }
-    
-    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resIdBase2 set $match 
-      dict for {id info} $selectList {
-        if {[lsearch -exact $info $match] >= 0} {
-          $w.distG.resSel.resNameBase2 set $id
-          break
-        }
-      }
-    } else {
-        $w.distG.resSel.resIdBase2 set "-1"
-      }
-    }
-
-    if {[regexp {^DC} $name1]} {
-      
-      dict for {id info} $selectList {
-      if {[regexp {^DG} $id]} {
-        append stc [split $info "\ "]
-        append stc "\ "
-      }
-    }
-
-    puts $stc 
-    
-    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resIdBase2 set $match 
-      dict for {id info} $selectList {
-        if {[lsearch -exact $info $match] >= 0} {
-          $w.distG.resSel.resNameBase2 set $id
-          break
-        }
-      }
-    } else {
-        $w.distG.resSel.resIdBase2 set "-1"
-      }
-    }
-
-    if {[regexp {^DG} $name1]} {
-      
-      dict for {id info} $selectList {
-        if {[regexp {^DC} $id]} {
+        if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
       }
-
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
       $w.distG.resSel.resIdBase2 set $match 
-      dict for {id info} $selectList {
-        if {[lsearch -exact $info $match] >= 0} {
-          $w.distG.resSel.resNameBase2 set $id
-          break
+        dict for {id info} $selectList {
+          if {[lsearch -exact $info $match] >= 0 } {
+            if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
+              $w.distG.resSel.resNameBase2 set $id
+            } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
+                $w.distG.resSel.resNameBase2 set $id
+            } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
+                $w.distG.resSel.resNameBase2 set $id
+            } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
+                $w.distG.resSel.resNameBase2 set $id
+            } 
+            break
+          }
         }
-      }
-    } else {
-        $w.distG.resSel.resIdBase2 set "-1"
+      } else {
+         $w.distG.resSel.resIdBase2 set -1
+         $w.distG.resSel.resNameBase2 set "NO MATCH"
       }
     }
-  }
-  
-
-  #dict for {id info} $selectList {
-  #  if {$id eq $name} {
-  #     
-  #  }
-  #}
+  } else {
+      $w.distG.resSel.resIdBase2 set -1
+      $w.distG.resSel.resNameBase2 set "NO MATCH"
+    }
 }
 
 #takes the index not the id of the atom
