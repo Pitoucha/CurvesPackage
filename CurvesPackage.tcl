@@ -140,6 +140,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 3 -column 2
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 4 -columnspan 3
     grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 5 -columnspan 3
+    #####################################################################################
     set COMMENT {
     grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
     grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 5 -column 0
@@ -150,6 +151,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 6 -column 2
     grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 7 -columnspan 3
     }
+    #####################################################################################
   
     grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
@@ -507,6 +509,7 @@ proc ::curvespackage::plotAngleGroups {} {
                 -marker none -legend "Angle" -plot];
 }
 
+#####################################################################################
 set COMMENT {
 proc ::curvespackage::plotAngleVectors {} {
   variable w
@@ -567,9 +570,8 @@ proc ::curvespackage::plotAngleVectors {} {
     puts "Error, some fields are empty"
   }
 }
-
 }
-
+#####################################################################################
 
 proc ::curvespackage::plotBases { type } {
 
@@ -594,13 +596,6 @@ proc ::curvespackage::plotBases { type } {
       set atom1 [lindex $atoms 0]
       set atom2 [lindex $atoms 1]
       set res1 [atomselect top "resid $idBase1 and name $atom1"]
-      set COMMENT {
-      set xyz [split [string range [$sel get {x y z}] 1 end-1] "\ "]
-      set xA1 [lindex $xyz 0]
-      set yA1 [lindex $xyz 1]
-      set zA1 [lindex $xyz 2]
-      $sel delete
-      }
       set res2 [atomselect top "resid $idBase1 and name $atom2"]
     } elseif {[regexp {^DT} $base1]} {
       set atoms [split [dict get $atomsDNA {DT}] "\ "]
@@ -843,6 +838,7 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
   }
 }
 
+#####################################################################################
 set COMMENT {
 proc ::curvespackage::plotOther {} {
   puts $::curvespackage::e
@@ -872,6 +868,7 @@ proc ::curvespackage::plotOther {} {
                 -marker none -legend "Function $::curvespackage::e" -plot];
 }
 }
+#####################################################################################
 
 proc curvespackage_tk {} {
   ::curvespackage::packageui
