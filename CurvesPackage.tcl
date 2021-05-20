@@ -136,7 +136,9 @@ proc ::curvespackage::chargement {} {
     grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId" -command "::curvespackage::matchList"] -row 2 -columnspan 3
     grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 3 -column 0
     grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 3 -column 1
-    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 3 -column 2  
+    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 3 -column 2
+    grid [button $w.distG.resSel.valSel -text "Plot the angle variation between these two bases" -command "::curvespackage::plotAngleBases"] -row 4 -columnspan 3
+    set COMMENT {
     grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
     grid [ttk::combobox $w.distG.resSel.resNameComp1] -row 5 -column 0
     grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 5 -column 1
@@ -145,6 +147,7 @@ proc ::curvespackage::chargement {} {
     grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 6 -column 1
     grid [ttk::combobox $w.distG.resSel.resIdComp2] -row 6 -column 2
     grid [button $w.distG.resSel.valSel -text "Plot the angles between the base and the other atoms" -command "::curvespackage::plotAngleVectors"] -row 7 -columnspan 3
+    }
   
     grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
@@ -269,8 +272,8 @@ proc ::curvespackage::listeResname {} {
     
     $w.distG.resSel.resNameBase1 configure -values $stc
     $w.distG.resSel.resNameBase2 configure -values $stc
-    $w.distG.resSel.resNameComp1 configure -values $stc
-    $w.distG.resSel.resNameComp2 configure -values $stc
+    #$w.distG.resSel.resNameComp1 configure -values $stc
+    #$w.distG.resSel.resNameComp2 configure -values $stc
     
     $sel delete
 }
@@ -558,6 +561,7 @@ proc ::curvespackage::plotAngleGroups {} {
                 -marker none -legend "Angle" -plot];
 }
 
+set COMMENT {
 proc ::curvespackage::plotAngleVectors {} {
   variable w
   variable frameStart
@@ -615,6 +619,39 @@ proc ::curvespackage::plotAngleVectors {} {
                   -marker none -legend "Angle" -plot];
   } else {
     puts "Error, some fields are empty"
+  }
+}
+
+}
+
+
+proc ::curvespackage::plotAngleBases {} {
+
+  variable w
+  variable atomsDNA
+  
+  set base1 [$w.distG.resSel.resNameBase1 get]
+  set idBase1 [$w.distG.resSel.resIdBase1 get]
+  set base2 [$w.distG.resSel.resNameBase2 get]
+  set idBase2 [$w.distG.resSel.resIdBase2 get]
+  
+  if {[regexp {^DA} $base1]} {
+    set atoms [split [dict get $atomsDNA {DA}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set sel [atomselect top "resid $idBase1 and name $atom1"]
+    set xyz [split [string range [$sel get {x y z}] 1 end-1] "\ "]
+    set xA1 [lindex $xyz 0]
+    set yA1 [lindex $xyz 1]
+    set zA1 [lindex $xyz 2]
+    $sel delete
+    set sel [atomselect top "resid $idBase1 and name $atom2"]
+    set xyz [split [string range [$sel get {x y z}] 1 end-1] "\ "]
+    set xA2 [lindex $xyz 0]
+    set yA2 [lindex $xyz 1]
+    set zA2 [lindex $xyz 2]
+    $sel delete
+    puts " $xA1 ; $yA1 ; $zA1 && $xA2 ; $yA2 ; $zA2 "
   }
 }
 
@@ -711,33 +748,35 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
   }
 }
 
-#proc ::curvespackage::plotOther {} {
-#  puts $::curvespackage::e
-#  set res [split $::curvespackage::e "x"]
-#  set f " "
-#  set i 0
-#  foreach s $res {
-#    incr i
-#    if {[expr {$i != [llength $res]}]} {
-#      append f $s
-#      append f {$x}
-#    }
-#  }
-#  set xlist {}
-#  set ylist {}
-#  for {set x -10} {$x <= 10} {set x [expr {$x + 1}]} {
-#    if {$x != 0} {
-#      lappend xlist $x
-#      lappend ylist [expr {[expr $f]*1.0}]
-#      puts [expr {[expr $f]*1.0}]
-#    }
-#  }
-#  puts [lindex ylist 15]
-#  set plothandle [multiplot -x $xlist -y $ylist \
-#                -xlabel "x" -ylabel "$::curvespackage::e" -title "Function $::curvespackage::e" \
-#                -lines -linewidth 1 -linecolor red \
-#                -marker none -legend "Function $::curvespackage::e" -plot];
-#}
+set COMMENT {
+proc ::curvespackage::plotOther {} {
+  puts $::curvespackage::e
+  set res [split $::curvespackage::e "x"]
+  set f " "
+  set i 0
+  foreach s $res {
+    incr i
+    if {[expr {$i != [llength $res]}]} {
+      append f $s
+      append f {$x}
+    }
+  }
+  set xlist {}
+  set ylist {}
+  for {set x -10} {$x <= 10} {set x [expr {$x + 1}]} {
+    if {$x != 0} {
+      lappend xlist $x
+      lappend ylist [expr {[expr $f]*1.0}]
+      puts [expr {[expr $f]*1.0}]
+    }
+  }
+  puts [lindex ylist 15]
+  set plothandle [multiplot -x $xlist -y $ylist \
+                -xlabel "x" -ylabel "$::curvespackage::e" -title "Function $::curvespackage::e" \
+                -lines -linewidth 1 -linecolor red \
+                -marker none -legend "Function $::curvespackage::e" -plot];
+}
+}
 
 proc curvespackage_tk {} {
   ::curvespackage::packageui
