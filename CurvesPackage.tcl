@@ -305,16 +305,16 @@ proc ::curvespackage::selectWithList {b} {
   }
   
   #defini la liste de resid
-  set list stc
+  if {$name != ""} {
+    set list stc
 
-  dict for {id info} $::curvespackage::selectList {
-    if {$id eq $name} {
-      set stc [split $info "\ "]
-      break 
+    dict for {id info} $::curvespackage::selectList {
+      if {$id eq $name} {
+        set stc [split $info "\ "]
+        break 
+      }
     }
-  }
-
-  switch $b {
+    switch $b {
     0 {
       $w.distG.resSel.resIdBase1 configure -values $stc
     }
@@ -328,9 +328,10 @@ proc ::curvespackage::selectWithList {b} {
       $w.distG.resSel.resIdComp2 configure -values $stc
     }
     default {
-      puts "there is a problem, call us!" 
+        puts "there is a problem, call us!" 
+      }
     }
-  }
+  }  
 }
 
 proc ::curvespackage::matchList {} {
