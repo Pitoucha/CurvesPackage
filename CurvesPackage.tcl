@@ -130,16 +130,22 @@ proc ::curvespackage::chargement {} {
     #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
   
     grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 6
-    grid [label $w.distG.resSel.labelBase -text "Select the atom groups to use as base"] -row 0 -columnspan 3
+    grid [label $w.distG.resSel.labelBase -text "Select the bases to match"] -row 0 -columnspan 3
     grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
     grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
     grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
-    grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId" -command "::curvespackage::matchList"] -row 2 -columnspan 3
-    grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 3 -column 0
-    grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 3 -column 1
-    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 3 -column 2
-    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 4 -columnspan 3
-    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 5 -columnspan 3
+    grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
+    grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 2 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2
+    grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId" -command "::curvespackage::matchList"] -row 3 -columnspan 3
+    grid [ttk::combobox $w.distG.resSel.resNameMatch1] -row 4 -column 0
+    grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 4 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdMatch1] -row 4 -column 2
+    grid [ttk::combobox $w.distG.resSel.resNameMatch2] -row 5 -column 0
+    grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 5 -column 1
+    grid [ttk::combobox $w.distG.resSel.resIdMatch2] -row 5 -column 2
+    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 6 -columnspan 3
+    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 7 -columnspan 3
     #####################################################################################
     set COMMENT {
     grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
