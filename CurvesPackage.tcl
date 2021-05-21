@@ -982,6 +982,10 @@ proc ::curvespackage::plotBases { type } {
                       -marker none -legend "Angle between the sets of bases" -plot];
 	} elseif { $type eq "4dist" } {
 	  set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
+	  $res1 delete
+	  $res2 delete
+	  $res3 delete
+	  $res4 delete
 	  set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
                       -lines -linewidth 1 -linecolor red \
