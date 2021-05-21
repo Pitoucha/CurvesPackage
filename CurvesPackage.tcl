@@ -352,9 +352,9 @@ proc ::curvespackage::listeResname {} {
     set stc [lsort -unique $stc]
     
     $w.distG.resSel.resBase1.resNameBase1 configure -values $stc
-    $w.distG.resSel.resNameBase2 configure -values $stc
-    $w.distG.resSel.resNameMatch1 configure -values $stc
-    $w.distG.resSel.resNameMatch2 configure -values $stc
+    $w.distG.resSel.resBase1.resNameMatch1 configure -values $stc
+    $w.distG.resSel.resBase2.resNameBase2 configure -values $stc
+    $w.distG.resSel.resBase2.resNameMatch2 configure -values $stc
     
     $sel delete
 }
@@ -365,16 +365,16 @@ proc ::curvespackage::selectWithList {b} {
   #quel liste déroulante appelle pour savoir chez qui récupérer le name 
   switch $b {
     0 {
-      set name [$w.distG.resSel.resNameBase1 get]
+      set name [$w.distG.resSel.resBase1.resNameBase1 get]
     }
     1 {
-      set name [$w.distG.resSel.resNameBase2 get]
+      set name [$w.distG.resSel.resBase2.resNameBase2 get]
     }
     2 {
-      set name [$w.distG.resSel.resNameMatch1 get]
+      set name [$w.distG.resSel.resBase1.resNameMatch1 get]
     }
     3 {
-      set name [$w.distG.resSel.resNameMatch2 get]
+      set name [$w.distG.resSel.resBase2.resNameMatch2 get]
     }
     default {
       puts "there is a problem, call us!" 
@@ -393,16 +393,17 @@ proc ::curvespackage::selectWithList {b} {
     }
     switch $b {
     0 {
-      $w.distG.resSel.resIdBase1 configure -values $stc
+      $w.distG.resSel.resBase1.resIdBase1 configure -values $stc
     }
     1 {
-      $w.distG.resSel.resIdBase2 configure -values $stc
+      
+      $w.distG.resSel.resBase2.resIdBase2 configure -values $stc
     }
     2 {
-      $w.distG.resSel.resIdMatch1 configure -values $stc
+      $w.distG.resSel.resBase1.resIdMatch1 configure -values $stc
     }
     3 {
-      $w.distG.resSel.resIdMatch2 configure -values $stc
+      $w.distG.resSel.resBase2.resIdMatch2 configure -values $stc
     }
     default {
         puts "there is a problem, call us!" 
@@ -421,8 +422,8 @@ proc ::curvespackage::matchList {} {
   variable mid 
 
   #part with the first and second bases
-  set name1 [$w.distG.resSel.resNameBase1 get]
-  set idSel1 [$w.distG.resSel.resIdBase1 get]
+  set name1 [$w.distG.resSel.resBase1.resNameBase1 get]
+  set idSel1 [$w.distG.resSel.resBase1.resIdBase1 get]
 
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
@@ -437,34 +438,34 @@ proc ::curvespackage::matchList {} {
         }
       }
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resIdBase2 set $match 
+      $w.distG.resSel.resBase1.resIdMatch1 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
-              $w.distG.resSel.resNameBase2 set $id
+              $w.distG.resSel.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
-                $w.distG.resSel.resNameBase2 set $id
+                $w.distG.resSel.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.distG.resSel.resNameBase2 set $id
+                $w.distG.resSel.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.distG.resSel.resNameBase2 set $id
+                $w.distG.resSel.resBase1.resNameMatch1 set $id
             } else {
-                $w.distG.resSel.resIdBase2 set -1
-                $w.distG.resSel.resNameBase2 set "NO MATCH"
+                $w.distG.resSel.resBase1.resIdMatch1 set -1
+                $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
               }
             break
           }
         }
       } else {
-          $w.distG.resSel.resIdBase2 set -1
-          $w.distG.resSel.resNameBase2 set "NO MATCH"
+          $w.distG.resSel.resBase1.resIdMatch1 set -1
+          $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } else {
-      $w.distG.resSel.resIdBase2 set -1
-      $w.distG.resSel.resNameBase2 set "NO MATCH"
+      $w.distG.resSel.resBase1.resIdMatch1 set -1
+      $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
       tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     }
 
@@ -472,8 +473,8 @@ proc ::curvespackage::matchList {} {
    #$w.distG.resSel.resNameMatch1 configure -values $stc
     #$w.distG.resSel.resNameMatch2 configure -values $stc
     
-  set name1 [$w.distG.resSel.resNameMatch1 get]
-  set idSel1 [$w.distG.resSel.resIdMatch1 get]
+  set name1 [$w.distG.resSel.resBase2.resNameBase2 get]
+  set idSel1 [$w.distG.resSel.resBase2.resIdBase2 get]
 
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
@@ -488,34 +489,34 @@ proc ::curvespackage::matchList {} {
         }
       }
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resIdMatch2 set $match 
+      $w.distG.resSel.resBase2.resIdMatch2 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
-              $w.distG.resSel.resNameMatch2 set $id
+              $w.distG.resSel.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
-                $w.distG.resSel.resNameMatch2 set $id
+                $w.distG.resSel.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.distG.resSel.resNameMatch2 set $id
+                $w.distG.resSel.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.distG.resSel.resNameMatch2 set $id
+                $w.distG.resSel.resBase2.resNameMatch2 set $id
             } else {
-                $w.distG.resSel.resIdMatch2 set -1
-                $w.distG.resSel.resNameMatch2 set "NO MATCH"
+                $w.distG.resSel.resBase2.resIdMatch2 set -1
+                $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
               }
             break
           }
         }
       } else {
-          $w.distG.resSel.resIdMatch2 set -1
-          $w.distG.resSel.resNameMatch2 set "NO MATCH"
+          $w.distG.resSel.resBase2.resIdMatch2 set -1
+          $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } else {
-      $w.distG.resSel.resIdMatch2 set -1
-      $w.distG.resSel.resNameMatch2 set "NO MATCH"
+      $w.distG.resSel.resBase2.resIdMatch2 set -1
+      $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
       tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     }
 }
