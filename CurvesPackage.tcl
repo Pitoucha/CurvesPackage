@@ -187,7 +187,7 @@ proc ::curvespackage::chargement {} {
     grid [button $w.distG.resSel.resBase1.getName1 -text "Use this resname" -command "::curvespackage::selectWithList 0"] -row 1 -column 0 -columnspan 2 
     grid [ttk::combobox $w.distG.resSel.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
     
-    grid [label $w.dist.resSel.resBase1.lab -text ""] -row 0 -column 2
+    grid [label $w.distG.resSel.resBase1.lab -text ""] -row 0 -column 2
     
     #first match
     grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1] -row 0 -column 3 -columnspan 2
@@ -204,7 +204,7 @@ proc ::curvespackage::chargement {} {
     grid [button $w.distG.resSel.resBase2.getName2 -text "Use this resname" -command "::curvespackage::selectWithList 1"] -row 1 -column 0 -columnspan 2
     grid [ttk::combobox $w.distG.resSel.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
     
-    grid [label $w.dist.resSel.resBase2.lab2 -text ""] -row 0 -column 2
+    grid [label $w.distG.resSel.resBase2.lab2 -text ""] -row 0 -column 2
     
     #second match
     grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2] -row 0 -column 3 -columnspan 2
@@ -351,7 +351,7 @@ proc ::curvespackage::listeResname {} {
     set stc [$sel get resname]
     set stc [lsort -unique $stc]
     
-    $w.distG.resSel.resNameBase1 configure -values $stc
+    $w.distG.resSel.resBase1.resNameBase1 configure -values $stc
     $w.distG.resSel.resNameBase2 configure -values $stc
     $w.distG.resSel.resNameMatch1 configure -values $stc
     $w.distG.resSel.resNameMatch2 configure -values $stc
