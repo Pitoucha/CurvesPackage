@@ -215,8 +215,8 @@ proc ::curvespackage::chargement {} {
     
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
     grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4
-    grid [button $w.distG.resSel.distVal -text "Plot the distance between the two sets of bases " -command "::curvespackage::plotDistanceFourBases" -state disabled] -row 5
-    grid [button $w.distG.resSel.angleVal -text "Plot the angle between the two sets of bases " -command "::curvespackage::plotAngleFourBases" -state disabled] -row 6
+    grid [button $w.distG.resSel.distVal -text "Plot the distance between the two sets of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5
+    grid [button $w.distG.resSel.angleVal -text "Plot the angle between the two sets of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6
     #####################################################################################
     set COMMENT {
     grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
@@ -804,7 +804,7 @@ proc ::curvespackage::plotBases { type } {
     for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
       lappend xlist $i
     }
-    if { $type eq "angl" } {
+    if { [regexp {angl$} $type] } {
       if {[regexp {^DA} $base1]} {
           set atoms [split [dict get $atomsDNA {DA}] "\ "]
           set atom1 [lindex $atoms 0]
@@ -856,7 +856,7 @@ proc ::curvespackage::plotBases { type } {
           set res3 [atomselect top "resid $idMatch1 and name $atom1"]
           set res4 [atomselect top "resid $idMatch1 and name $atom2"]
         }
-    } elseif { $type eq "dist" } {
+    } elseif { [regexp {dist$} $type] } {
       set res1 [atomselect top "resid $idBase1"]
       set res2 [atomselect top "resid $idMatch1"]
     }
@@ -882,7 +882,7 @@ proc ::curvespackage::plotBases { type } {
       }
     } else {
       if {$base2 ne "" && $match2 ne "" && $idBase2 ne "" && $idMatch2 ne ""} {
-        if { $type eq "angl" } {
+        if {[regexp {angl$} $type]} {
 	  if {[regexp {^DA} $base2]} {
             set atoms [split [dict get $atomsDNA {DA}] "\ "]
             set atom1 [lindex $atoms 0]
@@ -934,7 +934,11 @@ proc ::curvespackage::plotBases { type } {
             set res7 [atomselect top "resid $idMatch2 and name $atom1"]
             set res8 [atomselect top "resid $idMatch2 and name $atom2"]
           }
-	  
+	} elseif {[regexp {dist$} $type]} {
+	  set res3 [atomselect top "resid $idBase2"]
+          set res4 [atomselect top "resid $idMatch2"]
+	}
+	if { $type eq "angl" } {
 	  set listP1 [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
 	  set listP2 [::curvespackage::computeFrames "angB" $res5 $res6 $res7 $res8]
           $res1 delete
@@ -951,8 +955,6 @@ proc ::curvespackage::plotBases { type } {
                       -marker none -legend "Angle between the first bases"];
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor green -marker none -legend "Angle between the second bases" -plot
 	} elseif { $type eq "dist" } {
-	  set res3 [atomselect top "resid $idBase2"]
-          set res4 [atomselect top "resid $idMatch2"]
 	  set listP1 [::curvespackage::computeFrames "dist" $res1 $res2]
 	  set listP2 [::curvespackage::computeFrames "dist" $res3 $res4]
 	  $res1 delete
@@ -964,6 +966,26 @@ proc ::curvespackage::plotBases { type } {
                       -lines -linewidth 1 -linecolor red \
                       -marker none -legend "Distance between the second bases"];
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor green -marker none -legend "Distance between the second bases" -plot
+	} elseif { $type eq "4angl" } {
+	  set listP [::curvespackage::computeFrames "ang4" $res1 $res2 $res3 $res4 $res5 $res6 $res7 $res8]
+	  $res1 delete
+	  $res2 delete
+	  $res3 delete
+	  $res4 delete
+	  $res5 delete
+	  $res6 delete
+	  $res7 delete
+	  $res8 delete
+	  set plothandle [multiplot -x $xlist -y $listP \
+                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
+                      -lines -linewidth 1 -linecolor red \
+                      -marker none -legend "Angle between the sets of bases" -plot];
+	} elseif { $type eq "4dist" } {
+	  set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
+	  set plothandle [multiplot -x $xlist -y $listP \
+                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
+                      -lines -linewidth 1 -linecolor red \
+                      -marker none -legend "Distance between the sets of bases" -plot];
 	}
       } else {
         puts "Error, some fields are empty"
@@ -974,7 +996,7 @@ proc ::curvespackage::plotBases { type } {
   }
 }
 
-proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0}} {
+proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} {res6 0} {res7 0} {res8 0} } {
   variable frameStart
   variable frameEnd
   variable step
@@ -1092,6 +1114,75 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0}} {
 	lappend lAngl $ang
       }
       return $lAngl
+    }
+    "ang4" {
+      set lAngl {}
+      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        $res1 frame $i
+	$res2 frame $i
+	$res3 frame $i
+	$res4 frame $i
+	$res5 frame $i
+	$res6 frame $i
+	$res7 frame $i
+	$res8 frame $i
+	$res1 update
+	$res2 update
+	$res3 update
+	$res4 update
+	$res5 update
+	$res6 update
+	$res7 update
+	$res8 update
+	set xyzA1 [split [string range [$res1 get {x y z}] 1 end-1] "\ "]
+	set xyzA2 [split [string range [$res2 get {x y z}] 1 end-1] "\ "]
+	set vectB1 [vecsub $xyzA1 $xyzA2]
+	set xyzA1 [split [string range [$res3 get {x y z}] 1 end-1] "\ "]
+	set xyzA2 [split [string range [$res4 get {x y z}] 1 end-1] "\ "]
+	set vectB2 [vecsub $xyzA1 $xyzA2]
+	set vect1 [vecsub $vectB2 $vectB1]
+	set xyzA1 [split [string range [$res5 get {x y z}] 1 end-1] "\ "]
+	set xyzA2 [split [string range [$res6 get {x y z}] 1 end-1] "\ "]
+	set vectB1 [vecsub $xyzA1 $xyzA2]
+	set xyzA1 [split [string range [$res7 get {x y z}] 1 end-1] "\ "]
+	set xyzA2 [split [string range [$res8 get {x y z}] 1 end-1] "\ "]
+	set vectB2 [vecsub $xyzA1 $xyzA2]
+	set vect2 [vecsub $vectB2 $vectB1]
+	set lenV1 [veclength $vect1]
+	set lenV2 [veclength $vect2]
+	set dotprod [vecdot $vect1 $vect2]
+	set dotprodcor [expr $dotprod / ($lenV1 * $lenV2)]
+	if {$dotprodcor > 1.0} {
+	  set dotprodcor 1.0
+	}
+	if {$dotprodcor < -1.0} {
+	  set dotprodcor -1.0
+	}
+	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	lappend lAngl $ang
+      }
+      return $lAngl
+    }
+    "dist4" {
+      set lDist {}
+      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        $res1 frame $i
+	$res2 frame $i
+	$res3 frame $i
+	$res4 frame $i
+	$res1 update
+	$res2 update
+	$res3 update
+	$res4 update
+	set center1 [measure center $res1]
+	set center2 [measure center $res2]
+	set vect1 [vecsub $center2 $center1]
+	set center1 [measure center $res3]
+	set center2 [measure center $res4]
+	set vect2 [vecsub $center2 $center1]
+	lappend lDist [vecdist $vect1 $vect2]
+      }
+      return $lDist
     }
     "distB" {
       set lDist {}
