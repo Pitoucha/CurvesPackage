@@ -128,22 +128,55 @@ proc ::curvespackage::chargement {} {
     grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"] -row 3 -columnspan 6
     grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"] -row 4 -columnspan 6
     #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
-  
+    
+    #grid for the selection of two bases
     grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 6
     grid [label $w.distG.resSel.labelBase -text "Select the bases to match"] -row 0 -columnspan 3
+                           
+    #################################
+    #first base
+    #dropdown list for using the first base resname
     grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
+    #button to add the list of resid values
     grid [button $w.distG.resSel.getName1 -text "Use this resName"  -command "::curvespackage::selectWithList 0"] -row 1 -column 1
+    #dropdown list for the resid of the first base 
     grid [ttk::combobox $w.distG.resSel.resIdBase1] -row 1 -column 2
+
+    ###############################
+    #seconde base
+    #dropdown list for the second bases resname
     grid [ttk::combobox $w.distG.resSel.resNameBase2] -row 2 -column 0
+    #button to add the list of resid values
     grid [button $w.distG.resSel.getName2 -text "Use this resName"  -command "::curvespackage::selectWithList 1"] -row 2 -column 1
+    #dropdown list for the resid of the second base
     grid [ttk::combobox $w.distG.resSel.resIdBase2] -row 2 -column 2
+
+    ###############################
+
+    #button for calling the matching of bases
     grid [button $w.distG.resSel.btnMatch -text "Match this resId to get the facing resId" -command "::curvespackage::matchList"] -row 3 -columnspan 3
+    
+    ###############################
+
+    #third base 
+    #dropdown list for the third bases resname
     grid [ttk::combobox $w.distG.resSel.resNameMatch1] -row 4 -column 0
+    #button to add the list of resid values
     grid [button $w.distG.resSel.getName3 -text "Use this resName"  -command "::curvespackage::selectWithList 2"] -row 4 -column 1
+    #dropdown list for the resid of the third base
     grid [ttk::combobox $w.distG.resSel.resIdMatch1] -row 4 -column 2
+    
+    ###############################
+
+    #fourth base
+    #dropdown list for the fourth bases resname
     grid [ttk::combobox $w.distG.resSel.resNameMatch2] -row 5 -column 0
+    #button to add the list of resid values
     grid [button $w.distG.resSel.getName4 -text "Use this resName"  -command "::curvespackage::selectWithList 3"] -row 5 -column 1
+    #dropdown list for the resid of the fourth base
     grid [ttk::combobox $w.distG.resSel.resIdMatch2] -row 5 -column 2
+
+
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 6 -columnspan 3
     grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 7 -columnspan 3
     #####################################################################################
@@ -284,8 +317,8 @@ proc ::curvespackage::listeResname {} {
     
     $w.distG.resSel.resNameBase1 configure -values $stc
     $w.distG.resSel.resNameBase2 configure -values $stc
-    #$w.distG.resSel.resNameComp1 configure -values $stc
-    #$w.distG.resSel.resNameComp2 configure -values $stc
+    $w.distG.resSel.resNameMatch1 configure -values $stc
+    $w.distG.resSel.resNameMatch2 configure -values $stc
     
     $sel delete
 }
@@ -301,12 +334,12 @@ proc ::curvespackage::selectWithList {b} {
     1 {
       set name [$w.distG.resSel.resNameBase2 get]
     }
-    #2 {
-    #  set name [$w.distG.resSel.resNameComp1 get]
-    #}
-    #3 {
-    #  set name [$w.distG.resSel.resNameComp2 get]
-    #}
+    2 {
+      set name [$w.distG.resSel.resNameMatch1 get]
+    }
+    3 {
+      set name [$w.distG.resSel.resNameMatch2 get]
+    }
     default {
       puts "there is a problem, call us!" 
     }
@@ -329,12 +362,12 @@ proc ::curvespackage::selectWithList {b} {
     1 {
       $w.distG.resSel.resIdBase2 configure -values $stc
     }
-    #2 {
-    #  $w.distG.resSel.resIdComp1 configure -values $stc
-    #}
-    #3 {
-    #  $w.distG.resSel.resIdComp2 configure -values $stc
-    #}
+    2 {
+      $w.distG.resSel.resIdMatch1 configure -values $stc
+    }
+    3 {
+      $w.distG.resSel.resIdMatch2 configure -values $stc
+    }
     default {
         puts "there is a problem, call us!" 
       }
@@ -351,13 +384,15 @@ proc ::curvespackage::matchList {} {
   variable minDNA
   variable mid 
 
+  #part with the first and second bases
   set name1 [$w.distG.resSel.resNameBase1 get]
-  set idSel1 [expr {int([$w.distG.resSel.resIdBase1 get])}]
+  set idSel1 [$w.distG.resSel.resIdBase1 get]
 
-  set diff [expr $mid - $idSel1]
-  set match [expr {$mid + 1 + $diff}]
-
-  if {$idSel1 <= $mid} {
+  if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
+    
+    set diff [expr {$mid - [expr {int($idSel1)}]}]
+    set match [expr {$mid + 1 + $diff}]
+    
     if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
       dict for {id info} $selectList {
         if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
@@ -394,6 +429,57 @@ proc ::curvespackage::matchList {} {
   } else {
       $w.distG.resSel.resIdBase2 set -1
       $w.distG.resSel.resNameBase2 set "NO MATCH"
+      tk_messageBox -message "Select something on the first strand (See mid to determine this)"
+    }
+
+  #part with the third and fourth bases 
+   #$w.distG.resSel.resNameMatch1 configure -values $stc
+    #$w.distG.resSel.resNameMatch2 configure -values $stc
+    
+  set name1 [$w.distG.resSel.resNameMatch1 get]
+  set idSel1 [$w.distG.resSel.resIdMatch1 get]
+
+  if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
+    
+    set diff [expr {$mid - [expr {int($idSel1)}]}]
+    set match [expr {$mid + 1 + $diff}]
+    
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+      dict for {id info} $selectList {
+        if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+          append stc [split $info "\ "]
+          append stc "\ "
+        }
+      }
+    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+      $w.distG.resSel.resIdMatch2 set $match 
+        dict for {id info} $selectList {
+          if {[lsearch -exact $info $match] >= 0 } {
+            if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
+              $w.distG.resSel.resNameMatch2 set $id
+            } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
+                $w.distG.resSel.resNameMatch2 set $id
+            } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
+                $w.distG.resSel.resNameMatch2 set $id
+            } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
+                $w.distG.resSel.resNameMatch2 set $id
+            } else {
+                $w.distG.resSel.resIdMatch2 set -1
+                $w.distG.resSel.resNameMatch2 set "NO MATCH"
+                tk_messageBox -message "No match, your DNA is damaged"
+              }
+            break
+          }
+        }
+      } else {
+          $w.distG.resSel.resIdMatch2 set -1
+          $w.distG.resSel.resNameMatch2 set "NO MATCH"
+          tk_messageBox -message "No match, your DNA is damaged"
+      }
+    }
+  } else {
+      $w.distG.resSel.resIdMatch2 set -1
+      $w.distG.resSel.resNameMatch2 set "NO MATCH"
       tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     }
 }
