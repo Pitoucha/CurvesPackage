@@ -131,10 +131,10 @@ proc ::curvespackage::chargement {} {
     
     #grid for the selection of two bases
     grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 6
-    grid [label $w.distG.resSel.labelBase -text "Select the bases to match"] -row 0 -columnspan 3
-                           
+    #####################################################################################
+    set COMMENT {
     #################################
-    #first base
+    
     #dropdown list for using the first base resname
     grid [ttk::combobox $w.distG.resSel.resNameBase1] -row 1 -column 0
     #button to add the list of resid values
@@ -176,9 +176,41 @@ proc ::curvespackage::chargement {} {
     #dropdown list for the resid of the fourth base
     grid [ttk::combobox $w.distG.resSel.resIdMatch2] -row 5 -column 2
 
-
-    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 6 -columnspan 3
-    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 7 -columnspan 3
+    }
+    #####################################################################################
+    
+    
+    grid [labelframe $w.distG.resSel.resBase1 -text "Select the first base to match"] -row 0
+    
+    #first base
+    grid [ttk::combobox $w.distG.resSel.resBase1.resNameBase1] -row 0 -column 0
+    grid [button $w.distG.resSel.resBase1.getName1 -text "Use this resname" -command "::curvespackage::selectWithList 0"] -row 0 -column 1 -rowspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.resIdBase1] -row 1 -column 0
+    
+    #first match
+    grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1] -row 0 -column 2
+    grid [button $w.distG.resSel.resBase1.getName3 -text "Use this resname" -command "::curvespackage::selectWithList 2"] -row 0 -column 3 -rowspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1] -row 1 -column 2
+    
+    #button for calling the matching of bases
+    grid [button $w.distG.resSel.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1
+    
+    grid [labelframe $w.distG.resSel.resBase2 -text "Select the second base to match (optional)"] -row 2
+    
+    #second base
+    grid [ttk::combobox $w.distG.resSel.resBase2.resNameBase2] -row 0 -column 0
+    grid [button $w.distG.resSel.resBase2.getName2 -text "Use this resname" -command "::curvespackage::selectWithList 1"] -row 0 -column 1 -rowspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.resIdBase2] -row 1 -column 0
+    
+    #second match
+    grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2] -row 0 -column 2
+    grid [button $w.distG.resSel.resBase2.getName4 -text "Use this resname" -command "::curvespackage::selectWithList 3"] -row 0 -column 3 -rowspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2] -row 1 -column 2
+    
+    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
+    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4
+    
+    
     #####################################################################################
     set COMMENT {
     grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
