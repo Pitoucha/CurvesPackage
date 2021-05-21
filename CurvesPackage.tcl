@@ -215,8 +215,8 @@ proc ::curvespackage::chargement {} {
     
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
     grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4
-    grid [button $w.distG.resSel.vectVal -text "You cannot plot the distance between the two sets of bases " -command ""] -row 5
-    
+    grid [button $w.distG.resSel.distVal -text "Plot the distance between the two sets of bases " -command "::curvespackage::plotDistanceFourBases" -state disabled] -row 5
+    grid [button $w.distG.resSel.angleVal -text "Plot the angle between the two sets of bases " -command "::curvespackage::plotAngleFourBases" -state disabled] -row 6
     #####################################################################################
     set COMMENT {
     grid [label $w.distG.resSel.labelComp -text "Select the atom groups to compare"] -row 4 -columnspan 3
@@ -260,34 +260,37 @@ proc ::curvespackage::chargement {} {
     }
 
     bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
-      ::curvespackage::enableCommandVector 0
+      ::curvespackage::enableCommand 0
     }
 
     bind $w.distG.resSel.resBase2.resIdBase2 <<ComboboxSelected>> {
-      ::curvespackage::enableCommandVector 1
+      ::curvespackage::enableCommand 1
     }
-
-
   }
 }
-proc ::curvespackage::enableCommandVector {b} {
+proc ::curvespackage::enableCommand {b} {
   variable w
 
   switch $b {
     1 {
       set test [$w.distG.resSel.resBase1.resIdBase1 get]
       if {$test != ""} {
-        $w.distG.resSel.vectVal configure -text "You can plot the distance between the two sets of bases"
-        $w.distG.resSel.vectVal configure -command ""
-        puts "not empty resid2"
+        $w.distG.resSel.distVal configure -state normal
+        $w.distG.resSel.angleVal configure -state normal
+      } else {
+        $w.distG.resSel.distVal configure -state disabled
+        $w.distG.resSel.angleVal configure -state disabled
+
       }
     }
     0 {
       set test [$w.distG.resSel.resBase2.resIdBase2 get]
       if {$test != ""} {
-        $w.distG.resSel.vectVal configure -text "You can plot the distance between the two sets of bases"
-        $w.distG.resSel.vectVal configure -command ""
-        puts "not empty resid1"
+        $w.distG.resSel.distVal configure -state normal
+        $w.distG.resSel.angleVal configure -state normal
+      } else {
+        $w.distG.resSel.distVal configure -state disabled
+        $w.distG.resSel.angleVal configure -state disabled
       }
     } 
     default {
