@@ -178,20 +178,22 @@ proc ::curvespackage::chargement {} {
 
     }
     #####################################################################################
-    
-    
+    #-command "::curvespackage::selectWithList 0"
+    #-command "::curvespackage::selectWithList 2"
+    # -command "::curvespackage::selectWithList 1"
+    #-command "::curvespackage::selectWithList 3"
     grid [labelframe $w.distG.resSel.resBase1 -text "Select the first base to match"] -row 0
     
     #first base
     grid [ttk::combobox $w.distG.resSel.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
-    grid [button $w.distG.resSel.resBase1.getName1 -text "Use this resname" -command "::curvespackage::selectWithList 0"] -row 1 -column 0 -columnspan 2 
+    #grid [button $w.distG.resSel.resBase1.getName1 -text "Use this resname"] -row 1 -column 0 -columnspan 2 
     grid [ttk::combobox $w.distG.resSel.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
     
     grid [label $w.distG.resSel.resBase1.lab -text ""] -row 0 -column 2
     
     #first match
     grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1] -row 0 -column 3 -columnspan 2
-    grid [button $w.distG.resSel.resBase1.getName3 -text "Use this resname" -command "::curvespackage::selectWithList 2"] -row 1 -column 3 -columnspan 2
+    #grid [button $w.distG.resSel.resBase1.getName3 -text "Use this resname"] -row 1 -column 3 -columnspan 2
     grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1] -row 2 -column 3 -columnspan 2
     
     #button for calling the matching of bases
@@ -201,14 +203,14 @@ proc ::curvespackage::chargement {} {
     
     #second base
     grid [ttk::combobox $w.distG.resSel.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
-    grid [button $w.distG.resSel.resBase2.getName2 -text "Use this resname" -command "::curvespackage::selectWithList 1"] -row 1 -column 0 -columnspan 2
+    #grid [button $w.distG.resSel.resBase2.getName2 -text "Use this resname"] -row 1 -column 0 -columnspan 2
     grid [ttk::combobox $w.distG.resSel.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
     
     grid [label $w.distG.resSel.resBase2.lab2 -text ""] -row 0 -column 2
     
     #second match
     grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2] -row 0 -column 3 -columnspan 2
-    grid [button $w.distG.resSel.resBase2.getName4 -text "Use this resname" -command "::curvespackage::selectWithList 3"] -row 1 -column 3 -columnspan 2
+    #grid [button $w.distG.resSel.resBase2.getName4 -text "Use this resname"] -row 1 -column 3 -columnspan 2
     grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2] -row 2 -column 3 -columnspan 2
     
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
@@ -240,9 +242,28 @@ proc ::curvespackage::chargement {} {
 
     #appelle la creation de la liste des resnames disponibles 
     ::curvespackage::listeResname
+
+    bind $w.distG.resSel.resBase1.resNameBase1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithList 0
+    }
+
+    bind $w.distG.resSel.resBase1.resNameMatch1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithList 2
+    }
+
+    bind $w.distG.resSel.resBase2.resNameBase2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithList 1
+    }
+
+    bind $w.distG.resSel.resBase2.resNameMatch2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithList 3
+    }
+
   }
 }
-
+proc ::curvespackage::binder {} {
+  puts "hi binding is working"
+}
 proc ::curvespackage::hello {} {
   puts "Hello world"
 }
