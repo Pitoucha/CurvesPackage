@@ -215,7 +215,7 @@ proc ::curvespackage::chargement {} {
     
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
     grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4
-    
+    grid [button $w.distG.resSel.vectVal -text "You cannot plot the distance between the two sets of bases " -command ""] -row 5
     
     #####################################################################################
     set COMMENT {
@@ -259,11 +259,44 @@ proc ::curvespackage::chargement {} {
       ::curvespackage::selectWithList 3
     }
 
+    bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
+      ::curvespackage::enableCommandVector 0
+    }
+
+    bind $w.distG.resSel.resBase2.resIdBase2 <<ComboboxSelected>> {
+      ::curvespackage::enableCommandVector 1
+    }
+
+
   }
 }
-proc ::curvespackage::binder {} {
-  puts "hi binding is working"
+proc ::curvespackage::enableCommandVector {b} {
+  variable w
+
+  switch $b {
+    1 {
+      set test [$w.distG.resSel.resBase1.resIdBase1 get]
+      if {$test != ""} {
+        $w.distG.resSel.vectVal configure -text "You can plot the distance between the two sets of bases"
+        $w.distG.resSel.vectVal configure -command ""
+        puts "not empty resid2"
+      }
+    }
+    0 {
+      set test [$w.distG.resSel.resBase2.resIdBase2 get]
+      if {$test != ""} {
+        $w.distG.resSel.vectVal configure -text "You can plot the distance between the two sets of bases"
+        $w.distG.resSel.vectVal configure -command ""
+        puts "not empty resid1"
+      }
+    } 
+    default {
+      puts "you can't"
+    }
+  }
 }
+
+
 proc ::curvespackage::hello {} {
   puts "Hello world"
 }
