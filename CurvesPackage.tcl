@@ -593,110 +593,144 @@ proc ::curvespackage::plotBases { type } {
   set idBase1 [$w.distG.resSel.resIdBase1 get]
   set base2 [$w.distG.resSel.resNameBase2 get]
   set idBase2 [$w.distG.resSel.resIdBase2 get]
+  set match1 [$w.distG.resSel.resNameMatch1 get]
+  set idMatch1 [$w.distG.resSel.resIdMatch1 get]
+  set match2 [$w.distG.resSel.resNameMatch2 get]
+  set idMatch2 [$w.distG.resSel.resIdMatch2 get]
   #puts $atomsDNA
+  
+  array set res {}
   set res1 ""
   set res2 ""
   set res3 ""
   set res4 ""
-  if {$base1 ne "" && $base2 ne "" && $idBase1 ne "" && $idBase2 ne ""} {
-    if {[regexp {^DA} $base1]} {
-      set atoms [split [dict get $atomsDNA {DA}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res1 [atomselect top "resid $idBase1 and name $atom1"]
-      set res2 [atomselect top "resid $idBase1 and name $atom2"]
-    } elseif {[regexp {^DT} $base1]} {
-      set atoms [split [dict get $atomsDNA {DT}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res1 [atomselect top "resid $idBase1 and name $atom1"]
-      set res2 [atomselect top "resid $idBase1 and name $atom2"]
-    } elseif {[regexp {^DC} $base1]} {
-      set atoms [split [dict get $atomsDNA {DC}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res1 [atomselect top "resid $idBase1 and name $atom1"]
-      set res2 [atomselect top "resid $idBase1 and name $atom2"]
-    } elseif {[regexp {^DG} $base1]} {
-      set atoms [split [dict get $atomsDNA {DG}] "\ "]
-      puts "DG : $atoms"
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res1 [atomselect top "resid $idBase1 and name $atom1"]
-      set res2 [atomselect top "resid $idBase1 and name $atom2"]
-    }
-    if {[regexp {^DA} $base2]} {
-      set atoms [split [dict get $atomsDNA {DA}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res3 [atomselect top "resid $idBase2 and name $atom1"]
-      set res4 [atomselect top "resid $idBase2 and name $atom2"]
-    } elseif {[regexp {^DT} $base2]} {
-      set atoms [split [dict get $atomsDNA {DT}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res3 [atomselect top "resid $idBase2 and name $atom1"]
-      set res4 [atomselect top "resid $idBase2 and name $atom2"]
-    } elseif {[regexp {^DC} $base2]} {
-      set atoms [split [dict get $atomsDNA {DC}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res3 [atomselect top "resid $idBase2 and name $atom1"]
-      set res4 [atomselect top "resid $idBase2 and name $atom2"]
-    } elseif {[regexp {^DG} $base2]} {
-      set atoms [split [dict get $atomsDNA {DG}] "\ "]
-      set atom1 [lindex $atoms 0]
-      set atom2 [lindex $atoms 1]
-      set res3 [atomselect top "resid $idBase2 and name $atom1"]
-      set res4 [atomselect top "resid $idBase2 and name $atom2"]
-    }
   
-    if { $type eq "angl" } {
-      set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
-    } elseif { $type eq "dist" } {
-      set listP [::curvespackage::computeFrames "distB" $res1 $res2 $res3 $res4]
-    }
-    $res1 delete
-    $res2 delete
-    $res3 delete
-    $res4 delete
+  
+  if {$base1 ne "" && $match1 ne "" && $idBase1 ne "" && $idMatch1 ne ""} {
+    if {$base2 eq ""} {
+      if { $type eq "angl" } {
+        set res [::curvespackage::getResAngSimple]
+        set listP [::curvespackage::computeFrames "angB" $res(0) $res(1) $res(2) $res(3)]
+        $res(0) delete
+        $res(1) delete
+        $res(2) delete
+        $res(3) delete
+      } elseif { $type eq "dist" } {
+        set res1 [atomselect top "resid $idBase1"]
+	set res2 [atomselect top "resid $idMatch1"]
+        set listP [::curvespackage::computeFrames "dist" $res1 $res2]
+	$res1 delete
+	$res2 delete
+      }
     
-    if {$frameStart eq ""} {
-      set frameStart 0
-    } else {
-      set frameStart [expr int($frameStart)]
-    }
-    if {$frameEnd eq ""} {
-      set frameEnd [molinfo top get numframes]
-    } else {
-      set frameEnd [expr int($frameEnd)]
-    }
-    if {$step eq ""} {
-      set step 1
-    } else {
-      set step [expr int($step)]
-    }
+      if {$frameStart eq ""} {
+        set frameStart 0
+      } else {
+        set frameStart [expr int($frameStart)]
+      }
+      if {$frameEnd eq ""} {
+        set frameEnd [molinfo top get numframes]
+      } else {
+        set frameEnd [expr int($frameEnd)]
+      }
+      if {$step eq ""} {
+        set step 1
+      } else {
+        set step [expr int($step)]
+      }
   
-    set xlist {}
+      set xlist {}
+        
+      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        lappend xlist $i
+      }
   
-    for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-      lappend xlist $i
-    }
-  
-    if { $type eq "angl" } {
-      set plothandle [multiplot -x $xlist -y $listP \
-                    -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                    -lines -linewidth 1 -linecolor red \
-                    -marker none -legend "Angle" -plot];
-    } elseif { $type eq "dist" } {
-      set plothandle [multiplot -x $xlist -y $listP \
-                    -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                    -lines -linewidth 1 -linecolor red \
-                    -marker none -legend "Distance" -plot];
+      if { $type eq "angl" } {
+        set plothandle [multiplot -x $xlist -y $listP \
+                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
+                      -lines -linewidth 1 -linecolor red \
+                      -marker none -legend "Angle" -plot];
+      } elseif { $type eq "dist" } {
+        set plothandle [multiplot -x $xlist -y $listP \
+                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
+                      -lines -linewidth 1 -linecolor red \
+                      -marker none -legend "Distance" -plot];
+      }
+    } else {
+    
     }
   } else {
     puts "Error, some fields are empty"
   }
+}
+
+proc ::curvespackage::getResAngSimple {} {
+  variable w
+  variable atomsDNA
+
+  set base1 [$w.distG.resSel.resNameBase1 get]
+  set idBase1 [$w.distG.resSel.resIdBase1 get]
+  set match1 [$w.distG.resSel.resNameMatch1 get]
+  set idMatch1 [$w.distG.resSel.resIdMatch1 get]
+  
+  if {[regexp {^DA} $base1]} {
+    set atoms [split [dict get $atomsDNA {DA}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res1 [atomselect top "resid $idBase1 and name $atom1"]
+    set res2 [atomselect top "resid $idBase1 and name $atom2"]
+  } elseif {[regexp {^DT} $base1]} {
+    set atoms [split [dict get $atomsDNA {DT}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res1 [atomselect top "resid $idBase1 and name $atom1"]
+    set res2 [atomselect top "resid $idBase1 and name $atom2"]
+  } elseif {[regexp {^DC} $base1]} {
+    set atoms [split [dict get $atomsDNA {DC}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res1 [atomselect top "resid $idBase1 and name $atom1"]
+    set res2 [atomselect top "resid $idBase1 and name $atom2"]
+  } elseif {[regexp {^DG} $base1]} {
+    set atoms [split [dict get $atomsDNA {DG}] "\ "]
+    puts "DG : $atoms"
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res1 [atomselect top "resid $idBase1 and name $atom1"]
+    set res2 [atomselect top "resid $idBase1 and name $atom2"]
+  }
+  if {[regexp {^DA} $match1]} {
+    set atoms [split [dict get $atomsDNA {DA}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+    set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+  } elseif {[regexp {^DT} $match1]} {
+    set atoms [split [dict get $atomsDNA {DT}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+    set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+  } elseif {[regexp {^DC} $match1]} {
+    set atoms [split [dict get $atomsDNA {DC}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+    set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+  } elseif {[regexp {^DG} $base2]} {
+    set atoms [split [dict get $atomsDNA {DG}] "\ "]
+    set atom1 [lindex $atoms 0]
+    set atom2 [lindex $atoms 1]
+    set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+    set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+  }
+  
+  set res(0) $res1
+  set res(1) $res2
+  set res(2) $res3
+  set res(3) $res4
+  
+  return $res
 }
 
 proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} } {
