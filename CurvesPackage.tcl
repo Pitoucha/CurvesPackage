@@ -148,7 +148,7 @@ proc ::curvespackage::chargement {} {
     
     #first match
     grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1] -row 0 -column 3 -columnspan 2
-    #grid [button $w.distG.resSel.resBase1.getName3 -text "Use this resname"] -row 1 -column 3 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.colorB1] -row 0 -column 5 -columnspan 2 -rowspan 3
     grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1] -row 2 -column 3 -columnspan 2
     
     #button for calling the matching of bases
@@ -165,7 +165,7 @@ proc ::curvespackage::chargement {} {
     
     #second match
     grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase2.color -text "Use this resname"] -row 0 -column 5 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.colorB2] -row 0 -column 5 -columnspan 2 -rowspan 3
     grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2] -row 2 -column 3 -columnspan 2
     
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
