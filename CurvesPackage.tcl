@@ -357,11 +357,14 @@ proc ::curvespackage::listeResname {} {
     
     #set stc [$sel get resname]
     set stc [lsort -unique $stc]
-    puts $stc 
+    set stcId [lsort -integer $stcId]
     $w.distG.resSel.resBase1.resNameBase1 configure -values $stc
     $w.distG.resSel.resBase1.resNameMatch1 configure -values $stc
     $w.distG.resSel.resBase2.resNameBase2 configure -values $stc
     $w.distG.resSel.resBase2.resNameMatch2 configure -values $stc
+
+    $w.distG.resSel.resBase1.resIdBase1 configure -values $stcId
+    $w.distG.resSel.resBase2.resIdBase2 configure -values $stcId 
     
     $sel delete
 }
