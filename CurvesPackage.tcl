@@ -186,6 +186,8 @@ proc ::curvespackage::chargement {} {
     #appelle la creation de la liste des resnames disponibles 
     ::curvespackage::listeResname
 
+    #bind the selection of an element in the combobox with a function that puts the list 
+    #of resids for the resname (repeat for the next three)
     bind $w.distG.resSel.resBase1.resNameBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 0
     }
@@ -202,19 +204,16 @@ proc ::curvespackage::chargement {} {
       ::curvespackage::selectWithResname 3
     }
 
+    #binding with a function that reacts to a selection of the combobox
+    #enable the function plot if at least two bases are selected
     bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 0
+      ::curvespackage::enableCommand 0
+    
     }
 
     bind $w.distG.resSel.resBase2.resIdBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 1
-    }
-
-    bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
-      ::curvespackage::enableCommand 0
-    }
-
-    bind $w.distG.resSel.resBase2.resIdBase2 <<ComboboxSelected>> {
       ::curvespackage::enableCommand 1
     }
   }
@@ -409,6 +408,8 @@ proc ::curvespackage::selectWithResname {b} {
         break 
       }
     }
+    set stc [lsort -integer $stc]
+    
     switch $b {
     0 {
       $w.distG.resSel.resBase1.resIdBase1 configure -values $stc
@@ -430,6 +431,41 @@ proc ::curvespackage::selectWithResname {b} {
   } else {
     tk_messageBox -message "Please make a selection"
   } 
+}
+
+proc ::curvespackage::selectWithResid {b} {
+  variable w 
+  variable selectList
+
+  switch $b {
+    0 {
+      set stcId [$w.distG.resSel.resBase1.resIdBase1 get]
+      if {$stcId != ""} {
+        dict for {id info} $selectList {
+          if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
+            if {[lsearch -exact $info $stcId] >= 0} {
+              $w.distG.resSel.resBase1.resNameBase1 set $id
+              break
+            }
+          }
+        }
+      }
+    }
+
+    1 {
+      set stcId [$w.distG.resSel.resBase2.resIdBase2 get]
+      if {$stcId != ""} {
+        dict for {id info} $selectList {
+          if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
+            if {[lsearch -exact $info $stcId] >= 0 } {
+              $w.distG.resSel.resBase2.resNameBase2 set $id
+              break
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 proc ::curvespackage::matchList {} {
