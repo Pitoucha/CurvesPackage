@@ -328,7 +328,7 @@ proc ::curvespackage::listeResname {} {
   set names [$sel get {resname resid}]
   set names [lsort -unique $names]
   set stc [list]
-
+  set stcId [list]
   foreach name $names  {
       #recupère resname et resid
       set rsn [split $name "\ "]
@@ -344,6 +344,7 @@ proc ::curvespackage::listeResname {} {
 
       if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn]} {
         lappend stc $rsn
+        lappend stcId $rsi
       }
     }
 
