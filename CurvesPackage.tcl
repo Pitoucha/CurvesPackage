@@ -40,8 +40,7 @@ namespace eval ::curvespackage:: {
   variable mid
   variable atomsDNA
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
-  variable plotColors
-  set plotColors [list black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue]
+  variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
 }
 
 
@@ -94,7 +93,6 @@ proc ::curvespackage::packageui {} {
 
 proc ::curvespackage::chargement {} {
   variable w
-  variable plotColors
   
   #supprime 
   mol delete all 
@@ -135,10 +133,10 @@ proc ::curvespackage::chargement {} {
     #grid for the selection of two bases
     grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 6
     
-    #-command "::curvespackage::selectWithList 0"
-    #-command "::curvespackage::selectWithList 2"
-    # -command "::curvespackage::selectWithList 1"
-    #-command "::curvespackage::selectWithList 3"
+    #-command "::curvespackage::selectWithResname 0"
+    #-command "::curvespackage::selectWithResname 2"
+    # -command "::curvespackage::selectWithResname 1"
+    #-command "::curvespackage::selectWithResname 3"
     grid [labelframe $w.distG.resSel.resBase1 -text "Select the first base to match"] -row 0
     
     #first base
@@ -150,8 +148,7 @@ proc ::curvespackage::chargement {} {
     
     #first match
     grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1] -row 0 -column 3 -columnspan 2
-    grid [label $w.distG.resSel.resBase1.labelcolorB1 -text "Plotting color (empty for red)"] -row 0 -column 5
-    grid [ttk::combobox $w.distG.resSel.resBase1.colorB1 -values $plotColors] -row 2 -column 5
+    grid [ttk::combobox $w.distG.resSel.resBase1.colorB1] -row 0 -column 5 -columnspan 2 -rowspan 3
     grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1] -row 2 -column 3 -columnspan 2
     
     #button for calling the matching of bases
@@ -168,8 +165,7 @@ proc ::curvespackage::chargement {} {
     
     #second match
     grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2] -row 0 -column 3 -columnspan 2
-    grid [label $w.distG.resSel.resBase2.labelcolorB2 -text "Plotting color (empty for green)"] -row 0 -column 5
-    grid [ttk::combobox $w.distG.resSel.resBase2.colorB2 -values $plotColors] -row 2 -column 5
+    grid [ttk::combobox $w.distG.resSel.resBase2.colorB2] -row 0 -column 5 -columnspan 2 -rowspan 3
     grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2] -row 2 -column 3 -columnspan 2
     
     grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
@@ -191,19 +187,27 @@ proc ::curvespackage::chargement {} {
     ::curvespackage::listeResname
 
     bind $w.distG.resSel.resBase1.resNameBase1 <<ComboboxSelected>> {
-      ::curvespackage::selectWithList 0
+      ::curvespackage::selectWithResname 0
     }
 
     bind $w.distG.resSel.resBase1.resNameMatch1 <<ComboboxSelected>> {
-      ::curvespackage::selectWithList 2
+      ::curvespackage::selectWithResname 2
     }
 
     bind $w.distG.resSel.resBase2.resNameBase2 <<ComboboxSelected>> {
-      ::curvespackage::selectWithList 1
+      ::curvespackage::selectWithResname 1
     }
 
     bind $w.distG.resSel.resBase2.resNameMatch2 <<ComboboxSelected>> {
-      ::curvespackage::selectWithList 3
+      ::curvespackage::selectWithResname 3
+    }
+
+    bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 0
+    }
+
+    bind $w.distG.resSel.resBase2.resIdBase2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 1
     }
 
     bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
@@ -368,12 +372,12 @@ proc ::curvespackage::listeResname {} {
     $w.distG.resSel.resBase2.resNameMatch2 configure -values $stc
 
     $w.distG.resSel.resBase1.resIdBase1 configure -values $stcId
-    $w.distG.resSel.resBase2.resIdBase2 configure -values $stcId 
+    $w.distG.resSel.resBase2.resIdBase2 configure -values $stcId
     
     $sel delete
 }
 
-proc ::curvespackage::selectWithList {b} {
+proc ::curvespackage::selectWithResname {b} {
   variable w
 
   #quel liste déroulante appelle pour savoir chez qui récupérer le name 
