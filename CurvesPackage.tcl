@@ -669,7 +669,17 @@ proc ::curvespackage::plotBases { type } {
   set idMatch1 [$w.distG.resSel.resBase1.resIdMatch1 get]
   set match2 [$w.distG.resSel.resBase2.resNameMatch2 get]
   set idMatch2 [$w.distG.resSel.resBase2.resIdMatch2 get]
+  set color1 [$w.distG.resSel.resBase1.colorB1 get]
+  set color2 [$w.distG.resSel.resBase2.colorB2 get]
   #puts $atomsDNA
+  
+  if { $color1 eq "" } {
+    set color1 red
+  }
+  
+  if {$color2 eq "" } {
+    set color2 green
+  }
   
   set res1 ""
   set res2 ""
@@ -761,7 +771,7 @@ proc ::curvespackage::plotBases { type } {
 	$res4 delete
 	set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                      -lines -linewidth 1 -linecolor red \
+                      -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle" -plot];
       } elseif { $type eq "dist" } {
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
@@ -769,7 +779,7 @@ proc ::curvespackage::plotBases { type } {
 	$res2 delete
 	set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                      -lines -linewidth 1 -linecolor red \
+                      -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Distance" -plot];
       }
     } else {
@@ -843,9 +853,9 @@ proc ::curvespackage::plotBases { type } {
 	  $res8 delete
 	  set plothandle [multiplot -x $xlist -y $listP1 \
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                      -lines -linewidth 1 -linecolor red \
+                      -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle between the first bases"];
-	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor green -marker none -legend "Angle between the second bases" -plot
+	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
 	} elseif { $type eq "dist" } {
 	  set listP1 [::curvespackage::computeFrames "dist" $res1 $res2]
 	  set listP2 [::curvespackage::computeFrames "dist" $res3 $res4]
@@ -855,9 +865,9 @@ proc ::curvespackage::plotBases { type } {
 	  $res4 delete
 	  set plothandle [multiplot -x $xlist -y $listP1 \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                      -lines -linewidth 1 -linecolor red \
-                      -marker none -legend "Distance between the second bases"];
-	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor green -marker none -legend "Distance between the second bases" -plot
+                      -lines -linewidth 1 -linecolor $color1 \
+                      -marker none -legend "Distance between the first bases"];
+	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
 	} elseif { $type eq "4angl" } {
 	  set listP [::curvespackage::computeFrames "ang4" $res1 $res2 $res3 $res4 $res5 $res6 $res7 $res8]
 	  $res1 delete
