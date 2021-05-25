@@ -300,15 +300,15 @@ proc ::curvespackage::enableCommand {b} {
 }
 
 
-proc ::curvespackage::hello {} {
-  puts "Hello world"
-}
+#proc ::curvespackage::hello {} {
+#  puts "Hello world"
+#}
 
-proc ::curvespackage::hellopy {} {
-  set pyprefix {gopython}
-  puts "[$pyprefix "hello.py"]"
-  puts "[$pyprefix -command helloworld()]"
-}
+#proc ::curvespackage::hellopy {} {
+#  set pyprefix {gopython}
+#  puts "[$pyprefix "hello.py"]"
+#  puts "[$pyprefix -command helloworld()]"
+#}
 
 proc ::curvespackage::setselected {rad} {
   variable w
@@ -376,13 +376,15 @@ proc ::curvespackage::listeResname {} {
   variable maxDNA
   variable minDNA
   variable mid 
+  variable selectList
 
   set sel [atomselect top "all"]
 
-  set ::curvespackage::selectList [dict create]
+  set selectList [dict create]
 
   set names [$sel get {resname resid}]
   set names [lsort -unique $names]
+  set stc [list]
 
   foreach name $names  {
       #recupère resname et resid
@@ -391,10 +393,14 @@ proc ::curvespackage::listeResname {} {
       set rsn [lindex $rsn 0]
 
       #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
-      if {![dict exist $::curvespackage::selectList $rsn]} {
+      if {![dict exist $selectList $rsn]} {
         dict set ::curvespackage::selectList $rsn $rsi 
       } else {
         dict lappend ::curvespackage::selectList $rsn $rsi 
+      }
+
+      if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn]} {
+        lappend stc $rsn
       }
     }
 
@@ -405,9 +411,9 @@ proc ::curvespackage::listeResname {} {
     set mid [expr ($maxDNA - ($minDNA -1))/2]
     $selNucleic delete
     
-    set stc [$sel get resname]
+    #set stc [$sel get resname]
     set stc [lsort -unique $stc]
-    
+    puts $stc 
     $w.distG.resSel.resBase1.resNameBase1 configure -values $stc
     $w.distG.resSel.resBase1.resNameMatch1 configure -values $stc
     $w.distG.resSel.resBase2.resNameBase2 configure -values $stc
@@ -520,11 +526,12 @@ proc ::curvespackage::matchList {} {
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
-  } else {
-      $w.distG.resSel.resBase1.resIdMatch1 set -1
-      $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
-      tk_messageBox -message "Select something on the first strand (See mid to determine this)"
-    }
+  } 
+  #else {
+   #   $w.distG.resSel.resBase1.resIdMatch1 set -1
+    #  $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
+     # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
+    #}
 
   #part with the third and fourth bases 
    #$w.distG.resSel.resNameMatch1 configure -values $stc
@@ -571,11 +578,12 @@ proc ::curvespackage::matchList {} {
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
-  } else {
-      $w.distG.resSel.resBase2.resIdMatch2 set -1
-      $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
-      tk_messageBox -message "Select something on the first strand (See mid to determine this)"
-    }
+  } 
+  #else {
+   #   $w.distG.resSel.resBase2.resIdMatch2 set -1
+    #  $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
+     # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
+    #}
 }
 
 #takes the index not the id of the atom
