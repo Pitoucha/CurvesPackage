@@ -1,3 +1,13 @@
+##
+## CurvesPackage 0.1
+##
+## A VMD plugin used to plot data for double helix and G-Quadruplex DNA
+##
+## Authors: Emilia Goeury-Mayo ; Guillaume Schmit
+##
+## Id: CurvesPackage.tcl, v0.1 2021/05/26 17:19
+##
+
 package provide CurvesPackage 0.1
 package require Tk
 package require multiplot
