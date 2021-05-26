@@ -1053,11 +1053,15 @@ proc ::curvespackage::plotBases { type } {
   }
 }
 
+# Procedure that calculates a predifined formula for a certain selection for each selected frame
 proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} {res6 0} {res7 0} {res8 0} } {
+  
+  # Set of variables determining the start, end and step of the calculations
   variable frameStart
   variable frameEnd
   variable step
   
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
   if {$frameStart eq ""} {
     set frameStart 0
   } else {
@@ -1074,43 +1078,83 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
     set step [expr int($step)]
   }
   
+  # We check which type of calculus we are supposed to do
   switch $type {
     "dist" {
+    # Case in which we want to calculate a distance between two selections
+    
+      # Creating the list that will be returned
       set lDist {}
+      
+      # For each selected frame
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        
+	# Updating the selections for the frame i
 	$res1 frame $i
 	$res2 frame $i
 	$res1 update
 	$res2 update
+	
+	# Calculating the center of mass of each selection
 	set com1 [measure center $res1]
         set com2 [measure center $res2]
+	
+	# Calculating the distance between each center of mass and adding it to the list
 	lappend lDist [vecdist $com1 $com2]
       }
+      
+      # Returns the list
       return $lDist
     }
     "ang" {
+    # Case in which we calculate the angle between two selection's centers of mass
+    
+      # Creating the list that will be returned 
       set lAngl {}
+      
+      # For each selected frame from the loaded trajectory
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+      
+        # Updating the selections for the frame i
         $res1 frame $i
 	$res2 frame $i
 	$res1 update
 	$res2 update
+	
+	# Calculating the center of mass of each selection
 	set com1 [measure center $res1]
         set com2 [measure center $res2]
+	
+	# Calculating the length of each center of mass vector
 	set len1 [veclength $com1]
 	set len2 [veclength $com2]
-	#puts "com1 = $com1"
-	#puts "com2 = $com2"
+	
+	# Calculating the scalar dot product between the two center of mass vectors
 	set dotprod [vecdot $com1 $com2]
+	
+	# Correcting the scalar dot product by dividing it by the multiplication of the two vector lengths
 	set dotprodcor [expr $dotprod / ($len1 * $len2)]
+	
+	# Calculating the angle in degrees from the scalar dot product
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	
+	# Adding the angle to the returned list
 	lappend lAngl $ang
       }
+      
+      # Returns the list
       return $lAngl
     }
     "angV" {
+    # Case in which we calculate the angle between two pairs of selection's mass centers
+    
+      # Creating the list that will be returned 
       set lAngl {}
+      
+      # For each selected frame from the loaded trajectory
       for {set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        
+	# Updating the selections for the frame i
         $res1 frame $i
 	$res2 frame $i
 	$res3 frame $i
@@ -1119,30 +1163,61 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	$res2 update
 	$res3 update
 	$res4 update
+	
+	# Calculating the centers of mass of the first pair selected
 	set com1 [measure center $res1]
 	set com2 [measure center $res2]
+	
+	# Calculating the vector between the first pair of bases
 	set vectBase [vecsub $com2 $com1]
+	
+	# Calculating the centers of mass of the second pair selected
 	set com1 [measure center $res3]
 	set com2 [measure center $res4]
+	
+	# Calculating the vector between the second pair of bases
 	set vectComp [vecsub $com2 $com1]
+	
+	# Calculating the length of the base vector
 	set lenB [veclength $vectBase]
+	
+	# Calculating the length of the compared vector
 	set lenC [veclength $vectComp]
+	
+	# Calculating the scalar dot product between the base and comparated vector
 	set dotprod [vecdot $vectBase $vectComp]
+	
+	# Correcting the scalar dot product by dividing it by the multiplication of the lengths of the 2 vectors
 	set dotprodcor [expr $dotprod / ($lenB * $lenC)]
+	
+	# Correcting the scalar dot product (in case of bad rounding)
 	if {$dotprodcor > 1.0} {
 	  set dotprodcor 1.0
 	}
 	if {$dotprodcor < -1.0} {
 	  set dotprodcor -1.0
 	}
+	
+	# Calculating the angle in degrees from the scalar dot product
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	
+	# Adding the angle to the returned list
 	lappend lAngl $ang
       }
+      
+      # Returns the list
       return $lAngl
     }
     "angB" {
+    # Case in which we calculate the angle between two bases using two predifined atoms from each base
+    
+      # Creating the list that will be returned
       set lAngl {}
+      
+      #For each selected frame from the loaded trajectory
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        
+	# Updating the selections for the frame i
         $res1 frame $i
 	$res2 frame $i
 	$res3 frame $i
@@ -1151,30 +1226,59 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	$res2 update
 	$res3 update
 	$res4 update
+	
+	# Get the x, y and z positions as vectors of the two atoms used in the first base
 	set xyzA1 [split [string range [$res1 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res2 get {x y z}] 1 end-1] "\ "]
+	
+	# Calculating the vector between the two atoms of the first base
 	set vect1 [vecsub $xyzA1 $xyzA2]
+	
+	# Get the x, y and z positions as vectors of the two atoms used in the second base
 	set xyzA1 [split [string range [$res3 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res4 get {x y z}] 1 end-1] "\ "]
+	
+	# Calculating the vector between the two atoms of the second base
 	set vect2 [vecsub $xyzA1 $xyzA2]
+	
+	# Calculating the length of the two vectors calculated previously
 	set lenV1 [veclength $vect1]
 	set lenV2 [veclength $vect2]
+	
+	# Calculating the scalar dot product between the two vectors
 	set dotprod [vecdot $vect1 $vect2]
+	
+	# Correcting the scalar dot product by dividing it by the multiplication of the lengths of the 2 vectors
 	set dotprodcor [expr $dotprod / ($lenV1 * $lenV2)]
+	
+	# Correcting the scalar dot product (in case of bad rounding)
 	if {$dotprodcor > 1.0} {
 	  set dotprodcor 1.0
 	}
 	if {$dotprodcor < -1.0} {
 	  set dotprodcor -1.0
 	}
+	
+	# Calculating the angle in degrees from the scalar dot product
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	
+	# Adding the angle to the returned list
 	lappend lAngl $ang
       }
+      
+      # Returns the list
       return $lAngl
     }
     "ang4" {
+    # Case in which we calculate the angle between two pairs of bases using two predefined atoms from each base
+    
+      # Creating the list that will be returned
       set lAngl {}
+      
+      # For each selected frame from the loaded trajectory 
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        
+	# Updating the selections for the frame i
         $res1 frame $i
 	$res2 frame $i
 	$res3 frame $i
@@ -1191,38 +1295,79 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	$res6 update
 	$res7 update
 	$res8 update
+	
+	# Get the x, y and z positions as vectors of the two atoms used in the first base of the first pair
 	set xyzA1 [split [string range [$res1 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res2 get {x y z}] 1 end-1] "\ "]
+	
+	# Calculating the vector between the two atoms of the first base of the first pair
 	set vectB1 [vecsub $xyzA1 $xyzA2]
+	
+	# Get the x, y and z positions as vectors of the two atoms used in the second base of the first pair
 	set xyzA1 [split [string range [$res3 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res4 get {x y z}] 1 end-1] "\ "]
+	
+	# Calculating the vector between the two atoms of the second base of the first pair
 	set vectB2 [vecsub $xyzA1 $xyzA2]
+	
+	# Calculating the vector that represents the first pair
 	set vect1 [vecsub $vectB2 $vectB1]
+	
+	# Get the x, y and z positions as vectors of the two atoms used in the first base of the second pair
 	set xyzA1 [split [string range [$res5 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res6 get {x y z}] 1 end-1] "\ "]
+	
+	# Calculating the vector between the two atoms of the first base of the second pair
 	set vectB1 [vecsub $xyzA1 $xyzA2]
+	
+	# Get the x, y and z positions as vectors of the two atoms used in the second base of the second pair
 	set xyzA1 [split [string range [$res7 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res8 get {x y z}] 1 end-1] "\ "]
+	
+	# Calculating the vector between the two atoms of the second base of the second pair
 	set vectB2 [vecsub $xyzA1 $xyzA2]
+	
+	# Calculating the vector that represents the second pair
 	set vect2 [vecsub $vectB2 $vectB1]
+	
+	# Calculating the lengths of the pair vectors
 	set lenV1 [veclength $vect1]
 	set lenV2 [veclength $vect2]
+	
+	# Calculating the scalar dot product between the two vectors
 	set dotprod [vecdot $vect1 $vect2]
+	
+	# Correcting the scalar dot product by dividing it by the multiplication of the lengths of the 2 vectors
 	set dotprodcor [expr $dotprod / ($lenV1 * $lenV2)]
+	
+	# Correcting the scalar dot product (in case of bad rounding)
 	if {$dotprodcor > 1.0} {
 	  set dotprodcor 1.0
 	}
 	if {$dotprodcor < -1.0} {
 	  set dotprodcor -1.0
 	}
+	
+	# Calculating the angle in degrees from the scalar dot product
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
+	
+	# Adding the angle to the returned list
 	lappend lAngl $ang
       }
+      
+      # Returns the list
       return $lAngl
     }
     "dist4" {
+    # Case in which we calculate the distance between two pairs of bases using two predefined atoms from each base
+    
+      # Creating the list that will be returned
       set lDist {}
+      
+      # For each selected frame from the loaded trajectory
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+        
+	# Updating the selections for each frame
         $res1 frame $i
 	$res2 frame $i
 	$res3 frame $i
@@ -1231,18 +1376,34 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	$res2 update
 	$res3 update
 	$res4 update
+	
+	# Calculating the center of mass of the first base of the first pair
 	set center1 [measure center $res1]
+	
+	# Calculating the center of mass of the second base of the first base
 	set center2 [measure center $res2]
+	
+	# Creating a vector between these two centers of mass
 	set vect1 [vecsub $center2 $center1]
+	
+	# Calculating the center of mass of the first base of the second pair
 	set center1 [measure center $res3]
+	
+	# Calculating the center of mass of the second base of the second pair
 	set center2 [measure center $res4]
+	
+	# Creating a vector between these two centers of mass
 	set vect2 [vecsub $center2 $center1]
+	
+	# Calculating the distance between the two vectors and adding it to the returned list
 	lappend lDist [vecdist $vect1 $vect2]
       }
+      
+      # Returns the list
       return $lDist
     }
     default {
-      puts uss
+      puts "Nothing here... yet."
     }
   }
 }
