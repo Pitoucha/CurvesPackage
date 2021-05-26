@@ -348,7 +348,6 @@ proc ::curvespackage::trajectLoad {} {
 
 #Create the list of resname/resid used for the UI
 proc ::curvespackage::listeResname {} {
-  
   #declaration of the global variable used (in order)
     #window for the UI
     #max resid for the DNA contained
@@ -490,9 +489,12 @@ proc ::curvespackage::selectWithResid {b} {
 
   switch $b {
     0 {
+      #get the resid input 
       set stcId [$w.distG.resSel.resBase1.resIdBase1 get]
+      #verifies that the resid isnt empty
       if {$stcId != ""} {
         dict for {id info} $selectList {
+          #test if the resname is one from a DNA residue 
           if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
             if {[lsearch -exact $info $stcId] >= 0} {
               $w.distG.resSel.resBase1.resNameBase1 set $id
@@ -504,9 +506,12 @@ proc ::curvespackage::selectWithResid {b} {
     }
 
     1 {
+      #get the resid input 
       set stcId [$w.distG.resSel.resBase2.resIdBase2 get]
+      #verifies that the resid isnt empty
       if {$stcId != ""} {
         dict for {id info} $selectList {
+          #test if the resname is one from a DNA residue 
           if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
             if {[lsearch -exact $info $stcId] >= 0 } {
               $w.distG.resSel.resBase2.resNameBase2 set $id
@@ -519,7 +524,14 @@ proc ::curvespackage::selectWithResid {b} {
   }
 }
 
+#Match the resname and resid for a base
 proc ::curvespackage::matchList {} {
+   #declaration of the global variable used (in order)
+    #dictonary for the resname/resid 
+    #window for the UI
+    #max resid for the DNA contained
+    #min resid for the DNA contained
+    #resid at the middle of the DNA chain
   variable selectList
   variable w
   variable maxDNA
@@ -527,17 +539,20 @@ proc ::curvespackage::matchList {} {
   variable mid 
 
   #part with the first and second bases
+    #get the name and the resid of the base
   set name1 [$w.distG.resSel.resBase1.resNameBase1 get]
   set idSel1 [$w.distG.resSel.resBase1.resIdBase1 get]
 
+  #if the resid is inferior to the mid and the resname and resid aren't empty we continue
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
     set diff [expr {$mid - [expr {int($idSel1)}]}]
     set match [expr {$mid + 1 + $diff}]
     
+    #verifies that the resname is one from a DNA residue
     if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
