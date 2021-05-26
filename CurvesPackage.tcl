@@ -138,41 +138,43 @@ proc ::curvespackage::chargement {} {
     #-command "::curvespackage::selectWithResname 2"
     # -command "::curvespackage::selectWithResname 1"
     #-command "::curvespackage::selectWithResname 3"
-    grid [labelframe $w.distG.resSel.resBase1 -text "Select the first base to match"] -row 0
+    grid [labelframe $w.distG.resSel.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
     
     #first base
-    grid [ttk::combobox $w.distG.resSel.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.resNameBase1 -state readonly] -row 0 -column 0 -columnspan 2
     #grid [button $w.distG.resSel.resBase1.getName1 -text "Use this resname"] -row 1 -column 0 -columnspan 2 
-    grid [ttk::combobox $w.distG.resSel.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.resIdBase1 -state readonly] -row 2 -column 0 -columnspan 2
     
     grid [label $w.distG.resSel.resBase1.lab -text ""] -row 0 -column 2
     
     #first match
-    grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase1.colorB1 -values $plotColors] -row 0 -column 5 -columnspan 2 -rowspan 3
-    grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1] -row 2 -column 3 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1 -state readonly] -row 0 -column 3 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase1.colorB1 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
+    grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1 -state readonly] -row 2 -column 3 -columnspan 2
     
     #button for calling the matching of bases
-    grid [button $w.distG.resSel.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1
+    grid [button $w.distG.resSel.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
     
-    grid [labelframe $w.distG.resSel.resBase2 -text "Select the second base to match (optional)"] -row 2
+    grid [labelframe $w.distG.resSel.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
     
     #second base
-    grid [ttk::combobox $w.distG.resSel.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.resNameBase2 -state readonly] -row 0 -column 0 -columnspan 2
     #grid [button $w.distG.resSel.resBase2.getName2 -text "Use this resname"] -row 1 -column 0 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.resIdBase2 -state readonly] -row 2 -column 0 -columnspan 2
     
     grid [label $w.distG.resSel.resBase2.lab2 -text ""] -row 0 -column 2
     
     #second match
-    grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase2.colorB2 -values $plotColors] -row 0 -column 5 -columnspan 2 -rowspan 3
-    grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2] -row 2 -column 3 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2 -state readonly] -row 0 -column 3 -columnspan 2
+    grid [ttk::combobox $w.distG.resSel.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
+    grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
     
-    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3
-    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4
-    grid [button $w.distG.resSel.distVal -text "Plot the distance between the two sets of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5
-    grid [button $w.distG.resSel.angleVal -text "Plot the angle between the two sets of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6
+    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
+    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
+    grid [button $w.distG.resSel.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
+    grid [label $w.distG.resSel.labelColorPair -text "Plotting color of the pairs"] -row 5 -column 1
+    grid [ttk::combobox $w.distG.resSel.colorPair -values $plotColors -state disabled] -row 6 -column 1
+    grid [button $w.distG.resSel.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
   
     grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
@@ -228,10 +230,11 @@ proc ::curvespackage::enableCommand {b} {
       if {$test != ""} {
         $w.distG.resSel.distVal configure -state normal
         $w.distG.resSel.angleVal configure -state normal
+	$w.distG.resSel.colorPair configure -state readonly
       } else {
         $w.distG.resSel.distVal configure -state disabled
         $w.distG.resSel.angleVal configure -state disabled
-
+	$w.distG.resSel.colorPair configure -state disabled
       }
     }
     0 {
@@ -239,9 +242,11 @@ proc ::curvespackage::enableCommand {b} {
       if {$test != ""} {
         $w.distG.resSel.distVal configure -state normal
         $w.distG.resSel.angleVal configure -state normal
+	$w.distG.resSel.colorPair configure -state readonly
       } else {
         $w.distG.resSel.distVal configure -state disabled
         $w.distG.resSel.angleVal configure -state disabled
+	$w.distG.resSel.colorPair configure -state disabled
       }
     } 
     default {
@@ -715,6 +720,7 @@ proc ::curvespackage::plotBases { type } {
   set idMatch2 [$w.distG.resSel.resBase2.resIdMatch2 get]
   set color1 [$w.distG.resSel.resBase1.colorB1 get]
   set color2 [$w.distG.resSel.resBase2.colorB2 get]
+  set colorPair [$w.distG.resSel.colorPair get]
   #puts $atomsDNA
   
   if { $color1 eq "" } {
@@ -723,6 +729,10 @@ proc ::curvespackage::plotBases { type } {
   
   if {$color2 eq "" } {
     set color2 green
+  }
+  
+  if { $colorPair eq "" } {
+    set colorPair red
   }
   
   set res1 ""
@@ -924,7 +934,7 @@ proc ::curvespackage::plotBases { type } {
 	  $res8 delete
 	  set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
-                      -lines -linewidth 1 -linecolor red \
+                      -lines -linewidth 1 -linecolor $colorPair \
                       -marker none -legend "Angle between the sets of bases" -plot];
 	} elseif { $type eq "4dist" } {
 	  set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
@@ -934,7 +944,7 @@ proc ::curvespackage::plotBases { type } {
 	  $res4 delete
 	  set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
-                      -lines -linewidth 1 -linecolor red \
+                      -lines -linewidth 1 -linecolor $colorPair \
                       -marker none -legend "Distance between the sets of bases" -plot];
 	}
       } else {
