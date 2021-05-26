@@ -65,9 +65,7 @@ proc ::curvespackage::packageui {} {
   
   menubutton $w.menubar.edit -text Load -underline 0 -menu $w.menubar.edit.menu
   menu $w.menubar.edit.menu -tearoff no
-
-  $w.menubar.file.menu add command -label "Hello" -command  ::curvespackage::hello
-  $w.menubar.file.menu add command -label "Hello but in python" -command ::curvespackage::hellopy 
+  
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.edit.menu add command -label "Load new Mol" -command ::curvespackage::chargement
   $w.menubar.edit.menu add command -label "Load new trajectory" -command ::curvespackage::trajectLoad
@@ -76,17 +74,7 @@ proc ::curvespackage::packageui {} {
   grid $w.menubar.file -row 0 -column 0 -sticky w
   grid $w.menubar.edit -row 0 -column 1 -sticky e
   
-  
-  grid [labelframe $w.func  -text "Function plotting" -bd 2] -columnspan 6
-  grid [radiobutton $w.func.sinBtn -text "sin(x)" -variable func -value "sin" -command "::curvespackage::setselected {sin}"] -row 0 -column 0
-  grid [radiobutton $w.func.cosBtn -text "cos(x)" -variable func -value "cos" -command "::curvespackage::setselected {cos}"] -row 0 -column 1
-  grid [radiobutton $w.func.tanBtn -text "tan(x)" -variable func -value "tan" -command "::curvespackage::setselected {tan}"] -row 0 -column 2
-  #grid [radiobutton $w.func.other -text "other (var is x)" -variable func -value "other" -command "::curvespackage::setselected {other} $w"] -row 1 -column 0
-  #grid [entry $w.func.otherFunc -textvar ::curvespackage::e] -row 1 -column 1
-  grid [button $w.func.selectBtn -text "Plot this function" -command "::curvespackage::plotting {sin}"] -row 2 -columnspan 3
-  $w.func.sinBtn select
-  
-  pack $w.menubar $w.func
+  pack $w.menubar
   
   return $w
 }
@@ -112,110 +100,88 @@ proc ::curvespackage::chargement {} {
     #crée une nouvelle representation et l'ajoute
     mol representation CPK
     mol addrep [molinfo 0 get id]
-
-    #crée les buttons correspondants 
-    grid [labelframe $w.dist2 -text "Plot the distance between two atoms" -bd 2] -columnspan 6
-    grid [label $w.dist2.labelA1 -text "First atom to select (index) : "] -row 0 -column 0
-    grid [entry $w.dist2.atom1 -textvar ::curvespackage::atom1] -row 0 -column 1
-    grid [label $w.dist2.labelA2 -text "Second atom to select (index) : "] -row 1 -column 0
-    grid [entry $w.dist2.atom2 -textvar ::curvespackage::atom2] -row 1 -column 1
-    grid [button $w.dist2.plot2 -text "Plot the distance between two atoms" -command "::curvespackage::plotAtoms"] -columnspan 2
-    #grid [button $w.dist2.plot2Visu -text "Plot the distance between two atoms selected onscreen" -command "::curvespackage::plotAtoms"]
     
-    grid [labelframe $w.distG -text "Plot the distance between two groups of atoms" -bd 2] -columnspan 6
-    grid [label $w.distG.labelG1 -text "First group of atoms to select (index,index,...) : "] -row 0 -column 0 -columnspan 3
-    grid [entry $w.distG.atom1 -textvar ::curvespackage::lAtoms1] -row 0 -column 3 -columnspan 3
-    grid [label $w.distG.labelG2 -text "Second group of atoms to select (index,index,...) : "] -row 1 -column 0 -columnspan 3
-    grid [entry $w.distG.atom2 -textvar ::curvespackage::lAtoms2] -row 1 -column 3 -columnspan 3
-    grid [button $w.distG.plotG -text "Plot the distance between two groups of atoms" -command "::curvespackage::plotAtomsGroups"] -row 3 -columnspan 6
-    grid [button $w.distG.angleG -text "Plot the angles between two groups of atoms" -command "::curvespackage::plotAngleGroups"] -row 4 -columnspan 6
-    #grid [button $w.distG.plotGVisu -text "Plot the distance between two groups of atoms selected onscreen" -command "::curvespackage::plotAtomsGroups"]
+    grid [labelframe $w.helix -text "In case you're working on a single double helix of DNA" -bd 2]
     
-    #grid for the selection of two bases
-    grid [labelframe $w.distG.resSel -text "Select the resnames and resids to be selected" -bd 2] -row 5 -columnspan 6
-    
-    #-command "::curvespackage::selectWithResname 0"
-    #-command "::curvespackage::selectWithResname 2"
-    # -command "::curvespackage::selectWithResname 1"
-    #-command "::curvespackage::selectWithResname 3"
-    grid [labelframe $w.distG.resSel.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
+    grid [labelframe $w.helix.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
     
     #first base
-    grid [ttk::combobox $w.distG.resSel.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
-    #grid [button $w.distG.resSel.resBase1.getName1 -text "Use this resname"] -row 1 -column 0 -columnspan 2 
-    grid [ttk::combobox $w.distG.resSel.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
+    #grid [button $w.helix.resBase1.getName1 -text "Use this resname"] -row 1 -column 0 -columnspan 2 
+    grid [ttk::combobox $w.helix.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
     
-    grid [label $w.distG.resSel.resBase1.lab -text ""] -row 0 -column 2
+    grid [label $w.helix.resBase1.lab -text ""] -row 0 -column 2
     
     #first match
-    grid [ttk::combobox $w.distG.resSel.resBase1.resNameMatch1 -state readonly] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase1.colorB1 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
-    grid [ttk::combobox $w.distG.resSel.resBase1.resIdMatch1 -state readonly] -row 2 -column 3 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase1.resNameMatch1 -state readonly] -row 0 -column 3 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase1.colorB1 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
+    grid [ttk::combobox $w.helix.resBase1.resIdMatch1 -state readonly] -row 2 -column 3 -columnspan 2
     
     #button for calling the matching of bases
-    grid [button $w.distG.resSel.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
+    grid [button $w.helix.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
     
-    grid [labelframe $w.distG.resSel.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
+    grid [labelframe $w.helix.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
     
     #second base
-    grid [ttk::combobox $w.distG.resSel.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
-    #grid [button $w.distG.resSel.resBase2.getName2 -text "Use this resname"] -row 1 -column 0 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
+    #grid [button $w.helix.resBase2.getName2 -text "Use this resname"] -row 1 -column 0 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
     
-    grid [label $w.distG.resSel.resBase2.lab2 -text ""] -row 0 -column 2
+    grid [label $w.helix.resBase2.lab2 -text ""] -row 0 -column 2
     
     #second match
-    grid [ttk::combobox $w.distG.resSel.resBase2.resNameMatch2 -state readonly] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.distG.resSel.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
-    grid [ttk::combobox $w.distG.resSel.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase2.resNameMatch2 -state readonly] -row 0 -column 3 -columnspan 2
+    grid [ttk::combobox $w.helix.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
+    grid [ttk::combobox $w.helix.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
     
-    grid [button $w.distG.resSel.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
-    grid [button $w.distG.resSel.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
-    grid [button $w.distG.resSel.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
-    grid [label $w.distG.resSel.labelColorPair -text "Plotting color of the pairs"] -row 5 -column 1
-    grid [ttk::combobox $w.distG.resSel.colorPair -values $plotColors -state disabled] -row 6 -column 1
-    grid [button $w.distG.resSel.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
+    grid [button $w.helix.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
+    grid [button $w.helix.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
+    grid [button $w.helix.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
+    grid [label $w.helix.labelColorPair -text "Plotting color of the pairs"] -row 5 -column 1
+    grid [ttk::combobox $w.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
+    grid [button $w.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
   
-    grid [label $w.distG.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
-    grid [label $w.distG.frameSLab -text "First frame :"] -row 7 -column 0
-    grid [entry $w.distG.frameStart -textvar ::curvespackage::frameStart] -row 7 -column 1
-    grid [label $w.distG.frameELab -text "Last frame :"] -row 7 -column 2
-    grid [entry $w.distG.frameEnd -textvar ::curvespackage::frameEnd] -row 7 -column 3
-    grid [label $w.distG.stepLab -text "Step :"] -row 7 -column 4
-    grid [entry $w.distG.step -textvar ::curvespackage::step] -row 7 -column 5
+    grid [labelframe $w.frames -text "Frames to study"]
+    grid [label $w.frames.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
+    grid [label $w.frames.frameSLab -text "First frame :"] -row 7 -column 0
+    grid [entry $w.frames.frameStart -textvar ::curvespackage::frameStart] -row 7 -column 1
+    grid [label $w.frames.frameELab -text "Last frame :"] -row 7 -column 2
+    grid [entry $w.frames.frameEnd -textvar ::curvespackage::frameEnd] -row 7 -column 3
+    grid [label $w.frames.stepLab -text "Step :"] -row 7 -column 4
+    grid [entry $w.frames.step -textvar ::curvespackage::step] -row 7 -column 5
   
-    pack $w.dist2 $w.distG
+    pack $w.helix $w.frames
 
     #appelle la creation de la liste des resnames disponibles 
     ::curvespackage::listeResname
 
     #bind the selection of an element in the combobox with a function that puts the list 
     #of resids for the resname (repeat for the next three)
-    bind $w.distG.resSel.resBase1.resNameBase1 <<ComboboxSelected>> {
+    bind $w.helix.resBase1.resNameBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 0
     }
 
-    bind $w.distG.resSel.resBase1.resNameMatch1 <<ComboboxSelected>> {
+    bind $w.helix.resBase1.resNameMatch1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 2
     }
 
-    bind $w.distG.resSel.resBase2.resNameBase2 <<ComboboxSelected>> {
+    bind $w.helix.resBase2.resNameBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 1
     }
 
-    bind $w.distG.resSel.resBase2.resNameMatch2 <<ComboboxSelected>> {
+    bind $w.helix.resBase2.resNameMatch2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 3
     }
 
     #binding with a function that reacts to a selection of the combobox
     #enable the function plot if at least two bases are selected
-    bind $w.distG.resSel.resBase1.resIdBase1 <<ComboboxSelected>> {
+    bind $w.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 0
       ::curvespackage::enableCommand 0
     
     }
 
-    bind $w.distG.resSel.resBase2.resIdBase2 <<ComboboxSelected>> {
+    bind $w.helix.resBase2.resIdBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 1
       ::curvespackage::enableCommand 1
     }
@@ -230,43 +196,43 @@ proc ::curvespackage::enableCommand {b} {
 
   #determine which dropdown list has called
   switch $b {
-    # case $w.distG.resSel.resBase1.resIdBase1
     0 {
+    # case $w.helix.resBase1.resIdBase1
       #get the opposed resid in the dropdown list 
-      set test [$w.distG.resSel.resBase2.resIdBase2 get]
+      set test [$w.helix.resBase2.resIdBase2 get]
 
       #verify that the selection is not empty 
       if {$test != ""} {
 
         #set the state to normal which allow the user to call the plotting function
-        $w.distG.resSel.distVal configure -state normal
-        $w.distG.resSel.angleVal configure -state normal
-        $w.distG.resSel.colorPair configure -state readonly
+        $w.helix.distVal configure -state normal
+        $w.helix.angleVal configure -state normal
+        $w.helix.colorPair configure -state readonly
       } else {
 
         #if the event is a supression the button is disabled
-        $w.distG.resSel.distVal configure -state disabled
-        $w.distG.resSel.angleVal configure -state disabled
-        $w.distG.resSel.colorPair configure -state disabled
+        $w.helix.distVal configure -state disabled
+        $w.helix.angleVal configure -state disabled
+        $w.helix.colorPair configure -state disabled
       }
     } 
-    #case $w.distG.resSel.resBase2.resIdBase2
     1 {
-      set test [$w.distG.resSel.resBase1.resIdBase1 get]
+    #case $w.helix.resBase2.resIdBase2
+      set test [$w.helix.resBase1.resIdBase1 get]
       
       #verify that the selection is not empty 
       if {$test != ""} {
 
         #set the state to normal which allow the user to call the plotting function
-        $w.distG.resSel.distVal configure -state normal
-        $w.distG.resSel.angleVal configure -state normal
-        $w.distG.resSel.colorPair configure -state readonly
+        $w.helix.distVal configure -state normal
+        $w.helix.angleVal configure -state normal
+        $w.helix.colorPair configure -state readonly
       } else {
 
         #if the event is a supression the button is disabled
-        $w.distG.resSel.distVal configure -state disabled
-        $w.distG.resSel.angleVal configure -state disabled
-        $w.distG.resSel.colorPair configure -state disabled
+        $w.helix.distVal configure -state disabled
+        $w.helix.angleVal configure -state disabled
+        $w.helix.colorPair configure -state disabled
       }
     }
     
@@ -274,64 +240,6 @@ proc ::curvespackage::enableCommand {b} {
       puts "you can't"
     }
   }
-}
-
-
-#proc ::curvespackage::hello {} {
-#  puts "Hello world"
-#}
-
-#proc ::curvespackage::hellopy {} {
-#  set pyprefix {gopython}
-#  puts "[$pyprefix "hello.py"]"
-#  puts "[$pyprefix -command helloworld()]"
-#}
-
-proc ::curvespackage::setselected {rad} {
-  variable w
-  switch $rad {
-    "sin" {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {sin}"
-    }
-    "cos" {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {cos}"
-    }
-    "tan" {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {tan}"
-    }
-    "other" {
-      $w.func.selectBtn configure -command "::curvespackage::plotOther"
-    }
-    default {
-      $w.func.selectBtn configure -command "::curvespackage::plotting {sin}"
-    }
-  }
-}
-
-proc ::curvespackage::plotting {func} { 
-  puts "plotting $func\(x)"
-  set xlist {}
-  set ylist {}
-  for {set x -10} {$x <= 10} {set x [expr ($x + 0.01)]} {
-    switch $func {
-      "sin" {
-        lappend xlist $x
-  	lappend ylist [::tcl::mathfunc::sin $x]
-      }
-      "cos" {
-        lappend xlist $x
-  	lappend ylist [::tcl::mathfunc::cos $x]
-      }
-      "tan" {
-        lappend xlist $x
-  	lappend ylist [::tcl::mathfunc::tan $x]
-      }
-    }
-  }
-  set plothandle [multiplot -x $xlist -y $ylist \
-                -xlabel "x" -ylabel "$func\(x)" -title "Function $func" \
-                -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Function $func" -plot];
 }
 
 
@@ -405,13 +313,13 @@ proc ::curvespackage::listeResname {} {
     #set stc [$sel get resname]
     set stc [lsort -unique $stc]
     set stcId [lsort -integer $stcId]
-    $w.distG.resSel.resBase1.resNameBase1 configure -values $stc
-    $w.distG.resSel.resBase1.resNameMatch1 configure -values $stc
-    $w.distG.resSel.resBase2.resNameBase2 configure -values $stc
-    $w.distG.resSel.resBase2.resNameMatch2 configure -values $stc
+    $w.helix.resBase1.resNameBase1 configure -values $stc
+    $w.helix.resBase1.resNameMatch1 configure -values $stc
+    $w.helix.resBase2.resNameBase2 configure -values $stc
+    $w.helix.resBase2.resNameMatch2 configure -values $stc
 
-    $w.distG.resSel.resBase1.resIdBase1 configure -values $stcId
-    $w.distG.resSel.resBase2.resIdBase2 configure -values $stcId
+    $w.helix.resBase1.resIdBase1 configure -values $stcId
+    $w.helix.resBase2.resIdBase2 configure -values $stcId
     
     $sel delete
 }
@@ -422,16 +330,16 @@ proc ::curvespackage::selectWithResname {b} {
   #quel liste déroulante appelle pour savoir chez qui récupérer le name 
   switch $b {
     0 {
-      set name [$w.distG.resSel.resBase1.resNameBase1 get]
+      set name [$w.helix.resBase1.resNameBase1 get]
     }
     1 {
-      set name [$w.distG.resSel.resBase2.resNameBase2 get]
+      set name [$w.helix.resBase2.resNameBase2 get]
     }
     2 {
-      set name [$w.distG.resSel.resBase1.resNameMatch1 get]
+      set name [$w.helix.resBase1.resNameMatch1 get]
     }
     3 {
-      set name [$w.distG.resSel.resBase2.resNameMatch2 get]
+      set name [$w.helix.resBase2.resNameMatch2 get]
     }
     default {
       puts "there is a problem, call us!" 
@@ -452,17 +360,17 @@ proc ::curvespackage::selectWithResname {b} {
     
     switch $b {
     0 {
-      $w.distG.resSel.resBase1.resIdBase1 configure -values $stc
+      $w.helix.resBase1.resIdBase1 configure -values $stc
     }
     1 {
       
-      $w.distG.resSel.resBase2.resIdBase2 configure -values $stc
+      $w.helix.resBase2.resIdBase2 configure -values $stc
     }
     2 {
-      $w.distG.resSel.resBase1.resIdMatch1 configure -values $stc
+      $w.helix.resBase1.resIdMatch1 configure -values $stc
     }
     3 {
-      $w.distG.resSel.resBase2.resIdMatch2 configure -values $stc
+      $w.helix.resBase2.resIdMatch2 configure -values $stc
     }
     default {
         puts "there is a problem, call us!" 
@@ -479,12 +387,12 @@ proc ::curvespackage::selectWithResid {b} {
 
   switch $b {
     0 {
-      set stcId [$w.distG.resSel.resBase1.resIdBase1 get]
+      set stcId [$w.helix.resBase1.resIdBase1 get]
       if {$stcId != ""} {
         dict for {id info} $selectList {
           if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
             if {[lsearch -exact $info $stcId] >= 0} {
-              $w.distG.resSel.resBase1.resNameBase1 set $id
+              $w.helix.resBase1.resNameBase1 set $id
               break
             }
           }
@@ -493,12 +401,12 @@ proc ::curvespackage::selectWithResid {b} {
     }
 
     1 {
-      set stcId [$w.distG.resSel.resBase2.resIdBase2 get]
+      set stcId [$w.helix.resBase2.resIdBase2 get]
       if {$stcId != ""} {
         dict for {id info} $selectList {
           if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
             if {[lsearch -exact $info $stcId] >= 0 } {
-              $w.distG.resSel.resBase2.resNameBase2 set $id
+              $w.helix.resBase2.resNameBase2 set $id
               break
             }
           }
@@ -516,8 +424,8 @@ proc ::curvespackage::matchList {} {
   variable mid 
 
   #part with the first and second bases
-  set name1 [$w.distG.resSel.resBase1.resNameBase1 get]
-  set idSel1 [$w.distG.resSel.resBase1.resIdBase1 get]
+  set name1 [$w.helix.resBase1.resNameBase1 get]
+  set idSel1 [$w.helix.resBase1.resIdBase1 get]
 
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
@@ -532,44 +440,44 @@ proc ::curvespackage::matchList {} {
         }
       }
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resBase1.resIdMatch1 set $match 
+      $w.helix.resBase1.resIdMatch1 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
-              $w.distG.resSel.resBase1.resNameMatch1 set $id
+              $w.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
-                $w.distG.resSel.resBase1.resNameMatch1 set $id
+                $w.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.distG.resSel.resBase1.resNameMatch1 set $id
+                $w.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.distG.resSel.resBase1.resNameMatch1 set $id
+                $w.helix.resBase1.resNameMatch1 set $id
             } else {
-                $w.distG.resSel.resBase1.resIdMatch1 set -1
-                $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
+                $w.helix.resBase1.resIdMatch1 set -1
+                $w.helix.resBase1.resNameMatch1 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
               }
             break
           }
         }
       } else {
-          $w.distG.resSel.resBase1.resIdMatch1 set -1
-          $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
+          $w.helix.resBase1.resIdMatch1 set -1
+          $w.helix.resBase1.resNameMatch1 set "NO MATCH"
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } 
   #else {
-   #   $w.distG.resSel.resBase1.resIdMatch1 set -1
-    #  $w.distG.resSel.resBase1.resNameMatch1 set "NO MATCH"
+   #   $w.helix.resBase1.resIdMatch1 set -1
+    #  $w.helix.resBase1.resNameMatch1 set "NO MATCH"
      # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     #}
 
   #part with the third and fourth bases 
-   #$w.distG.resSel.resNameMatch1 configure -values $stc
-    #$w.distG.resSel.resNameMatch2 configure -values $stc
+   #$w.helix.resNameMatch1 configure -values $stc
+    #$w.helix.resNameMatch2 configure -values $stc
     
-  set name1 [$w.distG.resSel.resBase2.resNameBase2 get]
-  set idSel1 [$w.distG.resSel.resBase2.resIdBase2 get]
+  set name1 [$w.helix.resBase2.resNameBase2 get]
+  set idSel1 [$w.helix.resBase2.resIdBase2 get]
 
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
@@ -584,156 +492,37 @@ proc ::curvespackage::matchList {} {
         }
       }
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.distG.resSel.resBase2.resIdMatch2 set $match 
+      $w.helix.resBase2.resIdMatch2 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
-              $w.distG.resSel.resBase2.resNameMatch2 set $id
+              $w.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
-                $w.distG.resSel.resBase2.resNameMatch2 set $id
+                $w.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.distG.resSel.resBase2.resNameMatch2 set $id
+                $w.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.distG.resSel.resBase2.resNameMatch2 set $id
+                $w.helix.resBase2.resNameMatch2 set $id
             } else {
-                $w.distG.resSel.resBase2.resIdMatch2 set -1
-                $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
+                $w.helix.resBase2.resIdMatch2 set -1
+                $w.helix.resBase2.resNameMatch2 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
               }
             break
           }
         }
       } else {
-          $w.distG.resSel.resBase2.resIdMatch2 set -1
-          $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
+          $w.helix.resBase2.resIdMatch2 set -1
+          $w.helix.resBase2.resNameMatch2 set "NO MATCH"
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } 
   #else {
-   #   $w.distG.resSel.resBase2.resIdMatch2 set -1
-    #  $w.distG.resSel.resBase2.resNameMatch2 set "NO MATCH"
+   #   $w.helix.resBase2.resIdMatch2 set -1
+    #  $w.helix.resBase2.resNameMatch2 set "NO MATCH"
      # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     #}
-}
-
-#takes the index not the id of the atom
-proc ::curvespackage::plotAtoms {} {
-  set sel [atomselect top "resid $::curvespackage::atom1  $::curvespackage::atom2"]
-  set listDist [measure bond [list $::curvespackage::atom1 $::curvespackage::atom2] molid [molinfo 0 get id] frame all]
-  
-  set i 0
-  set xlist {}
-  foreach d $listDist {
-    lappend xlist $i
-    incr i
-  }
-  set plothandle [multiplot -x $xlist -y $listDist \
-                -xlabel "Frame" -ylabel "Distance" -title "Distance between the atoms" \
-                -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Distance" -plot];
-  $sel delete
-}
-
-proc ::curvespackage::plotAtomsGroups {} {
-  variable frameStart
-  variable frameEnd
-  variable step
-  
-  set list1 [split $::curvespackage::lAtoms1 ,]
-  set list2 [split $::curvespackage::lAtoms2 ,]
-
-
-  set l1 "resid\ "
-  append l1 $list1
-  set res1 [atomselect top $l1]
-
-
-  set l2 "resid\ "
-  append l2 $list2
-  set res2 [atomselect top $l2]
-  
-  set lDist [::curvespackage::computeFrames "dist" $res1 $res2]
-
-  $res1 delete
-  $res2 delete
-  
-  set xlist {}
-  
-  if {$frameStart eq ""} {
-    set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-    lappend xlist $i
-  }
-  
-  set plothandle [multiplot -x $xlist -y $lDist \
-                -xlabel "Frame" -ylabel "Distance" -title "Distance between the groups" \
-                -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Distance" -plot];
-}
-
-proc ::curvespackage::plotAngleGroups {} {
-  variable frameStart
-  variable frameEnd
-  variable step
-  
-  set list1 [split $::curvespackage::lAtoms1 ,]
-  set list2 [split $::curvespackage::lAtoms2 ,]
-  
-  set l1 "resid\ "
-  append l1 $list1
-  set res1 [atomselect top $l1]
-
-
-  set l2 "resid\ "
-  append l2 $list2
-  set res2 [atomselect top $l2]
-  
-  set lAngl [::curvespackage::computeFrames "ang" $res1 $res2]
-
-  $res1 delete
-  $res2 delete
-  
-  if {$frameStart eq ""} {
-    set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  set xlist {}
-  
-  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-    lappend xlist $i
-  }
-  
-  set plothandle [multiplot -x $xlist -y $lAngl \
-                -xlabel "Frame" -ylabel "Angle (degrees)" -title "Angle between the groups" \
-                -lines -linewidth 1 -linecolor red \
-                -marker none -legend "Angle" -plot];
 }
 
 # Procedure that plots the angle and distance between selected pairs
@@ -748,18 +537,18 @@ proc ::curvespackage::plotBases { type } {
   variable step
   
   # Set of variables used to get the resnames and resids of the pairs to plot
-  set base1 [$w.distG.resSel.resBase1.resNameBase1 get]
-  set idBase1 [$w.distG.resSel.resBase1.resIdBase1 get]
-  set base2 [$w.distG.resSel.resBase2.resNameBase2 get]
-  set idBase2 [$w.distG.resSel.resBase2.resIdBase2 get]
-  set match1 [$w.distG.resSel.resBase1.resNameMatch1 get]
-  set idMatch1 [$w.distG.resSel.resBase1.resIdMatch1 get]
-  set match2 [$w.distG.resSel.resBase2.resNameMatch2 get]
-  set idMatch2 [$w.distG.resSel.resBase2.resIdMatch2 get]
+  set base1 [$w.helix.resBase1.resNameBase1 get]
+  set idBase1 [$w.helix.resBase1.resIdBase1 get]
+  set base2 [$w.helix.resBase2.resNameBase2 get]
+  set idBase2 [$w.helix.resBase2.resIdBase2 get]
+  set match1 [$w.helix.resBase1.resNameMatch1 get]
+  set idMatch1 [$w.helix.resBase1.resIdMatch1 get]
+  set match2 [$w.helix.resBase2.resNameMatch2 get]
+  set idMatch2 [$w.helix.resBase2.resIdMatch2 get]
   # Set of variables used to get the colors of the base plotting
-  set color1 [$w.distG.resSel.resBase1.colorB1 get]
-  set color2 [$w.distG.resSel.resBase2.colorB2 get]
-  set colorPair [$w.distG.resSel.colorPair get]
+  set color1 [$w.helix.resBase1.colorB1 get]
+  set color2 [$w.helix.resBase2.colorB2 get]
+  set colorPair [$w.helix.colorPair get]
   
   # If the colors are not set, switching to default coloring
   if { $color1 eq "" } {
@@ -800,6 +589,11 @@ proc ::curvespackage::plotBases { type } {
       set step [expr int($step)]
     }
     
+    if { $frameStart == $frameEnd } {
+      tk_messageBox -message "Error, only one frame selected, graphing impossible"
+      return
+    }
+    
     # We create the list used for the abscissa of the graphes
     set xlist {}
     for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -830,7 +624,6 @@ proc ::curvespackage::plotBases { type } {
           set res2 [atomselect top "resid $idBase1 and name $atom2"]
         } elseif {[regexp {^DG} $base1]} {
           set atoms [split [dict get $atomsDNA {DG}] "\ "]
-          puts "DG : $atoms"
           set atom1 [lindex $atoms 0]
           set atom2 [lindex $atoms 1]
           set res1 [atomselect top "resid $idBase1 and name $atom1"]
@@ -1006,7 +799,7 @@ proc ::curvespackage::plotBases { type } {
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle between the first bases"];
-		      
+	  puts $xlist
 	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
 	  
@@ -1030,7 +823,7 @@ proc ::curvespackage::plotBases { type } {
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Distance between the first bases"];
-		      
+	  puts $xlist      
 	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
 	  
@@ -1139,108 +932,6 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
       
       # Returns the list
       return $lDist
-    }
-    "ang" {
-    # Case in which we calculate the angle between two selection's centers of mass
-    
-      # Creating the list that will be returned 
-      set lAngl {}
-      
-      # For each selected frame from the loaded trajectory
-      for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-      
-        # Updating the selections for the frame i
-        $res1 frame $i
-	$res2 frame $i
-	$res1 update
-	$res2 update
-	
-	# Calculating the center of mass of each selection
-	set com1 [measure center $res1]
-        set com2 [measure center $res2]
-	
-	# Calculating the length of each center of mass vector
-	set len1 [veclength $com1]
-	set len2 [veclength $com2]
-	
-	# Calculating the scalar dot product between the two center of mass vectors
-	set dotprod [vecdot $com1 $com2]
-	
-	# Correcting the scalar dot product by dividing it by the multiplication of the two vector lengths
-	set dotprodcor [expr $dotprod / ($len1 * $len2)]
-	
-	# Calculating the angle in degrees from the scalar dot product
-	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
-	
-	# Adding the angle to the returned list
-	lappend lAngl $ang
-      }
-      
-      # Returns the list
-      return $lAngl
-    }
-    "angV" {
-    # Case in which we calculate the angle between two pairs of selection's mass centers
-    
-      # Creating the list that will be returned 
-      set lAngl {}
-      
-      # For each selected frame from the loaded trajectory
-      for {set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-        
-	# Updating the selections for the frame i
-        $res1 frame $i
-	$res2 frame $i
-	$res3 frame $i
-	$res4 frame $i
-	$res1 update
-	$res2 update
-	$res3 update
-	$res4 update
-	
-	# Calculating the centers of mass of the first pair selected
-	set com1 [measure center $res1]
-	set com2 [measure center $res2]
-	
-	# Calculating the vector between the first pair of bases
-	set vectBase [vecsub $com2 $com1]
-	
-	# Calculating the centers of mass of the second pair selected
-	set com1 [measure center $res3]
-	set com2 [measure center $res4]
-	
-	# Calculating the vector between the second pair of bases
-	set vectComp [vecsub $com2 $com1]
-	
-	# Calculating the length of the base vector
-	set lenB [veclength $vectBase]
-	
-	# Calculating the length of the compared vector
-	set lenC [veclength $vectComp]
-	
-	# Calculating the scalar dot product between the base and comparated vector
-	set dotprod [vecdot $vectBase $vectComp]
-	
-	# Correcting the scalar dot product by dividing it by the multiplication of the lengths of the 2 vectors
-	set dotprodcor [expr $dotprod / ($lenB * $lenC)]
-	
-	# Correcting the scalar dot product (in case of bad rounding)
-	if {$dotprodcor > 1.0} {
-	  set dotprodcor 1.0
-	}
-	if {$dotprodcor < -1.0} {
-	  set dotprodcor -1.0
-	}
-	
-	# Calculating the angle in degrees from the scalar dot product
-	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
-	
-	# Adding the angle to the returned list
-	lappend lAngl $ang
-      }
-      
-      # Returns the list
-      return $lAngl
     }
     "angB" {
     # Case in which we calculate the angle between two bases using two predifined atoms from each base
