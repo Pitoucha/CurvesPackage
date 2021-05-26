@@ -258,7 +258,6 @@ proc ::curvespackage::trajectLoad {} {
 
 #Create the list of resname/resid used for the UI
 proc ::curvespackage::listeResname {} {
-  
   #declaration of the global variable used (in order)
     #window for the UI
     #max resid for the DNA contained
@@ -280,39 +279,46 @@ proc ::curvespackage::listeResname {} {
   #get the resname/resid couples from the selection
   set names [$sel get {resname resid}]
 
-  #
+  #delete the doubles 
   set names [lsort -unique $names]
   set stc [list]
   set stcId [list]
   foreach name $names  {
-      #recupère resname et resid
+      #get resname and resid
       set rsn [split $name "\ "]
       set rsi [lindex $rsn 1]
       set rsn [lindex $rsn 0]
 
-      #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
+      #added the couple in the dict with the syntax {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
       if {![dict exist $selectList $rsn]} {
         dict set ::curvespackage::selectList $rsn $rsi 
       } else {
         dict lappend ::curvespackage::selectList $rsn $rsi 
       }
 
+      #fill our DNA lists 
       if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn]} {
         lappend stc $rsn
         lappend stcId $rsi
       }
     }
 
+    #get all the nucleic residues 
     set selNucleic [atomselect top "nucleic"]
+    #gets the resid for those residues
     set listNucleic [$selNucleic get resid]
+    #calculate the max resid for our DNA
     set maxDNA [tcl::mathfunc::max {*}$listNucleic]
+    #calculate the min resid for our DNA
     set minDNA [tcl::mathfunc::min {*}$listNucleic]
+    #calculate the resid at the middle of the DNA chain
     set mid [expr ($maxDNA - ($minDNA -1))/2]
     $selNucleic delete
     
-    #set stc [$sel get resname]
+    #delete the double 
     set stc [lsort -unique $stc]
     set stcId [lsort -integer $stcId]
+    #set the values for all the dropdown lists 
     $w.helix.resBase1.resNameBase1 configure -values $stc
     $w.helix.resBase1.resNameMatch1 configure -values $stc
     $w.helix.resBase2.resNameBase2 configure -values $stc
@@ -324,10 +330,11 @@ proc ::curvespackage::listeResname {} {
     $sel delete
 }
 
+#set the list of resid which goes with the resname b passed in parameters
 proc ::curvespackage::selectWithResname {b} {
   variable w
 
-  #quel liste déroulante appelle pour savoir chez qui récupérer le name 
+  #get the resname selected 
   switch $b {
     0 {
       set name [$w.helix.resBase1.resNameBase1 get]
@@ -346,7 +353,7 @@ proc ::curvespackage::selectWithResname {b} {
     }
   }
   
-  #defini la liste de resid
+  #get the list of resid from the resname if a resname was choosen
   if {$name != ""} {
     set list stc
 
@@ -356,8 +363,10 @@ proc ::curvespackage::selectWithResname {b} {
         break 
       }
     }
+    #sort the list in ascending order
     set stc [lsort -integer $stc]
     
+    #set the values of the associated dropdown list 
     switch $b {
     0 {
       $w.helix.resBase1.resIdBase1 configure -values $stc
@@ -377,19 +386,24 @@ proc ::curvespackage::selectWithResname {b} {
       }
     }
   } else {
+    #prompts the user to make a choice if the name is empty 
     tk_messageBox -message "Please make a selection"
   } 
 }
 
+#set the resname which goes with the resid b passed in parameters
 proc ::curvespackage::selectWithResid {b} {
   variable w 
   variable selectList
 
   switch $b {
     0 {
+      #get the resid input 
       set stcId [$w.helix.resBase1.resIdBase1 get]
+      #verifies that the resid isnt empty
       if {$stcId != ""} {
         dict for {id info} $selectList {
+          #test if the resname is one from a DNA residue 
           if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
             if {[lsearch -exact $info $stcId] >= 0} {
               $w.helix.resBase1.resNameBase1 set $id
@@ -401,9 +415,12 @@ proc ::curvespackage::selectWithResid {b} {
     }
 
     1 {
+      #get the resid input 
       set stcId [$w.helix.resBase2.resIdBase2 get]
+      #verifies that the resid isnt empty
       if {$stcId != ""} {
         dict for {id info} $selectList {
+          #test if the resname is one from a DNA residue 
           if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
             if {[lsearch -exact $info $stcId] >= 0 } {
               $w.helix.resBase2.resNameBase2 set $id
@@ -416,7 +433,14 @@ proc ::curvespackage::selectWithResid {b} {
   }
 }
 
+#Match the resname and resid for a base
 proc ::curvespackage::matchList {} {
+   #declaration of the global variable used (in order)
+    #dictonary for the resname/resid 
+    #window for the UI
+    #max resid for the DNA contained
+    #min resid for the DNA contained
+    #resid at the middle of the DNA chain
   variable selectList
   variable w
   variable maxDNA
@@ -424,17 +448,20 @@ proc ::curvespackage::matchList {} {
   variable mid 
 
   #part with the first and second bases
+    #get the name and the resid of the base
   set name1 [$w.helix.resBase1.resNameBase1 get]
   set idSel1 [$w.helix.resBase1.resIdBase1 get]
 
+  #if the resid is inferior to the mid and the resname and resid aren't empty we continue
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
     set diff [expr {$mid - [expr {int($idSel1)}]}]
     set match [expr {$mid + 1 + $diff}]
     
+    #verifies that the resname is one from a DNA residue
     if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
@@ -799,7 +826,7 @@ proc ::curvespackage::plotBases { type } {
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle between the first bases"];
-	  puts $xlist
+	  
 	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
 	  
@@ -823,7 +850,7 @@ proc ::curvespackage::plotBases { type } {
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Distance between the first bases"];
-	  puts $xlist      
+
 	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
 	  
