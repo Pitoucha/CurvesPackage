@@ -702,18 +702,18 @@ proc ::curvespackage::plotAngleGroups {} {
                 -marker none -legend "Angle" -plot];
 }
 
-# Procedure that plots the angle and distance between selected bases
+# Procedure that plots the angle and distance between selected pairs
 proc ::curvespackage::plotBases { type } {
   # Variable used to get the window
   variable w
-  # Variable used as dictionary to store the different atoms used depending on the base
+  # Variable used as dictionary to store the different atoms used depending on the pair
   variable atomsDNA
   # Set of variables determining the start, end and step of the plotting
   variable frameStart
   variable frameEnd
   variable step
   
-  # Set of variables used to get the resnames and resids of the bases to plot
+  # Set of variables used to get the resnames and resids of the pairs to plot
   set base1 [$w.distG.resSel.resBase1.resNameBase1 get]
   set idBase1 [$w.distG.resSel.resBase1.resIdBase1 get]
   set base2 [$w.distG.resSel.resBase2.resNameBase2 get]
@@ -746,7 +746,7 @@ proc ::curvespackage::plotBases { type } {
   set res3 ""
   set res4 ""
   
-  # We check if all the necessary fields are filled
+  # We check if all the necessary fields for the first pair are filled
   if {$base1 ne "" && $match1 ne "" && $idBase1 ne "" && $idMatch1 ne ""} {
   
     # If the frame parameters are empty, we switch to default values, else we convert their values to integer
@@ -766,12 +766,16 @@ proc ::curvespackage::plotBases { type } {
       set step [expr int($step)]
     }
     
-    # we create the list used for the abscissa of the graphes
+    # We create the list used for the abscissa of the graphes
     set xlist {}
     for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
       lappend xlist $i
     }
+    
+    # If what we want is an angle, we create the selections (res) to use on our pair
     if { [regexp {angl$} $type] } {
+    
+      # We select the atoms according to the base type for the first base of the pair
       if {[regexp {^DA} $base1]} {
           set atoms [split [dict get $atomsDNA {DA}] "\ "]
           set atom1 [lindex $atoms 0]
@@ -798,6 +802,8 @@ proc ::curvespackage::plotBases { type } {
           set res1 [atomselect top "resid $idBase1 and name $atom1"]
           set res2 [atomselect top "resid $idBase1 and name $atom2"]
         }
+	
+	# We select the atoms according to the base type for the second base of the pair
         if {[regexp {^DA} $match1]} {
           set atoms [split [dict get $atomsDNA {DA}] "\ "]
           set atom1 [lindex $atoms 0]
@@ -823,37 +829,65 @@ proc ::curvespackage::plotBases { type } {
           set res3 [atomselect top "resid $idMatch1 and name $atom1"]
           set res4 [atomselect top "resid $idMatch1 and name $atom2"]
         }
+
+    # If what we want is a distance, we create the selections (res) to use on our pair
     } elseif { [regexp {dist$} $type] } {
       set res1 [atomselect top "resid $idBase1"]
       set res2 [atomselect top "resid $idMatch1"]
     }
+    
+    # If there's nothing in the fields of the second pair, graphing only the first one
     if {$base2 eq ""} {
+      
+      # Case if we want to plot an angle
       if { $type eq "angl" } {
+      
+        # Calling computeFrames on our selection for an angle between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
+	
+	# Deleting all our selections
         $res1 delete
 	$res2 delete
 	$res3 delete
 	$res4 delete
+	
+	# Creating and plotting the multiplot for the calculated list
 	set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle" -plot];
+      
+      # Case if we want to plot a distance
       } elseif { $type eq "dist" } {
+      
+        # Calling computeFrames on our selection for a distance between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
+	
+	# Deleting all our selections
 	$res1 delete
 	$res2 delete
+	
+	# Creating and plotting the multiplot for the calculated list
 	set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Distance" -plot];
       }
+    
+    # In case the fields are not empty for the second pair
     } else {
       set res5 ""
       set res6 ""
       set res7 ""
       set res8 ""
+      
+      # Checking if the fields for the second pair are all set
       if {$base2 ne "" && $match2 ne "" && $idBase2 ne "" && $idMatch2 ne ""} {
+      
+        # If what we want is an angle, we create the selections (res) to use on our pair
         if {[regexp {angl$} $type]} {
+	  
+	  # We select the atoms according to the base type for the first base of the pair
 	  if {[regexp {^DA} $base2]} {
             set atoms [split [dict get $atomsDNA {DA}] "\ "]
             set atom1 [lindex $atoms 0]
@@ -880,6 +914,8 @@ proc ::curvespackage::plotBases { type } {
             set res5 [atomselect top "resid $idBase2 and name $atom1"]
             set res6 [atomselect top "resid $idBase2 and name $atom2"]
           }
+	  
+	  # We select the atoms according to the base type for the second base of the pair
           if {[regexp {^DA} $match2]} {
             set atoms [split [dict get $atomsDNA {DA}] "\ "]
             set atom1 [lindex $atoms 0]
@@ -905,13 +941,23 @@ proc ::curvespackage::plotBases { type } {
             set res7 [atomselect top "resid $idMatch2 and name $atom1"]
             set res8 [atomselect top "resid $idMatch2 and name $atom2"]
           }
+	  
+	# If what we want is a distance, we create the selections (res) to use on our pair
 	} elseif {[regexp {dist$} $type]} {
 	  set res3 [atomselect top "resid $idBase2"]
           set res4 [atomselect top "resid $idMatch2"]
 	}
+	
+	# Case if we want to plot an angle
 	if { $type eq "angl" } {
+	  
+	  # Calling computeFrames on our selection for an angle between the two bases of the first selected pair
 	  set listP1 [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
+	  
+	  # Calling computeFrames on our selection for an angle between the two bases of the second selected pair
 	  set listP2 [::curvespackage::computeFrames "angB" $res5 $res6 $res7 $res8]
+	  
+	  # Deleting all our selections
           $res1 delete
 	  $res2 delete
 	  $res3 delete
@@ -920,25 +966,47 @@ proc ::curvespackage::plotBases { type } {
 	  $res6 delete
 	  $res7 delete
 	  $res8 delete
+	  
+	  # Creating the multiplot for the first calculated list
 	  set plothandle [multiplot -x $xlist -y $listP1 \
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle between the first bases"];
+		      
+	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
+	  
+	# Case if we want to plot a distance
 	} elseif { $type eq "dist" } {
+	
+	  # Calling computeFrames on our selection for a distance between the two bases of the first selected pair
 	  set listP1 [::curvespackage::computeFrames "dist" $res1 $res2]
+	  
+	  # Calling computeFrames on our selection for a distance between the two bases of the second selected pair
 	  set listP2 [::curvespackage::computeFrames "dist" $res3 $res4]
+	  
+	  # Deleting all our selections
 	  $res1 delete
 	  $res2 delete
 	  $res3 delete
 	  $res4 delete
+	  
+	  # Creating the multiplot for the first calculated list
 	  set plothandle [multiplot -x $xlist -y $listP1 \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Distance between the first bases"];
+		      
+	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
+	  
+	# Case if we want to plot the angle difference between two pairs
 	} elseif { $type eq "4angl" } {
+	
+	  # Calling computeFrames on our selection for an angle between the two selected pairs
 	  set listP [::curvespackage::computeFrames "ang4" $res1 $res2 $res3 $res4 $res5 $res6 $res7 $res8]
+	  
+	  # Deleting all our selections
 	  $res1 delete
 	  $res2 delete
 	  $res3 delete
@@ -947,27 +1015,41 @@ proc ::curvespackage::plotBases { type } {
 	  $res6 delete
 	  $res7 delete
 	  $res8 delete
+	  
+	  # Creating and plotting the multiplot for the calculated list
 	  set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
                       -lines -linewidth 1 -linecolor $colorPair \
                       -marker none -legend "Angle between the sets of bases" -plot];
+		      
+	# Case if we want to plot the distance between two pairs
 	} elseif { $type eq "4dist" } {
+	
+	  # Calling computeFrames on our selection for a distance between the two selected pairs
 	  set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
+	  
+	  # Deleting all our selections
 	  $res1 delete
 	  $res2 delete
 	  $res3 delete
 	  $res4 delete
+	  
+	  # Creating and plotting the multiplot for the calculated list
 	  set plothandle [multiplot -x $xlist -y $listP \
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
                       -lines -linewidth 1 -linecolor $colorPair \
                       -marker none -legend "Distance between the sets of bases" -plot];
 	}
+      
+      # If the fields for the second pair are not properly filled
       } else {
-        puts "Error, some fields are empty"
+        tk_messageBox -message "Error, some fields are empty"
       }
     }
+    
+  # If the fields for the first pair are not properly filled
   } else {
-    puts "Error, some fields are empty"
+    tk_messageBox -message "Error, some fields are empty"
   }
 }
 
