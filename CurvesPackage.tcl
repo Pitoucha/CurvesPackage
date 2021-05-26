@@ -221,34 +221,55 @@ proc ::curvespackage::chargement {} {
     }
   }
 }
+
+#enable the function call when the two bases are correctly filled
+#receive parameter b wich is the id of the dropdown list that called the Function
+  #through binding 
 proc ::curvespackage::enableCommand {b} {
   variable w
 
+  #determine which dropdown list has called
   switch $b {
-    1 {
-      set test [$w.distG.resSel.resBase1.resIdBase1 get]
-      if {$test != ""} {
-        $w.distG.resSel.distVal configure -state normal
-        $w.distG.resSel.angleVal configure -state normal
-	$w.distG.resSel.colorPair configure -state readonly
-      } else {
-        $w.distG.resSel.distVal configure -state disabled
-        $w.distG.resSel.angleVal configure -state disabled
-	$w.distG.resSel.colorPair configure -state disabled
-      }
-    }
+    # case $w.distG.resSel.resBase1.resIdBase1
     0 {
+      #get the opposed resid in the dropdown list 
       set test [$w.distG.resSel.resBase2.resIdBase2 get]
+
+      #verify that the selection is not empty 
       if {$test != ""} {
+
+        #set the state to normal which allow the user to call the plotting function
         $w.distG.resSel.distVal configure -state normal
         $w.distG.resSel.angleVal configure -state normal
-	$w.distG.resSel.colorPair configure -state readonly
+        $w.distG.resSel.colorPair configure -state readonly
       } else {
+
+        #if the event is a supression the button is disabled
         $w.distG.resSel.distVal configure -state disabled
         $w.distG.resSel.angleVal configure -state disabled
-	$w.distG.resSel.colorPair configure -state disabled
+        $w.distG.resSel.colorPair configure -state disabled
       }
     } 
+    #case $w.distG.resSel.resBase2.resIdBase2
+    1 {
+      set test [$w.distG.resSel.resBase1.resIdBase1 get]
+      
+      #verify that the selection is not empty 
+      if {$test != ""} {
+
+        #set the state to normal which allow the user to call the plotting function
+        $w.distG.resSel.distVal configure -state normal
+        $w.distG.resSel.angleVal configure -state normal
+        $w.distG.resSel.colorPair configure -state readonly
+      } else {
+
+        #if the event is a supression the button is disabled
+        $w.distG.resSel.distVal configure -state disabled
+        $w.distG.resSel.angleVal configure -state disabled
+        $w.distG.resSel.colorPair configure -state disabled
+      }
+    }
+    
     default {
       puts "you can't"
     }
@@ -314,31 +335,44 @@ proc ::curvespackage::plotting {func} {
 }
 
 
-
+#Load a new trajectory for the loaded mol
 proc ::curvespackage::trajectLoad {} {
-  #recupère la trajectoire à charger
+  #get the path of the trajectory
   set newTrajectory [tk_getOpenFile]
   
-  #verifie que le chemin a bien été pris en compte
+  #verify that the path exist 
   if {$newTrajectory != ""} {
-    #ajoute la trajecroire à la mol en court
+    #add the trajectory for the mol already opened 
     mol addfile $newTrajectory
     pbc unwrap -all 
   }
 }
 
+#Create the list of resname/resid used for the UI
 proc ::curvespackage::listeResname {} {
+  
+  #declaration of the global variable used (in order)
+    #window for the UI
+    #max resid for the DNA contained
+    #min resid for the DNA contained
+    #resid at the middle of the DNA chain
+    #dictonary for the resname/resid 
   variable w
   variable maxDNA
   variable minDNA
   variable mid 
   variable selectList
 
+  #we get all the components of the mol loaded
   set sel [atomselect top "all"]
 
+  #create the dict 
   set selectList [dict create]
 
+  #get the resname/resid couples from the selection
   set names [$sel get {resname resid}]
+
+  #
   set names [lsort -unique $names]
   set stc [list]
   set stcId [list]
