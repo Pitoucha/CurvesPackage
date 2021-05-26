@@ -1165,6 +1165,8 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
   }
 }
 
+set COMMENT {
 proc curvespackage_tk {} {
   ::curvespackage::packageui
+}
 }
