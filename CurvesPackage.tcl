@@ -230,7 +230,6 @@ proc ::curvespackage::enableCommand {b} {
 
   #determine which dropdown list has called
   switch $b {
-    # case $w.distG.resSel.resBase1.resIdBase1
     0 {
       #get the opposed resid in the dropdown list 
       set test [$w.distG.resSel.resBase2.resIdBase2 get]
@@ -250,7 +249,6 @@ proc ::curvespackage::enableCommand {b} {
         $w.distG.resSel.colorPair configure -state disabled
       }
     } 
-    #case $w.distG.resSel.resBase2.resIdBase2
     1 {
       set test [$w.distG.resSel.resBase1.resIdBase1 get]
       
@@ -372,39 +370,47 @@ proc ::curvespackage::listeResname {} {
   #get the resname/resid couples from the selection
   set names [$sel get {resname resid}]
 
-  #
+  #delete the doubles 
   set names [lsort -unique $names]
   set stc [list]
   set stcId [list]
   foreach name $names  {
-      #recupère resname et resid
+      #get resname and resid
       set rsn [split $name "\ "]
       set rsi [lindex $rsn 1]
       set rsn [lindex $rsn 0]
 
-      #ajout dans un dict sous la forme {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
+      #added the couple in the dict with the syntax {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
       if {![dict exist $selectList $rsn]} {
         dict set ::curvespackage::selectList $rsn $rsi 
       } else {
         dict lappend ::curvespackage::selectList $rsn $rsi 
       }
 
+      #fill our DNA lists 
       if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn]} {
         lappend stc $rsn
         lappend stcId $rsi
       }
     }
 
+    #get all the nucleic residues 
     set selNucleic [atomselect top "nucleic"]
+    #gets the resid for those residues
     set listNucleic [$selNucleic get resid]
+    #calculate the max resid for our DNA
     set maxDNA [tcl::mathfunc::max {*}$listNucleic]
+    #calculate the min resid for our DNA
     set minDNA [tcl::mathfunc::min {*}$listNucleic]
+    #calculate the resid at the middle of the DNA chain
     set mid [expr ($maxDNA - ($minDNA -1))/2]
     $selNucleic delete
     
-    #set stc [$sel get resname]
+    #delete the double 
     set stc [lsort -unique $stc]
     set stcId [lsort -integer $stcId]
+
+    #set the values for all the dropdown lists 
     $w.distG.resSel.resBase1.resNameBase1 configure -values $stc
     $w.distG.resSel.resBase1.resNameMatch1 configure -values $stc
     $w.distG.resSel.resBase2.resNameBase2 configure -values $stc
@@ -416,10 +422,11 @@ proc ::curvespackage::listeResname {} {
     $sel delete
 }
 
+#set the list of resid which goes with the resname b passed in parameters
 proc ::curvespackage::selectWithResname {b} {
   variable w
 
-  #quel liste déroulante appelle pour savoir chez qui récupérer le name 
+  #get the resname selected 
   switch $b {
     0 {
       set name [$w.distG.resSel.resBase1.resNameBase1 get]
@@ -438,7 +445,7 @@ proc ::curvespackage::selectWithResname {b} {
     }
   }
   
-  #defini la liste de resid
+  #get the list of resid from the resname if a resname was choosen
   if {$name != ""} {
     set list stc
 
@@ -448,8 +455,10 @@ proc ::curvespackage::selectWithResname {b} {
         break 
       }
     }
+    #sort the list in ascending order
     set stc [lsort -integer $stc]
     
+    #set the values of the associated dropdown list 
     switch $b {
     0 {
       $w.distG.resSel.resBase1.resIdBase1 configure -values $stc
@@ -469,10 +478,12 @@ proc ::curvespackage::selectWithResname {b} {
       }
     }
   } else {
+    #prompts the user to make a choice if the name is empty 
     tk_messageBox -message "Please make a selection"
   } 
 }
 
+#set the resname which goes with the resid b passed in parameters
 proc ::curvespackage::selectWithResid {b} {
   variable w 
   variable selectList
