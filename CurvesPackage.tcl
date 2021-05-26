@@ -89,35 +89,37 @@ proc ::curvespackage::packageui {} {
   return $w
 }
 
+#load a new molecule
 proc ::curvespackage::chargement {} {
   variable w
   variable plotColors
   
-  #supprime 
+  #deletes all others molecules present  
   mol delete all 
 
-  #on recup?e le fichier ?charger
+  #get path file to open
   set newMol [tk_getOpenFile]
 
   #verifie que le chemin a bien été pris en compte
   if {$newMol != ""} {
-    #chargement
+    #load the mol 
     mol new $newMol
 
-    #supprime la representation actuelle 
+    #delete the represention in use 
     mol delrep 0 [molinfo 0 get id]
     
-    #crée une nouvelle representation et l'ajoute
+    #creates a new representation and adds it 
     mol representation CPK
     mol addrep [molinfo 0 get id]
     
+    #Label frame for Helix
     grid [labelframe $w.helix -text "In case you're working on a single double helix of DNA" -bd 2]
     
+    #Label frame for the first base 
     grid [labelframe $w.helix.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
     
     #first base
     grid [ttk::combobox $w.helix.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
-    #grid [button $w.helix.resBase1.getName1 -text "Use this resname"] -row 1 -column 0 -columnspan 2 
     grid [ttk::combobox $w.helix.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
     
     grid [label $w.helix.resBase1.lab -text ""] -row 0 -column 2
@@ -130,11 +132,11 @@ proc ::curvespackage::chargement {} {
     #button for calling the matching of bases
     grid [button $w.helix.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
     
+    #Label frame for the second base
     grid [labelframe $w.helix.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
     
     #second base
     grid [ttk::combobox $w.helix.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
-    #grid [button $w.helix.resBase2.getName2 -text "Use this resname"] -row 1 -column 0 -columnspan 2
     grid [ttk::combobox $w.helix.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
     
     grid [label $w.helix.resBase2.lab2 -text ""] -row 0 -column 2
@@ -144,6 +146,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.helix.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
     grid [ttk::combobox $w.helix.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
     
+    #plotting buttons
     grid [button $w.helix.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
     grid [button $w.helix.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
     grid [button $w.helix.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
@@ -151,6 +154,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
     grid [button $w.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
   
+    #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
     grid [label $w.frames.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.frames.frameSLab -text "First frame :"] -row 7 -column 0
@@ -162,7 +166,7 @@ proc ::curvespackage::chargement {} {
   
     pack $w.helix $w.frames
 
-    #appelle la creation de la liste des resnames disponibles 
+    #call the function which create the list of resnames and resids 
     ::curvespackage::listeResname
 
     #bind the selection of an element in the combobox with a function that puts the list 
@@ -184,7 +188,7 @@ proc ::curvespackage::chargement {} {
     }
 
     #binding with a function that reacts to a selection of the combobox
-    #enable the function plot if at least two bases are selected
+    #enable the function plot if at least two bases are selected (next one same)
     bind $w.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 0
       ::curvespackage::enableCommand 0
@@ -521,6 +525,7 @@ proc ::curvespackage::matchList {} {
     set diff [expr {$mid - [expr {int($idSel1)}]}]
     set match [expr {$mid + 1 + $diff}]
     
+    #verifies that the resname is one from a DNA residue
     if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
       dict for {id info} $selectList {
         if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
