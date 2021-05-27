@@ -154,6 +154,29 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
     grid [button $w.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
   
+    # Labelframe for the G-Quadruplex section
+    grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
+    
+    # First base
+    grid [label $w.gQuad.labelRes1 -text "First base"] -row 0 -column 0
+    grid [ttk::combobox $w.gQuad.resName1] -row 1 -column 0
+    grid [ttk::combobox $w.gQuad.resId1] -row 2 -column 0
+    
+    # Second base
+    grid [label $w.gQuad.labelRes2 -text "Second base"] -row 0 -column 1
+    grid [ttk::combobox $w.gQuad.resName2] -row 1 -column 1
+    grid [ttk::combobox $w.gQuad.resId2] -row 2 -column 1
+    
+    # Third base
+    grid [label $w.gQuad.labelRes3 -text "Third base"] -row 3 -column 0
+    grid [ttk::combobox $w.gQuad.resName3] -row 4 -column 0
+    grid [ttk::combobox $w.gQuad.resId3] -row 5 -column 0
+    
+    # Fourth base
+    grid [label $w.gQuad.labelRes4 -text "Fourth base"] -row 3 -column 1
+    grid [ttk::combobox $w.gQuad.resName4] -row 4 -column 1
+    grid [ttk::combobox $w.gQuad.resId4] -row 5 -column 1
+  
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
     grid [label $w.frames.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
@@ -164,8 +187,9 @@ proc ::curvespackage::chargement {} {
     grid [label $w.frames.stepLab -text "Step :"] -row 7 -column 4
     grid [entry $w.frames.step -textvar ::curvespackage::step] -row 7 -column 5
   
-    pack $w.helix $w.frames
-
+    pack $w.helix $w.gQuad $w.frames
+    
+    
     #call the function which create the list of resnames and resids 
     ::curvespackage::listeResname
 
