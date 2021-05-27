@@ -1,0 +1,63 @@
+#!/bin/bash
+
+cat > Groove_param_W12.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Groove_W12.eps'
+
+set pm3d map 
+set title 'W12'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Groove_Parameters' u 1:2:3 with pm3d notitle
+
+EOF
+
+cat > Groove_param_D12.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Groove_D12.eps'
+
+set pm3d map 
+set title 'D12'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Groove_Parameters' u 1:2:4 with pm3d notitle
+
+EOF
+
+cat > Groove_param_W21.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Groove_W21.eps'
+
+set pm3d map 
+set title 'W21'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Groove_Parameters' u 1:2:5 with pm3d notitle
+
+EOF
+
+cat > Groove_param_D21.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Groove_D21.eps'
+
+set pm3d map 
+set title 'D21'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Groove_Parameters' u 1:2:6 with pm3d notitle
+
+EOF
+
+
+gnuplot Groove_param_*.plt
+
+for f in *eps ; do ps2pdf $f ; done
+

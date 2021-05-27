@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# seul des snapshots au format pdb sont necessaires pour pouvoir lancer ce code
+# il faut aussi avoir gnuplot
+# a lancer avec :
+# snapanalysis numeropremieresnapshot incrementsnapshots numerodernieresnapshot pairedebases brinA_first brinA_last brinB_first brinB_last
+# attention!!! mettre GetDNAParam dans le bin
+# ATTENTION!!! en ligne 28 de ce fichier, il faut changer le nom de file pour le faire coller avec les fichiers de 
+# snapshots, toujours en gardant le meme format, name-numero.pdb 
+# les make_* peuvent etre dans le Cur_Dir pour pouvoir les modifier et ameliorer l aspect des resultats
+# par exemple passer de "pm3d map" a pm3d 
+
+
+
+FIRST=$1
+INC=$2
+LAST=$3
+NPAIRS=$4
+
+for f in `seq $FIRST $INC $LAST`
+
+do
+
+cat > c+ana-$f  <<EOF
+module load curves+/std
+Cur+ <<!
+&inp file=snapshot-$f.pdb, lis=snapanal-$f,
+ lib=/auto/tms6/miclot11u/bin/Curve+/CURVES+/standard,
+&end
+2 1 -1 0 0
+2:12
+24:14
+!
+EOF
+
+chmod +x c+ana-$f
+./c+ana-$f
+
+done
+
+for g in `seq $FIRST $INC $LAST`
+  do
+    ./GetDNAParam snapanal-$g.lis $g $NPAIRS
+done
+
+./make_Backbone-S1_plots
+./make_Backbone-S2_plots
+./make_BP-Axis_plots
+./make_Groove_plots
+./make_Inter-BP_plots
+./make_Intra-BP_plots
+
+./GetBasePairParam.sh $FIRST $INC $LAST $NPAIRS
+./GetAverageParam.sh $NPAIRS

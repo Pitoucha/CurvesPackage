@@ -1,0 +1,91 @@
+#!/bin/bash
+
+cat > Intra-BP_param_Shear.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Intra-BP_Shear.eps'
+
+set pm3d map 
+set title 'Shear'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Intra-BP_Parameters' u 1:2:3 with pm3d notitle
+
+EOF
+
+cat > Intra-BP_param_Stretch.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Intra-BP_Stretch.eps'
+
+set pm3d map 
+set title 'Stretch'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Intra-BP_Parameters' u 1:2:4 with pm3d notitle
+
+EOF
+
+cat > Intra-BP_param_Stagger.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Intra-BP_Stagger.eps'
+
+set pm3d map 
+set title 'Stagger'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Intra-BP_Parameters' u 1:2:5 with pm3d notitle
+
+EOF
+
+cat > Intra-BP_param_Buckle.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Intra-BP_Buckle.eps'
+
+set pm3d map 
+set title 'Buckle'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Intra-BP_Parameters' u 1:2:6 with pm3d notitle
+
+EOF
+
+cat > Intra-BP_param_Propel.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Intra-BP_Propel.eps'
+
+set pm3d map 
+set title 'Propel'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Intra-BP_Parameters' u 1:2:7 with pm3d notitle
+
+EOF
+
+cat > Intra-BP_param_Opening.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Intra-BP_Opening.eps'
+
+set pm3d map 
+set title 'Opening'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Intra-BP_Parameters' u 1:2:8 with pm3d notitle
+
+EOF
+
+
+gnuplot Intra-BP_param_*.plt
+
+for f in *eps ; do ps2pdf $f ; done
+

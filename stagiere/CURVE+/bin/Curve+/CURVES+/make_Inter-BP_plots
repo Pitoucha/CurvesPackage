@@ -1,0 +1,118 @@
+#!/bin/bash
+
+cat > Inter-BP_param_Shift.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_Shift.eps'
+
+set pm3d map 
+set title 'Shift'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:3 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_Slide.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_Slide.eps'
+
+set pm3d map 
+set title 'Slide'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:4 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_Rise.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_Rise.eps'
+
+set pm3d map 
+set title 'Rise'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:5 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_Tilt.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_Tilt.eps'
+
+set pm3d map 
+set title 'Tilt'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:6 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_Roll.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_Roll.eps'
+
+set pm3d map 
+set title 'Roll'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:7 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_Twist.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_Twist.eps'
+
+set pm3d map 
+set title 'Twist'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:8 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_H-Ris.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_H-Ris.eps'
+
+set pm3d map 
+set title 'H-Ris'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:9 with pm3d notitle
+
+EOF
+
+cat > Inter-BP_param_H-Twi.plt <<EOF
+set terminal postscript eps enhanced color solid "Times-Roman" 16
+set output 'Inter-BP_H-Twi.eps'
+
+set pm3d map 
+set title 'H-Twi'
+set palette rgbformulae 22,13,-31
+set xlabel 'time'
+set ylabel 'pair number'
+
+splot 'Inter-BP_Parameters' u 1:2:10 with pm3d notitle
+
+EOF
+
+gnuplot Inter-BP_param_*.plt
+
+for f in *eps ; do epstopdf $f ; done
+

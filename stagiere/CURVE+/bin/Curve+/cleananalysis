@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm c+ana-* *lis *cda *eps *pdf *plt *Parameters *tmp *dat *_B.pdb *_X.pdb
