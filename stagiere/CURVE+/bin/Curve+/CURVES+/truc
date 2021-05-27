@@ -1,5 +1,0 @@
-#!/bin/bash
-
-TRUC=$(($1 -1))
-
-echo $TRUC 

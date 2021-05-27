@@ -1,4 +1,0 @@
-# Ion library
-# Each line gives the ion/atom name (in signle quotes) and its formal charge
-# Up to 40 ion type are allowed in this library file
-'O' 0
