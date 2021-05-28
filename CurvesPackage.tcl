@@ -12,10 +12,6 @@ package provide CurvesPackage 0.1
 package require Tk
 package require multiplot
 
-set CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
-set PACKAGE_PATH "$CURVESPACKAGE_PATH"
-set PACKAGEPATH "$CURVESPACKAGE_PATH"
-
 variable platform $tcl_platform(platform)
 
 switch $platform {
@@ -51,6 +47,10 @@ namespace eval ::curvespackage:: {
   variable atomsDNA
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
   variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
+
+  variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
+  variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
+  variable PACKAGEPATH "$CURVESPACKAGE_PATH"
 }
 
 
@@ -79,6 +79,8 @@ proc ::curvespackage::packageui {} {
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.edit.menu add command -label "Load new Mol" -command ::curvespackage::chargement
   $w.menubar.edit.menu add command -label "Load new trajectory" -command ::curvespackage::trajectLoad
+  $w.menubar.edit.menu add command -label "test exec ls" -command ::curvespackage::testLs
+  $w.menubar.edit.menu add command -label "GNUplot" -command ::curvespackage::gnuPlotTest
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
   grid $w.menubar.file -row 0 -column 0 -sticky w
@@ -87,6 +89,20 @@ proc ::curvespackage::packageui {} {
   pack $w.menubar
   
   return $w
+}
+
+
+proc gnuPlotTest {} {
+  puts "ICI POUR .dat"
+}
+
+proc ::curvespackage::testLs {} {
+  variable CURVESPACKAGE_PATH
+  puts [exec ls]
+  puts $CURVESPACKAGE_PATH
+  set path [ "gnu " $CURVESPACKAGE_PATH "GNU_Script/angle_AQ.plt"]
+  
+  exec $path
 }
 
 #load a new molecule
