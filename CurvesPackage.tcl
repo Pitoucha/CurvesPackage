@@ -290,7 +290,7 @@ proc ::curvespackage::trajectLoad {} {
   if {$newTrajectory != ""} {
     #add the trajectory for the mol already opened 
     mol addfile $newTrajectory
-    pbc unwrap -all 
+    pbc unwrap -sel "all not water"
   }
 }
 
