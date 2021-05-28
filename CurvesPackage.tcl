@@ -92,7 +92,7 @@ proc ::curvespackage::packageui {} {
 }
 
 
-proc gnuPlotTest {} {
+proc ::curvespackage::gnuPlotTest {} {
   puts "ICI POUR .dat"
 }
 
