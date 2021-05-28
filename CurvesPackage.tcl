@@ -194,7 +194,7 @@ proc ::curvespackage::chargement {} {
     ::curvespackage::listeResname
 
     #bind the selection of an element in the combobox with a function that puts the list 
-    #of resids for the resname (repeat for the next three)
+    #of resids for the resname
     bind $w.helix.resBase1.resNameBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 0
     }
@@ -211,6 +211,23 @@ proc ::curvespackage::chargement {} {
       ::curvespackage::selectWithResname 3
     }
 
+    bind $w.gQuad.resName1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 4
+
+    }
+    bind $w.gQuad.resName2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 5
+
+    }
+    bind $w.gQuad.resName3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 6
+
+    }
+    bind $w.gQuad.resName4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 7
+
+    }
+
     #binding with a function that reacts to a selection of the combobox
     #enable the function plot if at least two bases are selected (next one same)
     bind $w.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
@@ -222,6 +239,22 @@ proc ::curvespackage::chargement {} {
     bind $w.helix.resBase2.resIdBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 1
       ::curvespackage::enableCommand 1
+    }
+
+    bind $w.gQuad.resId1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 2
+    }
+
+    bind $w.gQuad.resId2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 3
+    }
+
+    bind $w.gQuad.resId3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 4
+    }
+
+    bind $w.gQuad.resId4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 5
     }
   }
 }
@@ -319,8 +352,15 @@ proc ::curvespackage::listeResname {} {
 
   #delete the doubles 
   set names [lsort -unique $names]
+  
+  #list for DNA residues
   set stc [list]
   set stcId [list]
+
+  #list for Guanine
+  set stcQuad [list]
+  set stcQuadId [list]
+
   foreach name $names  {
       #get resname and resid
       set rsn [split $name "\ "]
@@ -338,6 +378,10 @@ proc ::curvespackage::listeResname {} {
       if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn]} {
         lappend stc $rsn
         lappend stcId $rsi
+        if {[regexp {^DG} $rsn]} {
+          lappend stcQuad $rsn
+          lappend stcQuadId $rsi
+        }
       }
     }
 
@@ -356,14 +400,29 @@ proc ::curvespackage::listeResname {} {
     #delete the double 
     set stc [lsort -unique $stc]
     set stcId [lsort -integer $stcId]
+    set stcQuad [lsort -unique $stcQuad]
+    set stcQuadId [lsort -integer $stcQuadId]    
+
     #set the values for all the dropdown lists 
+      #resname
     $w.helix.resBase1.resNameBase1 configure -values $stc
     $w.helix.resBase1.resNameMatch1 configure -values $stc
     $w.helix.resBase2.resNameBase2 configure -values $stc
     $w.helix.resBase2.resNameMatch2 configure -values $stc
+    
+    $w.gQuad.resName1 configure -values $stcQuad
+    $w.gQuad.resName2 configure -values $stcQuad
+    $w.gQuad.resName3 configure -values $stcQuad
+    $w.gQuad.resName4 configure -values $stcQuad
 
+      #resid
     $w.helix.resBase1.resIdBase1 configure -values $stcId
     $w.helix.resBase2.resIdBase2 configure -values $stcId
+    
+    $w.gQuad.resId1 configure -values $stcQuadId
+    $w.gQuad.resId2 configure -values $stcQuadId
+    $w.gQuad.resId3 configure -values $stcQuadId
+    $w.gQuad.resId4 configure -values $stcQuadId
     
     $sel delete
 }
@@ -385,6 +444,18 @@ proc ::curvespackage::selectWithResname {b} {
     }
     3 {
       set name [$w.helix.resBase2.resNameMatch2 get]
+    }
+    4 {
+      set name [$w.gQuad.resName1 get]
+    }
+    5 {
+      set name [$w.gQuad.resName2 get]
+    }
+    6 {
+      set name [$w.gQuad.resName3 get]
+    }
+    7 {
+      set name [$w.gQuad.resName4 get]
     }
     default {
       puts "there is a problem, call us!" 
@@ -410,7 +481,6 @@ proc ::curvespackage::selectWithResname {b} {
       $w.helix.resBase1.resIdBase1 configure -values $stc
     }
     1 {
-      
       $w.helix.resBase2.resIdBase2 configure -values $stc
     }
     2 {
@@ -418,6 +488,18 @@ proc ::curvespackage::selectWithResname {b} {
     }
     3 {
       $w.helix.resBase2.resIdMatch2 configure -values $stc
+    }
+    4 {
+      $w.gQuad.resId1 configure -values $stc 
+    }
+    5 {
+      $w.gQuad.resId2 configure -values $stc 
+    }
+    6 {
+      $w.gQuad.resId3 configure -values $stc 
+    }
+    7 {
+      $w.gQuad.resId4 configure -values $stc 
     }
     default {
         puts "there is a problem, call us!" 
@@ -433,38 +515,61 @@ proc ::curvespackage::selectWithResname {b} {
 proc ::curvespackage::selectWithResid {b} {
   variable w 
   variable selectList
-
+  
+  #get the resid input 
   switch $b {
     0 {
-      #get the resid input 
       set stcId [$w.helix.resBase1.resIdBase1 get]
-      #verifies that the resid isnt empty
-      if {$stcId != ""} {
-        dict for {id info} $selectList {
-          #test if the resname is one from a DNA residue 
-          if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
-            if {[lsearch -exact $info $stcId] >= 0} {
-              $w.helix.resBase1.resNameBase1 set $id
-              break
-            }
-          }
-        }
-      }
     }
-
     1 {
-      #get the resid input 
       set stcId [$w.helix.resBase2.resIdBase2 get]
-      #verifies that the resid isnt empty
-      if {$stcId != ""} {
-        dict for {id info} $selectList {
-          #test if the resname is one from a DNA residue 
-          if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
-            if {[lsearch -exact $info $stcId] >= 0 } {
-              $w.helix.resBase2.resNameBase2 set $id
-              break
+    }
+    2 {
+      set stcId [$w.gQuad.resId1 get]
+    }
+    3 {
+      set stcId [$w.gQuad.resId2 get]
+    }
+    4 {
+      set stcId [$w.gQuad.resId3 get]
+    }
+    5 {
+      set stcId [$w.gQuad.resId4 get]
+    }
+    default {
+      set stcId ""
+    }
+  }
+
+  if {$stcId != ""} {
+    dict for {id info} $selectList {
+      #test if the resname is one from a DNA residue 
+      if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
+        if {[lsearch -exact $info $stcId] >= 0} {
+          switch $b {
+            0 {
+                $w.helix.resBase1.resNameBase1 set $id
+              }
+            1 {
+                $w.helix.resBase2.resNameBase2 set $id
+            }
+            2 {
+                $w.gQuad.resName1 set $id 
+            }
+            3 {
+                $w.gQuad.resName2 set $id 
+            }
+            4 {
+                $w.gQuad.resName3 set $id 
+            }
+            5 {
+                $w.gQuad.resName4 set $id 
+            }
+            default {
+              puts "W.T.F ?"
             }
           }
+          break
         }
       }
     }
