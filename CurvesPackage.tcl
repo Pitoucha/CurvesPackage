@@ -93,7 +93,19 @@ proc ::curvespackage::packageui {} {
 
 
 proc ::curvespackage::gnuPlotTest {} {
-  puts "ICI POUR .dat"
+  set file [open "outdist1.dat" w]
+  set listP [::curvespackage::plotBases dist 1]
+  for { set i 0 } { $i <= [llength $listP] } { incr i } {
+    puts $file [lindex $listP $i]
+  }
+  close $file
+  
+  set file [open "outangl1.dat" w]
+  set listP [::curvespackage::plotBases angl 1]
+  for { set i 0 } { $i <= [llength $listP] } { incr i } {
+    puts $file [lindex $listP $i]
+  }
+  close $file
 }
 
 proc ::curvespackage::testLs {} {
@@ -714,7 +726,7 @@ proc ::curvespackage::matchList {} {
 }
 
 # Procedure that plots the angle and distance between selected pairs
-proc ::curvespackage::plotBases { type } {
+proc ::curvespackage::plotBases { type {hist 0} } {
   # Variable used to get the window
   variable w
   # Variable used as dictionary to store the different atoms used depending on the pair
@@ -860,6 +872,10 @@ proc ::curvespackage::plotBases { type } {
         # Calling computeFrames on our selection for an angle between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
 	
+	if { $hist != 0 } {
+	  return $listP
+	}
+	
 	# Deleting all our selections
         $res1 delete
 	$res2 delete
@@ -877,6 +893,10 @@ proc ::curvespackage::plotBases { type } {
       
         # Calling computeFrames on our selection for a distance between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
+	
+	if { $hist != 0 } {
+	  return $listP
+	}
 	
 	# Deleting all our selections
 	$res1 delete
