@@ -113,7 +113,7 @@ proc ::curvespackage::testLs {} {
   #puts [exec ls]
   set path [append CURVESPACKAGE_PATH "/GNU_Script/angle_AQ.plt"]
   puts $path
-  exec ["gnuplot " $path]
+  exec "gnuplot $path"
 }
 
 #/Applications/VMD 1.9.4.app/Contents/vmd/plugins/noarch/tcl/CurvesPackage/GNU_Script/angle_AQ.pl
