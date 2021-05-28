@@ -98,13 +98,14 @@ proc ::curvespackage::gnuPlotTest {} {
 
 proc ::curvespackage::testLs {} {
   variable CURVESPACKAGE_PATH
-  puts [exec ls]
-  puts $CURVESPACKAGE_PATH
-  set path [ "gnu " $CURVESPACKAGE_PATH "GNU_Script/angle_AQ.plt"]
-  
-  exec $path
+  #puts [exec ls]
+  set path [append CURVESPACKAGE_PATH "/GNU_Script/angle_AQ.plt"]
+  puts $path
+  exec ["gnuplot " $path]
 }
 
+#/Applications/VMD 1.9.4.app/Contents/vmd/plugins/noarch/tcl/CurvesPackage/GNU_Script/angle_AQ.pl
+#/Applications/VMD 1.9.4.app/Contents/vmd/plugins/noarch/tcl/CurvesPackage/GNU_Script
 #load a new molecule
 proc ::curvespackage::chargement {} {
   variable w
