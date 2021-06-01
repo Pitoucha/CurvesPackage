@@ -121,7 +121,7 @@ proc ::curvespackage::testLs {} {
   
   puts [exec pwd]
   #gnuplot -c distGNUScript.plt angle_apo_WT.dat
-  set test "exec gnuplot -c $path outdist1.dat"
+  set test "exec gnuplot -c $path outdist1.dat 0.10"
   eval $test
 }
 
@@ -411,7 +411,7 @@ proc ::curvespackage::listeResname {} {
       }
 
       #fill our DNA lists 
-      if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn] || [regexp {^RA} $rsn] || [regexp {^RT} $rsn] || [regexp {^RC} $rsn] || [regexp {^RG} $rsn]} {
+      if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn] || [regexp {^RA} $rsn] || [regexp {^RU} $rsn] || [regexp {^RC} $rsn] || [regexp {^RG} $rsn]} {
         lappend stc $rsn
         lappend stcId $rsi
         if {[regexp {^DG} $rsn]} {
@@ -580,7 +580,7 @@ proc ::curvespackage::selectWithResid {b} {
   if {$stcId != ""} {
     dict for {id info} $selectList {
       #test if the resname is one from a DNA residue 
-      if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $rsn] || [regexp {^RT} $rsn] || [regexp {^RC} $rsn] || [regexp {^RG} $rsn]} {
+      if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
         if {[lsearch -exact $info $stcId] >= 0} {
           switch $b {
             0 {
@@ -638,9 +638,9 @@ proc ::curvespackage::matchList {} {
     set match [expr {$mid + 1 + $diff}]
     
     #verifies that the resname is one from a DNA residue
-    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RT} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RT} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
@@ -657,11 +657,19 @@ proc ::curvespackage::matchList {} {
                 $w.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
                 $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
             } else {
                 $w.helix.resBase1.resIdMatch1 set -1
                 $w.helix.resBase1.resNameMatch1 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
-              }
+            }
             break
           }
         }
@@ -691,9 +699,9 @@ proc ::curvespackage::matchList {} {
     set match [expr {$mid + 1 + $diff}]
     
     #verifies that the resname is one from a DNA residue
-    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RT} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RT} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
@@ -710,6 +718,14 @@ proc ::curvespackage::matchList {} {
                 $w.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
                 $w.helix.resBase2.resNameMatch2 set $id
+            } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
+            } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
+            } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
+            } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
             } else {
                 $w.helix.resBase2.resIdMatch2 set -1
                 $w.helix.resBase2.resNameMatch2 set "NO MATCH"
