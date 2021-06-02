@@ -118,13 +118,10 @@ proc ::curvespackage::testLs {} {
   cd "GNU_Script"
 
   set path "distGNUScript.plt"
- # set output [tk_chooseDirectory]
 
   set foo "This is some text."
-
   toplevel .t
-  pack [button .t.file -text "choose the output directory" -command tk_getOpenFile]
-
+  pack [label .t.l -text "Enter the rounding"]
   pack [entry .t.e -textvar $foo]
   pack [button .t.b -text "OK" -command {destroy .t}]
   bind .t <Return> {.t.b invoke}
@@ -133,10 +130,13 @@ proc ::curvespackage::testLs {} {
 
   puts "The variable contains '$foo'"
 
-  puts [exec pwd]
   #gnuplot -c distGNUScript.plt angle_apo_WT.dat
-  set test "exec gnuplot -c $path outdist1.dat 0.10 $output"
+  set test "exec gnuplot -c $path outdist1.dat $foo"
   eval $test
+}
+
+proc ::curvespackage::callFileChooser {} {
+  return [tk_getOpenFile]
 }
 
 #load a new molecule
