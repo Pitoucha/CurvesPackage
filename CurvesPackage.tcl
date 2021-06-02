@@ -1182,7 +1182,7 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	set dotprod [vecdot $vect1 $vect2]
 	
 	# Correcting the scalar dot product by dividing it by the multiplication of the lengths of the 2 vectors
-	set dotprodcor [expr $dotprod / ($lenV1 * $lenV2)]
+	set dotprodcor [vecnorm $dotprod]
 	
 	# Correcting the scalar dot product (in case of bad rounding)
 	if {$dotprodcor > 1.0} {
