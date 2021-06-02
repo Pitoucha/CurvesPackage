@@ -207,25 +207,51 @@ proc ::curvespackage::chargement {} {
     # Labelframe for the G-Quadruplex section
     grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
     
+    #First quartet
+    grid [labelframe $w.gQuad.qua1 -text "First Quartet"]
+    
     # First base
-    grid [label $w.gQuad.labelRes1 -text "First base"] -row 0 -column 0
-    grid [ttk::combobox $w.gQuad.resName1] -row 1 -column 0
-    grid [ttk::combobox $w.gQuad.resId1] -row 2 -column 0
+    grid [label $w.gQuad.qua1.labelRes1 -text "First base"] -row 0 -column 0
+    grid [ttk::combobox $w.gQuad.qua1.resName1] -row 1 -column 0
+    grid [ttk::combobox $w.gQuad.qua1.resId1] -row 2 -column 0
     
     # Second base
-    grid [label $w.gQuad.labelRes2 -text "Second base"] -row 0 -column 1
-    grid [ttk::combobox $w.gQuad.resName2] -row 1 -column 1
-    grid [ttk::combobox $w.gQuad.resId2] -row 2 -column 1
+    grid [label $w.gQuad.qua1.labelRes2 -text "Second base"] -row 0 -column 1
+    grid [ttk::combobox $w.gQuad.qua1.resName2] -row 1 -column 1
+    grid [ttk::combobox $w.gQuad.qua1.resId2] -row 2 -column 1
     
     # Third base
-    grid [label $w.gQuad.labelRes3 -text "Third base"] -row 3 -column 0
-    grid [ttk::combobox $w.gQuad.resName3] -row 4 -column 0
-    grid [ttk::combobox $w.gQuad.resId3] -row 5 -column 0
+    grid [label $w.gQuad.qua1.labelRes3 -text "Third base"] -row 3 -column 0
+    grid [ttk::combobox $w.gQuad.qua1.resName3] -row 4 -column 0
+    grid [ttk::combobox $w.gQuad.qua1.resId3] -row 5 -column 0
     
     # Fourth base
-    grid [label $w.gQuad.labelRes4 -text "Fourth base"] -row 3 -column 1
-    grid [ttk::combobox $w.gQuad.resName4] -row 4 -column 1
-    grid [ttk::combobox $w.gQuad.resId4] -row 5 -column 1
+    grid [label $w.gQuad.qua1.labelRes4 -text "Fourth base"] -row 3 -column 1
+    grid [ttk::combobox $w.gQuad.qua1.resName4] -row 4 -column 1
+    grid [ttk::combobox $w.gQuad.qua1.resId4] -row 5 -column 1
+    
+    #Second quartet
+    grid [labelframe $w.gQuad.qua2 -text "First Quartet"]
+    
+    # First base
+    grid [label $w.gQuad.qua2.labelRes1 -text "First base"] -row 0 -column 0
+    grid [ttk::combobox $w.gQuad.qua2.resName1] -row 1 -column 0
+    grid [ttk::combobox $w.gQuad.qua2.resId1] -row 2 -column 0
+    
+    # Second base
+    grid [label $w.gQuad.qua2.labelRes2 -text "Second base"] -row 0 -column 1
+    grid [ttk::combobox $w.gQuad.qua2.resName2] -row 1 -column 1
+    grid [ttk::combobox $w.gQuad.qua2.resId2] -row 2 -column 1
+    
+    # Third base
+    grid [label $w.gQuad.qua2.labelRes3 -text "Third base"] -row 3 -column 0
+    grid [ttk::combobox $w.gQuad.qua2.resName3] -row 4 -column 0
+    grid [ttk::combobox $w.gQuad.qua2.resId3] -row 5 -column 0
+    
+    # Fourth base
+    grid [label $w.gQuad.qua2.labelRes4 -text "Fourth base"] -row 3 -column 1
+    grid [ttk::combobox $w.gQuad.qua2.resName4] -row 4 -column 1
+    grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
   
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -261,20 +287,36 @@ proc ::curvespackage::chargement {} {
       ::curvespackage::selectWithResname 3
     }
 
-    bind $w.gQuad.resName1 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resName1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 4
 
     }
-    bind $w.gQuad.resName2 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resName2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 5
 
     }
-    bind $w.gQuad.resName3 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resName3 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 6
 
     }
-    bind $w.gQuad.resName4 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resName4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 7
+
+    }
+    bind $w.gQuad.qua2.resName1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 8
+
+    }
+    bind $w.gQuad.qua2.resName2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 9
+
+    }
+    bind $w.gQuad.qua2.resName3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 10
+
+    }
+    bind $w.gQuad.qua2.resName4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 11
 
     }
 
@@ -291,19 +333,19 @@ proc ::curvespackage::chargement {} {
       ::curvespackage::enableCommand 1
     }
 
-    bind $w.gQuad.resId1 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resId1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 2
     }
 
-    bind $w.gQuad.resId2 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resId2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 3
     }
 
-    bind $w.gQuad.resId3 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resId3 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 4
     }
 
-    bind $w.gQuad.resId4 <<ComboboxSelected>> {
+    bind $w.gQuad.qua1.resId4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 5
     }
   }
@@ -460,19 +502,27 @@ proc ::curvespackage::listeResname {} {
     $w.helix.resBase2.resNameBase2 configure -values $stc
     $w.helix.resBase2.resNameMatch2 configure -values $stc
     
-    $w.gQuad.resName1 configure -values $stcQuad
-    $w.gQuad.resName2 configure -values $stcQuad
-    $w.gQuad.resName3 configure -values $stcQuad
-    $w.gQuad.resName4 configure -values $stcQuad
+    $w.gQuad.qua1.resName1 configure -values $stcQuad
+    $w.gQuad.qua1.resName2 configure -values $stcQuad
+    $w.gQuad.qua1.resName3 configure -values $stcQuad
+    $w.gQuad.qua1.resName4 configure -values $stcQuad
+    $w.gQuad.qua2.resName1 configure -values $stcQuad
+    $w.gQuad.qua2.resName2 configure -values $stcQuad
+    $w.gQuad.qua2.resName3 configure -values $stcQuad
+    $w.gQuad.qua2.resName4 configure -values $stcQuad
 
       #resid
     $w.helix.resBase1.resIdBase1 configure -values $stcId
     $w.helix.resBase2.resIdBase2 configure -values $stcId
     
-    $w.gQuad.resId1 configure -values $stcQuadId
-    $w.gQuad.resId2 configure -values $stcQuadId
-    $w.gQuad.resId3 configure -values $stcQuadId
-    $w.gQuad.resId4 configure -values $stcQuadId
+    $w.gQuad.qua1.resId1 configure -values $stcQuadId
+    $w.gQuad.qua1.resId2 configure -values $stcQuadId
+    $w.gQuad.qua1.resId3 configure -values $stcQuadId
+    $w.gQuad.qua1.resId4 configure -values $stcQuadId
+    $w.gQuad.qua2.resId1 configure -values $stcQuadId
+    $w.gQuad.qua2.resId2 configure -values $stcQuadId
+    $w.gQuad.qua2.resId3 configure -values $stcQuadId
+    $w.gQuad.qua2.resId4 configure -values $stcQuadId
     
     $sel delete
 }
@@ -496,16 +546,28 @@ proc ::curvespackage::selectWithResname {b} {
       set name [$w.helix.resBase2.resNameMatch2 get]
     }
     4 {
-      set name [$w.gQuad.resName1 get]
+      set name [$w.gQuad.qua1.resName1 get]
     }
     5 {
-      set name [$w.gQuad.resName2 get]
+      set name [$w.gQuad.qua1.resName2 get]
     }
     6 {
-      set name [$w.gQuad.resName3 get]
+      set name [$w.gQuad.qua1.resName3 get]
     }
     7 {
-      set name [$w.gQuad.resName4 get]
+      set name [$w.gQuad.qua1.resName4 get]
+    }
+    8 {
+      set name [$w.gQuad.qua2.resName1 get]
+    }
+    9 {
+      set name [$w.gQuad.qua2.resName2 get]
+    }
+    10 {
+      set name [$w.gQuad.qua2.resName3 get]
+    }
+    11 {
+      set name [$w.gQuad.qua2.resName4 get]
     }
     default {
       puts "there is a problem, call us!" 
@@ -540,16 +602,28 @@ proc ::curvespackage::selectWithResname {b} {
       $w.helix.resBase2.resIdMatch2 configure -values $stc
     }
     4 {
-      $w.gQuad.resId1 configure -values $stc 
+      $w.gQuad.qua1.resId1 configure -values $stc 
     }
     5 {
-      $w.gQuad.resId2 configure -values $stc 
+      $w.gQuad.qua1.resId2 configure -values $stc 
     }
     6 {
-      $w.gQuad.resId3 configure -values $stc 
+      $w.gQuad.qua1.resId3 configure -values $stc 
     }
     7 {
-      $w.gQuad.resId4 configure -values $stc 
+      $w.gQuad.qua1.resId4 configure -values $stc 
+    }
+    8 {
+      $w.gQuad.qua2.resId1 configure -values $stc 
+    }
+    9 {
+      $w.gQuad.qua2.resId2 configure -values $stc 
+    }
+    10 {
+      $w.gQuad.qua2.resId3 configure -values $stc 
+    }
+    11 {
+      $w.gQuad.qua2.resId4 configure -values $stc 
     }
     default {
         puts "there is a problem, call us!" 
@@ -575,16 +649,16 @@ proc ::curvespackage::selectWithResid {b} {
       set stcId [$w.helix.resBase2.resIdBase2 get]
     }
     2 {
-      set stcId [$w.gQuad.resId1 get]
+      set stcId [$w.gQuad.qua1.resId1 get]
     }
     3 {
-      set stcId [$w.gQuad.resId2 get]
+      set stcId [$w.gQuad.qua1.resId2 get]
     }
     4 {
-      set stcId [$w.gQuad.resId3 get]
+      set stcId [$w.gQuad.qua1.resId3 get]
     }
     5 {
-      set stcId [$w.gQuad.resId4 get]
+      set stcId [$w.gQuad.qua1.resId4 get]
     }
     default {
       set stcId ""
@@ -604,16 +678,16 @@ proc ::curvespackage::selectWithResid {b} {
                 $w.helix.resBase2.resNameBase2 set $id
             }
             2 {
-                $w.gQuad.resName1 set $id 
+                $w.gQuad.qua1.resName1 set $id 
             }
             3 {
-                $w.gQuad.resName2 set $id 
+                $w.gQuad.qua1.resName2 set $id 
             }
             4 {
-                $w.gQuad.resName3 set $id 
+                $w.gQuad.qua1.resName3 set $id 
             }
             5 {
-                $w.gQuad.resName4 set $id 
+                $w.gQuad.qua1.resName4 set $id 
             }
             default {
               puts "W.T.F ?"
