@@ -12,10 +12,6 @@ package provide CurvesPackage 0.1
 package require Tk
 package require multiplot
 
-set CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
-set PACKAGE_PATH "$CURVESPACKAGE_PATH"
-set PACKAGEPATH "$CURVESPACKAGE_PATH"
-
 variable platform $tcl_platform(platform)
 
 switch $platform {
@@ -51,6 +47,10 @@ namespace eval ::curvespackage:: {
   variable atomsDNA
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
   variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
+
+  variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
+  variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
+  variable PACKAGEPATH "$CURVESPACKAGE_PATH"
 }
 
 
@@ -79,6 +79,8 @@ proc ::curvespackage::packageui {} {
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.edit.menu add command -label "Load new Mol" -command ::curvespackage::chargement
   $w.menubar.edit.menu add command -label "Load new trajectory" -command ::curvespackage::trajectLoad
+  $w.menubar.edit.menu add command -label "test exec ls" -command ::curvespackage::testLs
+  $w.menubar.edit.menu add command -label "GNUplot" -command ::curvespackage::gnuPlotTest
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
   grid $w.menubar.file -row 0 -column 0 -sticky w
@@ -89,35 +91,71 @@ proc ::curvespackage::packageui {} {
   return $w
 }
 
+
+proc ::curvespackage::gnuPlotTest {} {
+  variable CURVESPACKAGE_PATH
+  cd $CURVESPACKAGE_PATH
+  cd "GNU_Script"
+
+  set file [open "outdist1.dat" w]
+  set listP [::curvespackage::plotBases dist 1]
+  for { set i 0 } { $i <= [llength $listP] } { incr i } {
+    puts $file [lindex $listP $i]
+  }
+  close $file
+
+  set file [open "outangl1.dat" w]
+  set listP [::curvespackage::plotBases angl 1]
+  for { set i 0 } { $i <= [llength $listP] } { incr i } {
+    puts $file [lindex $listP $i]
+  }
+  close $file
+}
+
+proc ::curvespackage::testLs {} {
+  variable CURVESPACKAGE_PATH
+  cd $CURVESPACKAGE_PATH
+  cd "GNU_Script"
+
+  set path "distGNUScript.plt"
+  
+  puts [exec pwd]
+  #gnuplot -c distGNUScript.plt angle_apo_WT.dat
+  set test "exec gnuplot -c $path outdist1.dat 0.10"
+  eval $test
+}
+
+#load a new molecule
 proc ::curvespackage::chargement {} {
   variable w
   variable plotColors
   
-  #supprime 
+  #deletes all others molecules present  
   mol delete all 
 
-  #on recup?e le fichier ?charger
+  #get path file to open
   set newMol [tk_getOpenFile]
 
   #verifie que le chemin a bien été pris en compte
   if {$newMol != ""} {
-    #chargement
+    #load the mol 
     mol new $newMol
 
-    #supprime la representation actuelle 
+    #delete the represention in use 
     mol delrep 0 [molinfo 0 get id]
     
-    #crée une nouvelle representation et l'ajoute
+    #creates a new representation and adds it 
     mol representation CPK
     mol addrep [molinfo 0 get id]
     
+    #Label frame for Helix
     grid [labelframe $w.helix -text "In case you're working on a single double helix of DNA" -bd 2]
     
+    #Label frame for the first base 
     grid [labelframe $w.helix.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
     
     #first base
     grid [ttk::combobox $w.helix.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
-    #grid [button $w.helix.resBase1.getName1 -text "Use this resname"] -row 1 -column 0 -columnspan 2 
     grid [ttk::combobox $w.helix.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
     
     grid [label $w.helix.resBase1.lab -text ""] -row 0 -column 2
@@ -130,11 +168,11 @@ proc ::curvespackage::chargement {} {
     #button for calling the matching of bases
     grid [button $w.helix.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
     
+    #Label frame for the second base
     grid [labelframe $w.helix.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
     
     #second base
     grid [ttk::combobox $w.helix.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
-    #grid [button $w.helix.resBase2.getName2 -text "Use this resname"] -row 1 -column 0 -columnspan 2
     grid [ttk::combobox $w.helix.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
     
     grid [label $w.helix.resBase2.lab2 -text ""] -row 0 -column 2
@@ -144,6 +182,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.helix.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
     grid [ttk::combobox $w.helix.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
     
+    #plotting buttons
     grid [button $w.helix.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
     grid [button $w.helix.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
     grid [button $w.helix.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
@@ -151,6 +190,30 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
     grid [button $w.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
   
+    # Labelframe for the G-Quadruplex section
+    grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
+    
+    # First base
+    grid [label $w.gQuad.labelRes1 -text "First base"] -row 0 -column 0
+    grid [ttk::combobox $w.gQuad.resName1] -row 1 -column 0
+    grid [ttk::combobox $w.gQuad.resId1] -row 2 -column 0
+    
+    # Second base
+    grid [label $w.gQuad.labelRes2 -text "Second base"] -row 0 -column 1
+    grid [ttk::combobox $w.gQuad.resName2] -row 1 -column 1
+    grid [ttk::combobox $w.gQuad.resId2] -row 2 -column 1
+    
+    # Third base
+    grid [label $w.gQuad.labelRes3 -text "Third base"] -row 3 -column 0
+    grid [ttk::combobox $w.gQuad.resName3] -row 4 -column 0
+    grid [ttk::combobox $w.gQuad.resId3] -row 5 -column 0
+    
+    # Fourth base
+    grid [label $w.gQuad.labelRes4 -text "Fourth base"] -row 3 -column 1
+    grid [ttk::combobox $w.gQuad.resName4] -row 4 -column 1
+    grid [ttk::combobox $w.gQuad.resId4] -row 5 -column 1
+  
+    #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
     grid [label $w.frames.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
     grid [label $w.frames.frameSLab -text "First frame :"] -row 7 -column 0
@@ -160,13 +223,14 @@ proc ::curvespackage::chargement {} {
     grid [label $w.frames.stepLab -text "Step :"] -row 7 -column 4
     grid [entry $w.frames.step -textvar ::curvespackage::step] -row 7 -column 5
   
-    pack $w.helix $w.frames
-
-    #appelle la creation de la liste des resnames disponibles 
+    pack $w.helix $w.gQuad $w.frames
+    
+    
+    #call the function which create the list of resnames and resids 
     ::curvespackage::listeResname
 
     #bind the selection of an element in the combobox with a function that puts the list 
-    #of resids for the resname (repeat for the next three)
+    #of resids for the resname
     bind $w.helix.resBase1.resNameBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 0
     }
@@ -183,8 +247,25 @@ proc ::curvespackage::chargement {} {
       ::curvespackage::selectWithResname 3
     }
 
+    bind $w.gQuad.resName1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 4
+
+    }
+    bind $w.gQuad.resName2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 5
+
+    }
+    bind $w.gQuad.resName3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 6
+
+    }
+    bind $w.gQuad.resName4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResname 7
+
+    }
+
     #binding with a function that reacts to a selection of the combobox
-    #enable the function plot if at least two bases are selected
+    #enable the function plot if at least two bases are selected (next one same)
     bind $w.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 0
       ::curvespackage::enableCommand 0
@@ -194,6 +275,22 @@ proc ::curvespackage::chargement {} {
     bind $w.helix.resBase2.resIdBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 1
       ::curvespackage::enableCommand 1
+    }
+
+    bind $w.gQuad.resId1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 2
+    }
+
+    bind $w.gQuad.resId2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 3
+    }
+
+    bind $w.gQuad.resId3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 4
+    }
+
+    bind $w.gQuad.resId4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 5
     }
   }
 }
@@ -262,7 +359,7 @@ proc ::curvespackage::trajectLoad {} {
   if {$newTrajectory != ""} {
     #add the trajectory for the mol already opened 
     mol addfile $newTrajectory
-    pbc unwrap -all 
+    pbc unwrap -sel "all not water"
   }
 }
 
@@ -291,8 +388,15 @@ proc ::curvespackage::listeResname {} {
 
   #delete the doubles 
   set names [lsort -unique $names]
+  
+  #list for DNA residues
   set stc [list]
   set stcId [list]
+
+  #list for Guanine
+  set stcQuad [list]
+  set stcQuadId [list]
+
   foreach name $names  {
       #get resname and resid
       set rsn [split $name "\ "]
@@ -307,9 +411,13 @@ proc ::curvespackage::listeResname {} {
       }
 
       #fill our DNA lists 
-      if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn]} {
+      if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn] || [regexp {^RA} $rsn] || [regexp {^RU} $rsn] || [regexp {^RC} $rsn] || [regexp {^RG} $rsn]} {
         lappend stc $rsn
         lappend stcId $rsi
+        if {[regexp {^DG} $rsn]} {
+          lappend stcQuad $rsn
+          lappend stcQuadId $rsi
+        }
       }
     }
 
@@ -328,14 +436,29 @@ proc ::curvespackage::listeResname {} {
     #delete the double 
     set stc [lsort -unique $stc]
     set stcId [lsort -integer $stcId]
+    set stcQuad [lsort -unique $stcQuad]
+    set stcQuadId [lsort -integer $stcQuadId]    
+
     #set the values for all the dropdown lists 
+      #resname
     $w.helix.resBase1.resNameBase1 configure -values $stc
     $w.helix.resBase1.resNameMatch1 configure -values $stc
     $w.helix.resBase2.resNameBase2 configure -values $stc
     $w.helix.resBase2.resNameMatch2 configure -values $stc
+    
+    $w.gQuad.resName1 configure -values $stcQuad
+    $w.gQuad.resName2 configure -values $stcQuad
+    $w.gQuad.resName3 configure -values $stcQuad
+    $w.gQuad.resName4 configure -values $stcQuad
 
+      #resid
     $w.helix.resBase1.resIdBase1 configure -values $stcId
     $w.helix.resBase2.resIdBase2 configure -values $stcId
+    
+    $w.gQuad.resId1 configure -values $stcQuadId
+    $w.gQuad.resId2 configure -values $stcQuadId
+    $w.gQuad.resId3 configure -values $stcQuadId
+    $w.gQuad.resId4 configure -values $stcQuadId
     
     $sel delete
 }
@@ -357,6 +480,18 @@ proc ::curvespackage::selectWithResname {b} {
     }
     3 {
       set name [$w.helix.resBase2.resNameMatch2 get]
+    }
+    4 {
+      set name [$w.gQuad.resName1 get]
+    }
+    5 {
+      set name [$w.gQuad.resName2 get]
+    }
+    6 {
+      set name [$w.gQuad.resName3 get]
+    }
+    7 {
+      set name [$w.gQuad.resName4 get]
     }
     default {
       puts "there is a problem, call us!" 
@@ -382,7 +517,6 @@ proc ::curvespackage::selectWithResname {b} {
       $w.helix.resBase1.resIdBase1 configure -values $stc
     }
     1 {
-      
       $w.helix.resBase2.resIdBase2 configure -values $stc
     }
     2 {
@@ -390,6 +524,18 @@ proc ::curvespackage::selectWithResname {b} {
     }
     3 {
       $w.helix.resBase2.resIdMatch2 configure -values $stc
+    }
+    4 {
+      $w.gQuad.resId1 configure -values $stc 
+    }
+    5 {
+      $w.gQuad.resId2 configure -values $stc 
+    }
+    6 {
+      $w.gQuad.resId3 configure -values $stc 
+    }
+    7 {
+      $w.gQuad.resId4 configure -values $stc 
     }
     default {
         puts "there is a problem, call us!" 
@@ -405,38 +551,61 @@ proc ::curvespackage::selectWithResname {b} {
 proc ::curvespackage::selectWithResid {b} {
   variable w 
   variable selectList
-
+  
+  #get the resid input 
   switch $b {
     0 {
-      #get the resid input 
       set stcId [$w.helix.resBase1.resIdBase1 get]
-      #verifies that the resid isnt empty
-      if {$stcId != ""} {
-        dict for {id info} $selectList {
-          #test if the resname is one from a DNA residue 
-          if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
-            if {[lsearch -exact $info $stcId] >= 0} {
-              $w.helix.resBase1.resNameBase1 set $id
-              break
-            }
-          }
-        }
-      }
     }
-
     1 {
-      #get the resid input 
       set stcId [$w.helix.resBase2.resIdBase2 get]
-      #verifies that the resid isnt empty
-      if {$stcId != ""} {
-        dict for {id info} $selectList {
-          #test if the resname is one from a DNA residue 
-          if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
-            if {[lsearch -exact $info $stcId] >= 0 } {
-              $w.helix.resBase2.resNameBase2 set $id
-              break
+    }
+    2 {
+      set stcId [$w.gQuad.resId1 get]
+    }
+    3 {
+      set stcId [$w.gQuad.resId2 get]
+    }
+    4 {
+      set stcId [$w.gQuad.resId3 get]
+    }
+    5 {
+      set stcId [$w.gQuad.resId4 get]
+    }
+    default {
+      set stcId ""
+    }
+  }
+
+  if {$stcId != ""} {
+    dict for {id info} $selectList {
+      #test if the resname is one from a DNA residue 
+      if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
+        if {[lsearch -exact $info $stcId] >= 0} {
+          switch $b {
+            0 {
+                $w.helix.resBase1.resNameBase1 set $id
+              }
+            1 {
+                $w.helix.resBase2.resNameBase2 set $id
+            }
+            2 {
+                $w.gQuad.resName1 set $id 
+            }
+            3 {
+                $w.gQuad.resName2 set $id 
+            }
+            4 {
+                $w.gQuad.resName3 set $id 
+            }
+            5 {
+                $w.gQuad.resName4 set $id 
+            }
+            default {
+              puts "W.T.F ?"
             }
           }
+          break
         }
       }
     }
@@ -469,9 +638,9 @@ proc ::curvespackage::matchList {} {
     set match [expr {$mid + 1 + $diff}]
     
     #verifies that the resname is one from a DNA residue
-    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
@@ -488,11 +657,19 @@ proc ::curvespackage::matchList {} {
                 $w.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
                 $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
+            } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
+                $w.helix.resBase1.resNameMatch1 set $id
             } else {
                 $w.helix.resBase1.resIdMatch1 set -1
                 $w.helix.resBase1.resNameMatch1 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
-              }
+            }
             break
           }
         }
@@ -521,9 +698,10 @@ proc ::curvespackage::matchList {} {
     set diff [expr {$mid - [expr {int($idSel1)}]}]
     set match [expr {$mid + 1 + $diff}]
     
-    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+    #verifies that the resname is one from a DNA residue
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
@@ -540,6 +718,14 @@ proc ::curvespackage::matchList {} {
                 $w.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
                 $w.helix.resBase2.resNameMatch2 set $id
+            } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
+            } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
+            } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
+            } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
+                $w.helix.resBase1.resNameMatch2 set $id
             } else {
                 $w.helix.resBase2.resIdMatch2 set -1
                 $w.helix.resBase2.resNameMatch2 set "NO MATCH"
@@ -563,7 +749,7 @@ proc ::curvespackage::matchList {} {
 }
 
 # Procedure that plots the angle and distance between selected pairs
-proc ::curvespackage::plotBases { type } {
+proc ::curvespackage::plotBases { type {hist 0} } {
   # Variable used to get the window
   variable w
   # Variable used as dictionary to store the different atoms used depending on the pair
@@ -709,8 +895,12 @@ proc ::curvespackage::plotBases { type } {
         # Calling computeFrames on our selection for an angle between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
 	
+	if { $hist != 0 } {
+	  return $listP
+	}
+	
 	# Deleting all our selections
-        $res1 delete
+  $res1 delete
 	$res2 delete
 	$res3 delete
 	$res4 delete
@@ -726,6 +916,10 @@ proc ::curvespackage::plotBases { type } {
       
         # Calling computeFrames on our selection for a distance between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
+	
+	if { $hist != 0 } {
+	  return $listP
+	}
 	
 	# Deleting all our selections
 	$res1 delete

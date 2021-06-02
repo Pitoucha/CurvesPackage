@@ -1,0 +1,27 @@
+##
+## CurvesPackage 0.1
+##
+## A VMD plugin used to plot data for double helix and G-Quadruplex DNA
+##
+## Authors: Emilia Goeury-Mayo ; Guillaume Schmit
+##
+## Id: CurvesPackage.tcl, v0.1 2021/05/26 17:19
+##
+
+************************* REQUIRED *************************
+
+https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD (VMD 1.9.3 version or later) 
+
+Linux or Mac distribution (Sorry windows v( ‘.’ )v )
+
+https://truckle.in-chemnitz.de/pdf4tcl/pdf4tcl.html (for pdf conversion/not required)
+
+http://www.gnuplot.info/download.html (for making histograms)
+
+************************* INSTALLATION *************************
+
+Extract contents of the archive and copy CurvesPackage folder to VMD TCL plugins directory, i.e. $VMDDIR/plugins/noarch/tcl/.
+
+Then, insert following line into $VMDDIR/scripts/vmd/loadplugins.tcl at line 135:
+
+vmd_install_extension CurvesPackage curvespackage_tk  "CURVES+"
