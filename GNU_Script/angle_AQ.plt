@@ -31,11 +31,11 @@ set xrange [102:133]
 binwidth=0.1
 bin(x,width)=width*floor(x/width)
 
-plot 'angle_apo_AQ.dat' using (bin($2,binwidth)):(1.0) smooth freq with boxes lt rgb 'black' t 'apo'
+plot 'angle_apo_WT.dat' using (bin($2,binwidth)):(1.0) smooth freq with boxes lt rgb 'black' t 'apo'
 set xtics nomirror
 set xtics scale 0 font ",14"
 set xlabel "Angle (°)"
-plot 'angle_cGAMP_AQ.dat' using (bin($2,binwidth)):(1.0) smooth freq with boxes lt rgb '#CC0000' t 'cGAMP'
+#plot 'angle_cGAMP_AQ.dat' using (bin($2,binwidth)):(1.0) smooth freq with boxes lt rgb '#CC0000' t 'cGAMP'
 
 unset multiplot
 
