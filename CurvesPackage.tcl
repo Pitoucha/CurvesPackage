@@ -428,7 +428,7 @@ proc ::curvespackage::listeResname {} {
       if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn] || [regexp {^RA} $rsn] || [regexp {^RU} $rsn] || [regexp {^RC} $rsn] || [regexp {^RG} $rsn]} {
         lappend stc $rsn
         lappend stcId $rsi
-        if {[regexp {^DG} $rsn]} {
+        if {[regexp {^DG} $rsn] || [regexp {^RG} $rsn]} {
           lappend stcQuad $rsn
           lappend stcQuadId $rsi
         }
