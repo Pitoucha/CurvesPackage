@@ -118,10 +118,24 @@ proc ::curvespackage::testLs {} {
   cd "GNU_Script"
 
   set path "distGNUScript.plt"
-  
+ # set output [tk_chooseDirectory]
+
+  set foo "This is some text."
+
+  toplevel .t
+  pack [button .t.file -text "choose the output directory" -command tk_getOpenFile]
+
+  pack [entry .t.e -textvar $foo]
+  pack [button .t.b -text "OK" -command {destroy .t}]
+  bind .t <Return> {.t.b invoke}
+  focus .t.e
+  tkwait window .t
+
+  puts "The variable contains '$foo'"
+
   puts [exec pwd]
   #gnuplot -c distGNUScript.plt angle_apo_WT.dat
-  set test "exec gnuplot -c $path outdist1.dat 0.10"
+  set test "exec gnuplot -c $path outdist1.dat 0.10 $output"
   eval $test
 }
 
