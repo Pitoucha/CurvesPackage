@@ -219,7 +219,7 @@ proc ::curvespackage::chargement {} {
     grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
     
     #First quartet
-    grid [labelframe $w.gQuad.qua1 -text "First Quartet"] -row 0 -columnspan 2
+    grid [labelframe $w.gQuad.qua1 -text "First Quartet"] -row 0 -column 0
     
     # First base
     grid [label $w.gQuad.qua1.labelRes1 -text "First base"] -row 0 -column 0
@@ -242,7 +242,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.gQuad.qua1.resId4] -row 5 -column 1
     
     #Second quartet
-    grid [labelframe $w.gQuad.qua2 -text "Second Quartet"] -row 1 -columnspan 2
+    grid [labelframe $w.gQuad.qua2 -text "Second Quartet"] -row 0 -column 1
     
     # First base
     grid [label $w.gQuad.qua2.labelRes1 -text "First base"] -row 0 -column 0
@@ -265,12 +265,12 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
     
     #Calculating the guanines' planarity compared to the quartet's perpendicular axis
-    grid [button $w.gQuad.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 2 -column 0
-    grid [label $w.gQuad.labelQuaSel -text "Which quartet's guanines ?"] -row 2 -column 1
-    grid [entry $w.gQuad.quaSel -textvar ::curvespackage::quaNum] -row 3 -column 1
+    grid [button $w.gQuad.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 1 -column 0
+    grid [label $w.gQuad.labelQuaSel -text "Which quartet's guanines ?"] -row 1 -column 1
+    grid [entry $w.gQuad.quaSel -textvar ::curvespackage::quaNum] -row 2 -column 1
     
     #Calculating the guanines' planarity between themselves
-    grid [button $w.gQuad.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 3 -column 0
+    grid [button $w.gQuad.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 2 -column 0
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -1568,17 +1568,6 @@ proc curvespackage::guaPlanForQuaAxis {} {
     set selq$i [atomselect top "resid [set r[set i]1] [set r[set i]2] [set r[set i]3] [set r[set i]4] and $nameAtomsGQuad"]
   }
   
-  set COMMENT {
-  set r11 [$w.gQuad.qua1.resId1 get]
-  set r12 [$w.gQuad.qua1.resId2 get]
-  set r13 [$w.gQuad.qua1.resId3 get]
-  set r14 [$w.gQuad.qua1.resId4 get]
-  set r21 [$w.gQuad.qua2.resId1 get]
-  set r22 [$w.gQuad.qua2.resId2 get]
-  set r23 [$w.gQuad.qua2.resId3 get]
-  set r24 [$w.gQuad.qua2.resId4 get]
-  }
-  
   foreach i {1 2 3 4} {
     #puts "resid \[set r[set quaNum][set i]\] and name N9"
     set selx[set i]N9 [atomselect top "resid [set r[set quaNum][set i]] and name N9"]
@@ -1646,6 +1635,12 @@ proc curvespackage::guaPlanForQuaAxis {} {
   $plothandle add $xlist $listP3 -lines -linewidth 1 -linecolor green -marker none -legend "Planarity of the third guanin"
   $plothandle add $xlist $listP4 -lines -linewidth 1 -linecolor black -marker none -legend "Planarity of the fourth guanin" -plot
   
+}
+
+proc curvespackage::guaPlan {} {
+  global M_PI
+  variable w
+  variable quaNum
 }
 
 proc curvespackage_tk {} {
