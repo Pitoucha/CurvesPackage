@@ -10,9 +10,9 @@ unset xtics
 unset ytics
 
 set style fill solid 1.0 noborder
-set boxwidth ARG2 absolute
+set boxwidth ARG1 absolute
 
-bin_width = ARG2;
+bin_width = ARG1;
 
 bin_number(x) = floor(x/bin_width)
 rounded(x) = bin_width * ( bin_number(x) + 0.5 )
@@ -27,4 +27,4 @@ set xtics font ",14"
 set auto y
 set ytics nomirror
 
-plot ARG1 using (rounded($1)):(1) smooth frequency with boxes lt rgb "#2E49F4" title "Distance"
+plot ARG2 using (rounded($1)):(1) smooth frequency with boxes lt rgb "#2E49F4" title "Distance"
