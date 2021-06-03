@@ -1,5 +1,13 @@
+#THIRD=ARG3
+#print "script name        : ", ARG0
+#print "first argument     : ", ARG1
+#print "second argument     : ", ARG2
+#print "third argument     : ", THIRD 
+#print "number of arguments: ", ARGC 
+
+cd ARG2
 set terminal postscript eps enhanced solid color
-set output 'dist.eps'
+set output "dist.eps"
 
 set tmargin 3
 set bmargin 3
@@ -27,4 +35,4 @@ set xtics font ",14"
 set auto y
 set ytics nomirror
 
-plot ARG2 using (rounded($1)):(1) smooth frequency with boxes lt rgb "#2E49F4" title "Distance"
+plot ARG3 using (rounded($1)):(1) smooth frequency with boxes lt rgb "#2E49F4" title "Distance"

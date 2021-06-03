@@ -93,10 +93,6 @@ proc ::curvespackage::packageui {} {
 
 
 proc ::curvespackage::gnuPlotTest {} {
-  variable CURVESPACKAGE_PATH
-  cd $CURVESPACKAGE_PATH
-  cd "GNU_Script"
-
   set file [open "outdist1.dat" w]
   set listP [::curvespackage::plotBases dist 1]
   for { set i 0 } { $i <= [llength $listP] } { incr i } {
@@ -113,23 +109,24 @@ proc ::curvespackage::gnuPlotTest {} {
 }
 
 proc ::curvespackage::testLs {} {
-  variable CURVESPACKAGE_PATH
-  #cd $CURVESPACKAGE_PATH
-  #cd "GNU_Script"
-
-  set path CURVESPACKAGE_PATH
-  set path [lappend $path "/GNU_Script/distGNUScript.plt"]
+  set path [pwd]
+  append path "/outdist1.dat"
+  
+  set savePath [pwd]
+  
+  puts $savePath
   puts $path
-  set path [string map {"\ " "\\ "} $path]
-  puts $path  
-  #set path "distGNUScript.plt"
+  
+  variable CURVESPACKAGE_PATH
+  cd $CURVESPACKAGE_PATH
+  cd "GNU_Script"
   
   set rounding [::curvespackage::callRoundingChooser]
-  
-  puts $rounding
-  #gnuplot -c distGNUScript.plt angle_apo_WT.dat
-  set test "exec gnuplot -c $path $rounding outdist1.dat"
+  set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path"
+                            #0                #1        #2        #3
   eval $test
+  cd $savePath
+
 }
 
 proc ::curvespackage::callRoundingChooser {} {
