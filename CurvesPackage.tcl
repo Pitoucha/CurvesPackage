@@ -48,6 +48,8 @@ namespace eval ::curvespackage:: {
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
   variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
 
+  variable nameAtomsGQuad "name N1 C2 N2 N3 C4 C5 C6 O6 N7 C8 N9"
+
   variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
   variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
   variable PACKAGEPATH "$CURVESPACKAGE_PATH"
@@ -252,6 +254,9 @@ proc ::curvespackage::chargement {} {
     grid [label $w.gQuad.qua2.labelRes4 -text "Fourth base"] -row 3 -column 1
     grid [ttk::combobox $w.gQuad.qua2.resName4] -row 4 -column 1
     grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
+    
+    #Calculating the guanines' planarity compared to the quartet's perpendicular axis
+    grid [button $w.gQuad.planGua1Axis -text "Planarity of the guanines compared to the quartet's perpendicular axis (First quartet)" -command "curvespackage::guaPlanForQuaAxis {1}"]
   
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -347,6 +352,22 @@ proc ::curvespackage::chargement {} {
 
     bind $w.gQuad.qua1.resId4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 5
+    }
+    
+    bind $w.gQuad.qua2.resId1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 6
+    }
+
+    bind $w.gQuad.qua2.resId2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 7
+    }
+
+    bind $w.gQuad.qua2.resId3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 8
+    }
+
+    bind $w.gQuad.qua2.resId4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 9
     }
   }
 }
@@ -659,6 +680,18 @@ proc ::curvespackage::selectWithResid {b} {
     }
     5 {
       set stcId [$w.gQuad.qua1.resId4 get]
+    }
+    6 {
+      set stcId [$w.gQuad.qua2.resId1 get]
+    }
+    7 {
+      set stcId [$w.gQuad.qua2.resId2 get]
+    }
+    8 {
+      set stcId [$w.gQuad.qua2.resId3 get]
+    }
+    9 {
+      set stcId [$w.gQuad.qua2.resId4 get]
     }
     default {
       set stcId ""
@@ -1449,6 +1482,42 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
     default {
       puts "Nothing here... yet."
     }
+  }
+}
+
+proc curvespackage::guaPlanForQuaAxis {quaNum} {
+  variable w
+  variable nameAtomsGQuad
+  
+  set r11 [$w.gQuad.qua1.resId1 get]
+  set r12 [$w.gQuad.qua1.resId2 get]
+  set r13 [$w.gQuad.qua1.resId3 get]
+  set r14 [$w.gQuad.qua1.resId4 get]
+  set r21 [$w.gQuad.qua2.resId1 get]
+  set r22 [$w.gQuad.qua2.resId2 get]
+  set r23 [$w.gQuad.qua2.resId3 get]
+  set r24 [$w.gQuad.qua2.resId4 get]
+  
+  set q1 [measure center [atomselect top "resid $r11 $r12 $r13 $r14 and $nameAtomsGQuad"] weight mass]
+  set q2 [measure center [atomselect top "resid $r21 $r22 $r23 $r24 and $nameAtomsGQuad"] weight mass]
+  
+  puts "q1 = $q1"
+  puts "q2 = $q2"
+  
+  set axis [vecnorm [vecsub $q1 $q2]]
+  
+  foreach i {1 2 3 4} {
+    set [set r1[set i]N9] [measure center [atomselect top "resid [set $r1$i] and name N9"] weight mass]
+    puts "r1[set i]N9 = "
+    puts [set r1[set i]N9]
+  }
+  
+  set COMMENT {
+  switch $quaNum {
+    1 {
+      
+    }
+  }
   }
 }
 
