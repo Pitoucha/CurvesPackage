@@ -48,6 +48,9 @@ namespace eval ::curvespackage:: {
   set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
   variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
 
+  variable nameAtomsGQuad "name N1 C2 N2 N3 C4 C5 C6 O6 N7 C8 N9"
+  variable quaNum
+
   variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
   variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
   variable PACKAGEPATH "$CURVESPACKAGE_PATH"
@@ -216,7 +219,7 @@ proc ::curvespackage::chargement {} {
     grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
     
     #First quartet
-    grid [labelframe $w.gQuad.qua1 -text "First Quartet"]
+    grid [labelframe $w.gQuad.qua1 -text "First Quartet"] -row 0 -columnspan 2
     
     # First base
     grid [label $w.gQuad.qua1.labelRes1 -text "First base"] -row 0 -column 0
@@ -239,7 +242,7 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.gQuad.qua1.resId4] -row 5 -column 1
     
     #Second quartet
-    grid [labelframe $w.gQuad.qua2 -text "First Quartet"]
+    grid [labelframe $w.gQuad.qua2 -text "Second Quartet"] -row 1 -columnspan 2
     
     # First base
     grid [label $w.gQuad.qua2.labelRes1 -text "First base"] -row 0 -column 0
@@ -260,7 +263,15 @@ proc ::curvespackage::chargement {} {
     grid [label $w.gQuad.qua2.labelRes4 -text "Fourth base"] -row 3 -column 1
     grid [ttk::combobox $w.gQuad.qua2.resName4] -row 4 -column 1
     grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
-  
+    
+    #Calculating the guanines' planarity compared to the quartet's perpendicular axis
+    grid [button $w.gQuad.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 2 -column 0
+    grid [label $w.gQuad.labelQuaSel -text "Which quartet's guanines ?"] -row 2 -column 1
+    grid [entry $w.gQuad.quaSel -textvar ::curvespackage::quaNum] -row 3 -column 1
+    
+    #Calculating the guanines' planarity between themselves
+    grid [button $w.gQuad.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 3 -column 0
+
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
     grid [label $w.frames.frameLab -text "Choose the starting and ending frames to plot, and the step (leave empty for all frames and a step of 1)"] -row 6 -columnspan 6
@@ -355,6 +366,22 @@ proc ::curvespackage::chargement {} {
 
     bind $w.gQuad.qua1.resId4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 5
+    }
+    
+    bind $w.gQuad.qua2.resId1 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 6
+    }
+
+    bind $w.gQuad.qua2.resId2 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 7
+    }
+
+    bind $w.gQuad.qua2.resId3 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 8
+    }
+
+    bind $w.gQuad.qua2.resId4 <<ComboboxSelected>> {
+      ::curvespackage::selectWithResid 9
     }
   }
 }
@@ -668,6 +695,18 @@ proc ::curvespackage::selectWithResid {b} {
     5 {
       set stcId [$w.gQuad.qua1.resId4 get]
     }
+    6 {
+      set stcId [$w.gQuad.qua2.resId1 get]
+    }
+    7 {
+      set stcId [$w.gQuad.qua2.resId2 get]
+    }
+    8 {
+      set stcId [$w.gQuad.qua2.resId3 get]
+    }
+    9 {
+      set stcId [$w.gQuad.qua2.resId4 get]
+    }
     default {
       set stcId ""
     }
@@ -696,6 +735,18 @@ proc ::curvespackage::selectWithResid {b} {
             }
             5 {
                 $w.gQuad.qua1.resName4 set $id 
+            }
+            6 {
+                $w.gQuad.qua2.resName1 set $id 
+            }
+            7 {
+                $w.gQuad.qua2.resName2 set $id 
+            }
+            8 {
+                $w.gQuad.qua2.resName3 set $id 
+            }
+            9 {
+                $w.gQuad.qua2.resName4 set $id 
             }
             default {
               puts "W.T.F ?"
@@ -1458,6 +1509,143 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
       puts "Nothing here... yet."
     }
   }
+}
+
+proc curvespackage::guaPlanForQuaAxis {} {
+  global M_PI
+  variable w
+  variable nameAtomsGQuad
+  variable quaNum
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  if {$quaNum eq ""} {
+    set quaNum 1
+  } else {
+    set quaNum [expr int($quaNum)]
+  }
+  
+  set numQuartets 2
+  
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
+    foreach j {1 2 3 4} {
+      set r[set i][set j] [$w.gQuad.qua[set i].resId$j get]
+    }
+  }
+  
+  for { set i 1 } { $i <= $numQuartets } {incr i } {
+    set selq$i [atomselect top "resid [set r[set i]1] [set r[set i]2] [set r[set i]3] [set r[set i]4] and $nameAtomsGQuad"]
+  }
+  
+  set COMMENT {
+  set r11 [$w.gQuad.qua1.resId1 get]
+  set r12 [$w.gQuad.qua1.resId2 get]
+  set r13 [$w.gQuad.qua1.resId3 get]
+  set r14 [$w.gQuad.qua1.resId4 get]
+  set r21 [$w.gQuad.qua2.resId1 get]
+  set r22 [$w.gQuad.qua2.resId2 get]
+  set r23 [$w.gQuad.qua2.resId3 get]
+  set r24 [$w.gQuad.qua2.resId4 get]
+  }
+  
+  foreach i {1 2 3 4} {
+    #puts "resid \[set r[set quaNum][set i]\] and name N9"
+    set selx[set i]N9 [atomselect top "resid [set r[set quaNum][set i]] and name N9"]
+    set selx[set i]N2 [atomselect top "resid [set r[set quaNum][set i]] and name N2"]
+    set selx[set i]O6 [atomselect top "resid [set r[set quaNum][set i]] and name O6"]
+
+    set listP$i {}
+
+    for { set j $frameStart } { $j < $frameEnd } { set j [expr {$j + $step}] } {
+      $selq1 frame $j
+      $selq2 frame $j
+      $selq1 update
+      $selq2 update
+	  
+      [set selx[set i]N9] frame $j
+      [set selx[set i]N2] frame $j
+      [set selx[set i]O6] frame $j
+      [set selx[set i]N9] update
+      [set selx[set i]N2] update
+      [set selx[set i]O6] update
+	  
+      set q1 [measure center $selq1 weight mass]
+      set q2 [measure center $selq2 weight mass]
+	  
+      set axis [vecnorm [vecsub $q1 $q2]]
+	
+      set rxxN9 [measure center [set selx[set i]N9] weight mass]
+      set rxxN2 [measure center [set selx[set i]N2] weight mass]
+      set rxxO6 [measure center [set selx[set i]O6] weight mass]
+	  
+      set vectN9N2 [vecsub $rxxN9 $rxxN2]
+      set vectN9O6 [vecsub $rxxN9 $rxxO6]
+	  
+      set vectAngle [vecnorm [veccross $vectN9N2 $vectN9O6]]
+	  
+      set angleRad [vecdot $vectAngle $axis]
+	  
+      set angle [expr acos($angleRad)/$M_PI * 180]
+      
+      lappend listP[set i] $angle
+    }
+	
+    [set selx[set i]N9] delete
+    [set selx[set i]N2] delete
+    [set selx[set i]O6] delete
+    
+    set plothandle [multiplot -x $xlist -y [set listP$i] \
+                      -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanin $i of the quartet $quaNum" \
+                      -lines -linewidth 1 -linecolor blue \
+                      -marker none -legend "Planarity of the guanin $i" -plot];
+    
+  }
+  for { set i 1 } { $i <= $numQuartets } {incr i } {
+    [set selq$i] delete
+  }
+  
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP1 \
+                    -xlabel "Frame" -ylabel "Distance" -title "Planarity of the guanins of the quartet $quaNum compared to the quartets' axis" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "Planarity of the first guanin"];
+
+  # Adding the second calculated list
+  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor red -marker none -legend "Planarity of the second guanin"
+  $plothandle add $xlist $listP3 -lines -linewidth 1 -linecolor green -marker none -legend "Planarity of the third guanin"
+  $plothandle add $xlist $listP4 -lines -linewidth 1 -linecolor black -marker none -legend "Planarity of the fourth guanin" -plot
+  
 }
 
 proc curvespackage_tk {} {
