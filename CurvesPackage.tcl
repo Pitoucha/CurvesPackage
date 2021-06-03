@@ -116,29 +116,40 @@ proc ::curvespackage::gnuPlotTest {} {
 
 proc ::curvespackage::testLs {} {
   variable CURVESPACKAGE_PATH
-  cd $CURVESPACKAGE_PATH
-  cd "GNU_Script"
+  #cd $CURVESPACKAGE_PATH
+  #cd "GNU_Script"
 
-  set path "distGNUScript.plt"
- # set output [tk_chooseDirectory]
-
-  set foo "This is some text."
-
-  toplevel .t
-  pack [button .t.file -text "choose the output directory" -command tk_getOpenFile]
-
-  pack [entry .t.e -textvar $foo]
-  pack [button .t.b -text "OK" -command {destroy .t}]
-  bind .t <Return> {.t.b invoke}
-  focus .t.e
-  tkwait window .t
-
-  puts "The variable contains '$foo'"
-
-  puts [exec pwd]
+  set path CURVESPACKAGE_PATH
+  set path [lappend $path "/GNU_Script/distGNUScript.plt"]
+  puts $path
+  set path [string map {"\ " "\\ "} $path]
+  puts $path  
+  #set path "distGNUScript.plt"
+  
+  set rounding [::curvespackage::callRoundingChooser]
+  
+  puts $rounding
   #gnuplot -c distGNUScript.plt angle_apo_WT.dat
-  set test "exec gnuplot -c $path outdist1.dat 0.10 $output"
+  set test "exec gnuplot -c $path $rounding outdist1.dat"
   eval $test
+}
+
+proc ::curvespackage::callRoundingChooser {} {
+  set w [toplevel .[clock seconds]]
+  wm resizable $w 0 0
+  wm title $w "Value request"
+  label  $w.l -text "Please choose a rounding"
+  entry  $w.e -textvar $w -bg white
+  bind $w.e <Return> {set done 1}
+  button $w.ok     -text OK     -command {set done 1}
+  button $w.c      -text Clear  -command "set $w {}"
+  button $w.cancel -text Cancel -command "set $w {}; set done 1"
+  grid $w.l  -    -        -sticky news
+  grid $w.e  -    -        -sticky news
+  grid $w.ok $w.c $w.cancel
+  vwait done
+  destroy $w
+  set ::$w
 }
 
 #load a new molecule
