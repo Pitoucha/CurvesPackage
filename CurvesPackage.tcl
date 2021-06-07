@@ -7,6 +7,7 @@
 ##
 ## Id: CurvesPackage.tcl, v0.1 2021/05/26 17:19
 ##
+##analyse et visualisation
 
 package provide CurvesPackage 0.1
 package require Tk
@@ -82,8 +83,8 @@ proc ::curvespackage::packageui {} {
   $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
   $w.menubar.edit.menu add command -label "Load new Mol" -command ::curvespackage::chargement
   $w.menubar.edit.menu add command -label "Load new trajectory" -command ::curvespackage::trajectLoad
-  $w.menubar.edit.menu add command -label "test exec ls" -command ::curvespackage::testLs
-  $w.menubar.edit.menu add command -label "GNUplot" -command ::curvespackage::gnuPlotTest
+  #$w.menubar.edit.menu add command -label "test exec ls" -command ::curvespackage::testLs
+  #$w.menubar.edit.menu add command -label "GNUplot" -command ::curvespackage::gnuPlotTest
   $w.menubar.file config -width 5
   $w.menubar.edit config -width 5
   grid $w.menubar.file -row 0 -column 0 -sticky w
@@ -95,41 +96,68 @@ proc ::curvespackage::packageui {} {
 }
 
 
-proc ::curvespackage::gnuPlotTest {} {
-  set file [open "outdist1.dat" w]
-  set listP [::curvespackage::plotBases dist 1]
-  for { set i 0 } { $i <= [llength $listP] } { incr i } {
-    puts $file [lindex $listP $i]
+proc ::curvespackage::Histograms {b} {
+  if {![file exist "Ouput_Dat"] } {
+     exec mkdir "Ouput_Dat"
   }
-  close $file
 
-  set file [open "outangl1.dat" w]
-  set listP [::curvespackage::plotBases angl 1]
-  for { set i 0 } { $i <= [llength $listP] } { incr i } {
-    puts $file [lindex $listP $i]
+  #case 0 - distance variation between two atom of a base (base 1 / a1 -a2)
+  #case 1 - angle variation between two atom of a base (base 1 / a1 -a2)
+  
+  #case 2 - distance variation between two atom of a base (base 2 / a1 -a2)
+  #case 3 - angle variation between two atom of a base (base 2 / a1 -a2)
+
+  #case 4 - distance variation bewtee
+
+  switch $b {
+    0 {
+      set name "Ouput_Dat/outdist1.dat"
+      set file [open $name w]
+      set listP [::curvespackage::plotBases dist 1]
+      for { set i 0 } { $i <= [llength $listP] } { incr i } {
+        puts $file [lindex $listP $i]
+      }
+      close $file
+      ::curvespackage::gnuPlotting $name "outdist1"
+    }
+    1 {
+      set name "Ouput_Dat/outangl1.dat"
+      set file [open $name w]
+      set listP [::curvespackage::plotBases angl 1]
+      for { set i 0 } { $i <= [llength $listP] } { incr i } {
+        puts $file [lindex $listP $i]
+      }
+      close $file
+      ::curvespackage::gnuPlotting $name "outangl1"
+    }
   }
-  close $file
 }
 
-proc ::curvespackage::testLs {} {
-  set path [pwd]
-  append path "/outdist1.dat"
+proc ::curvespackage::gnuPlotting {nameDat name} {
+  if {$nameDat == "Ouput_Dat/outdist1.dat"} {
+    set path [pwd]
+    append path "/" 
+    append path $nameDat 
   
-  set savePath [pwd]
-  
-  puts $savePath
-  puts $path
-  
-  variable CURVESPACKAGE_PATH
-  cd $CURVESPACKAGE_PATH
-  cd "GNU_Script"
-  
-  set rounding [::curvespackage::callRoundingChooser]
-  set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path"
-                            #0                #1        #2        #3
-  eval $test
-  cd $savePath
+    set savePath [pwd]
+    
+    puts $savePath
+    puts $path
+    puts $name 
 
+    variable CURVESPACKAGE_PATH
+    cd $CURVESPACKAGE_PATH
+    cd "GNU_Script"
+    
+    set rounding [::curvespackage::callRoundingChooser]
+    set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path $name"
+                              #0                #1        #2        #3    #4
+    #eval $test
+    if [catch eval $test] {
+      puts ""
+    }
+    cd $savePath
+  }
 }
 
 proc ::curvespackage::callRoundingChooser {} {
@@ -281,8 +309,10 @@ proc ::curvespackage::chargement {} {
     grid [entry $w.frames.frameEnd -textvar ::curvespackage::frameEnd] -row 7 -column 3
     grid [label $w.frames.stepLab -text "Step :"] -row 7 -column 4
     grid [entry $w.frames.step -textvar ::curvespackage::step] -row 7 -column 5
-  
-    pack $w.helix $w.gQuad $w.frames
+    
+    checkbutton $w.histogram -text "Histogram" -command "::curvespackage::Histograms {0}"
+    
+    pack $w.helix $w.gQuad $w.frames $w.histogram
     
     
     #call the function which create the list of resnames and resids 
