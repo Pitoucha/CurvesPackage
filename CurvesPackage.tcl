@@ -294,11 +294,14 @@ proc ::curvespackage::chargement {} {
     
     #Calculating the guanines' planarity compared to the quartet's perpendicular axis
     grid [button $w.gQuad.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 1 -column 0
-    grid [label $w.gQuad.labelQuaSel -text "Which quartet's guanines ?"] -row 1 -column 1
-    grid [entry $w.gQuad.quaSel -textvar ::curvespackage::quaNum] -row 2 -column 1
+    grid [labelframe $w.gQuad.selGua -text "Which quartet's guanines ?"] -row 1 -column 1 -rowspan 3
+    grid [entry $w.gQuad.selGua.quaSel -textvar ::curvespackage::quaNum]
     
     #Calculating the guanines' planarity between themselves
     grid [button $w.gQuad.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 2 -column 0
+    
+    #Calculating the quartet bending lengthwise
+    grid [button $w.gQuad.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 3 -column 0
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -1644,10 +1647,12 @@ proc curvespackage::guaPlanForQuaAxis {} {
     [set selx[set i]N2] delete
     [set selx[set i]O6] delete
     
+    set COMMENT {
     set plothandle [multiplot -x $xlist -y [set listP$i] \
                       -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanin $i of the quartet $quaNum" \
                       -lines -linewidth 1 -linecolor blue \
                       -marker none -legend "Planarity of the guanin $i" -plot];
+    }
     
   }
   for { set i 1 } { $i <= $numQuartets } {incr i } {
@@ -1656,7 +1661,7 @@ proc curvespackage::guaPlanForQuaAxis {} {
   
   # Creating the multiplot for the first calculated list
   set plothandle [multiplot -x $xlist -y $listP1 \
-                    -xlabel "Frame" -ylabel "Distance" -title "Planarity of the guanins of the quartet $quaNum compared to the quartets' axis" \
+                    -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanins of the quartet $quaNum compared to the quartets' axis" \
                     -lines -linewidth 1 -linecolor blue \
                     -marker none -legend "Planarity of the first guanin"];
 
@@ -1671,6 +1676,332 @@ proc curvespackage::guaPlan {} {
   global M_PI
   variable w
   variable quaNum
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  if {$quaNum eq ""} {
+    set quaNum 1
+  } else {
+    set quaNum [expr int($quaNum)]
+  }
+  
+  foreach i {1 2 3 4} {
+    set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
+  }
+  
+  foreach i {1 2 3} {
+    
+    set selx[set i]N9 [atomselect top "resid [set r[set quaNum][set i]] and name N9"]
+    set selx[set i]N2 [atomselect top "resid [set r[set quaNum][set i]] and name N2"]
+    set selx[set i]O6 [atomselect top "resid [set r[set quaNum][set i]] and name O6"]
+    
+    for { set j [expr $i + 1] } { $j < 5 } { incr j } {
+    
+      set selx[set j]N9 [atomselect top "resid [set r[set quaNum][set j]] and name N9"]
+      set selx[set j]N2 [atomselect top "resid [set r[set quaNum][set j]] and name N2"]
+      set selx[set j]O6 [atomselect top "resid [set r[set quaNum][set j]] and name O6"]
+      
+      set listP[set i]$j {}
+      
+      for { set k $frameStart } { $k < $frameEnd } { set k [expr {$k + $step}] } {
+        [set selx[set i]N9] frame $k
+	[set selx[set i]N2] frame $k
+	[set selx[set i]O6] frame $k
+	
+	[set selx[set j]N9] frame $k
+	[set selx[set j]N2] frame $k
+	[set selx[set j]O6] frame $k
+	
+        [set selx[set i]N9] update
+	[set selx[set i]N2] update
+	[set selx[set i]O6] update
+	
+	[set selx[set j]N9] update
+	[set selx[set j]N2] update
+	[set selx[set j]O6] update
+	
+	set rx[set i]N9 [measure center [set selx[set i]N9] weight mass]
+	set rx[set i]N2 [measure center [set selx[set i]N2] weight mass]
+	set rx[set i]O6 [measure center [set selx[set i]O6] weight mass]
+	
+	set rx[set j]N9 [measure center [set selx[set j]N9] weight mass]
+	set rx[set j]N2 [measure center [set selx[set j]N2] weight mass]
+	set rx[set j]O6 [measure center [set selx[set j]O6] weight mass]
+	
+	set vect[set i]N9N2 [vecsub [set rx[set i]N9] [set rx[set i]N2]]
+        set vect[set i]N9O6 [vecsub [set rx[set i]N9] [set rx[set i]O6]]
+	
+	set vect[set j]N9N2 [vecsub [set rx[set j]N9] [set rx[set j]N2]]
+        set vect[set j]N9O6 [vecsub [set rx[set j]N9] [set rx[set j]O6]]
+	
+	set vectAngle$i [vecnorm [veccross [set vect[set i]N9N2] [set vect[set i]N9O6]]]
+	
+	set vectAngle$j [vecnorm [veccross [set vect[set j]N9N2] [set vect[set j]N9O6]]]
+	
+	set angleRad [vecdot [set vectAngle$i] [set vectAngle$j]]
+	
+	set angle [expr acos($angleRad)/$M_PI * 180]
+	
+	lappend listP[set i]$j $angle
+      }
+      
+      #puts "listP[set i]$j : [set listP[set i]$j"
+      
+      [set selx[set j]N9] delete
+      [set selx[set j]N2] delete
+      [set selx[set j]O6] delete
+      
+    }
+    
+    [set selx[set i]N9] delete
+    [set selx[set i]N2] delete
+    [set selx[set i]O6] delete
+    
+  }
+  
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP12 \
+                    -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanins of the quartet $quaNum compared to each other" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "Planarity between the guanin 1 & 2"];
+
+  # Adding the other calculated lists
+  $plothandle add $xlist $listP13 -lines -linewidth 1 -linecolor red -marker none -legend "Planarity between the guanin 1 & 3"
+  $plothandle add $xlist $listP14 -lines -linewidth 1 -linecolor green -marker none -legend "Planarity between the guanin 1 & 4"
+  $plothandle add $xlist $listP23 -lines -linewidth 1 -linecolor magenta -marker none -legend "Planarity between the guanin 2 & 3"
+  $plothandle add $xlist $listP24 -lines -linewidth 1 -linecolor orange -marker none -legend "Planarity between the guanin 2 & 4"
+  $plothandle add $xlist $listP34 -lines -linewidth 1 -linecolor black -marker none -legend "Planarity between the guanin 3 & 4" -plot
+  
+}
+
+proc curvespackage::lenBend {} {
+  global M_PI
+  variable w
+  variable quaNum
+  variable nameAtomsGQuad
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  if {$quaNum eq ""} {
+    set quaNum 1
+  } else {
+    set quaNum [expr int($quaNum)]
+  }
+  
+  foreach i {1 2 3 4} {
+    set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
+  }
+  
+  foreach i { 0 1 } {
+  
+    set ip [expr $i + 1]
+    foreach j { 1 2 3 } {
+      set listP[set j]$ip {}
+    }
+    
+    foreach j { 0 1 2 3 } {
+      set guaX [expr {(($j + $i) % 4) + 1}]
+      
+      set id1 [expr {$j + 1}]
+      set id2 [expr { ($id1) % 4 + 1 }]
+      
+      set selrx[set id1][set id2] [atomselect top "resid [set r[set quaNum]$guaX] and $nameAtomsGQuad"]
+      set selrx[set id1][set id2]N1 [atomselect top "resid [set r[set quaNum]$guaX] and name N1"]
+      
+      if { $j == 0 || $j == 2 } {
+        set selx[set id1][set id2]C8 [atomselect top "resid [set r[set quaNum]$guaX] and name C8"]
+	#puts "C8 -> $guaX , indice $id1$id2 ; i = $i"
+      } else {
+        set selx[set id1][set id2]C2 [atomselect top "resid [set r[set quaNum]$guaX] and name C2"]
+        set selx[set id1][set id2]N9 [atomselect top "resid [set r[set quaNum]$guaX] and name N9"]
+	#puts "C2,N9 -> $guaX , indice $id1$id2 ; i = $i"
+      }
+      
+      #puts $id1$id2
+    }
+    
+    for { set j $frameStart } { $j < $frameEnd } { set j [expr {$j + $step}] } {
+      foreach k { 0 1 2 3 } {
+        set id1 [expr {$k + 1}]
+        set id2 [expr { ($id1) % 4 + 1 }]
+	
+	[set selrx[set id1][set id2]] frame $j
+	[set selrx[set id1][set id2]N1] frame $j
+	[set selrx[set id1][set id2]] update
+	[set selrx[set id1][set id2]N1] update
+	
+	set rx[set id1][set id2] [measure center [set selrx[set id1][set id2]] weight mass]
+	set rx[set id1][set id2]N1 [measure center [set selrx[set id1][set id2]] weight mass]
+	
+	if { $k == 0 || $k == 2 } {
+	  [set selx[set id1][set id2]C8] frame $j
+	  [set selx[set id1][set id2]C8] update
+	  
+	  set rx[set id1][set id2]C8 [measure center [set selx[set id1][set id2]C8] weight mass]
+	  
+	  #puts rx[set id1][set id2]C8
+	  
+	} else {
+	  [set selx[set id1][set id2]C2] frame $j
+          [set selx[set id1][set id2]N9] frame $j
+	  [set selx[set id1][set id2]C2] update
+          [set selx[set id1][set id2]N9] update
+	  
+	  set rx[set id1][set id2]C2 [measure center [set selx[set id1][set id2]C2] weight mass]
+	  set rx[set id1][set id2]N9 [measure center [set selx[set id1][set id2]N9] weight mass]
+	  
+	  #puts "rx[set id1][set id2]C2 + N9"
+	}
+      }
+      
+      
+      set vect12_23_C8C2 [vecsub $rx12C8 $rx23C2]
+      set vect12_23_C8N9 [vecsub $rx12C8 $rx23N9]
+      
+      set vectAngl12_23_C8C2_C8N9 [vecnorm [veccross $vect12_23_C8C2 $vect12_23_C8N9]]
+      
+      set vect34_41_C8C2 [vecsub $rx34C8 $rx41C2]
+      set vect34_41_C8N9 [vecsub $rx34C8 $rx41N9]
+      
+      set vectAngl34_41_C8C2_C8N9 [vecnorm [veccross $vect34_41_C8C2 $vect34_41_C8N9]]
+      
+      # Angle between 12 & 34 then 23 & 41
+      set angl1223_3441_rad [vecdot $vectAngl12_23_C8C2_C8N9 $vectAngl34_41_C8C2_C8N9]
+      
+      set angl1223_3441 [expr acos($angl1223_3441_rad) / $M_PI * 180]
+      
+      lappend listP1$ip $angl1223_3441
+      
+      #puts listP1$ip
+      #puts listP2$ip
+      #puts listP3$ip
+      
+      
+      set vect23_12 [vecsub $rx23 $rx12]
+      set vect23_34 [vecsub $rx23 $rx34]
+      
+      set vectAngl23_1234 [vecnorm [veccross $vect23_12 $vect23_34]]
+      
+      set vect41_34 [vecsub $rx41 $rx34]
+      set vect41_12 [vecsub $rx41 $rx12]
+      
+      set vectAngl41_3412 [vecnorm [veccross $vect41_34 $vect41_12]]
+      
+      # Angle between [ Angle between ( 23 -> 12 ) & ( 23 -> 34 ) ] & [ Angle between ( 41 -> 34 ) & ( 41 -> 12 ) ]
+      set angl123234_341412_rad [vecdot $vectAngl23_1234 $vectAngl41_3412]
+      
+      set angl123234_341412 [expr acos($angl123234_341412_rad) / $M_PI * 180]
+      
+      lappend listP2$ip $angl123234_341412
+      
+      
+      set vect23_12_N1 [vecsub $rx23N1 $rx12N1]
+      set vect23_34_N1 [vecsub $rx23N1 $rx34N1]
+      
+      set vectAngl23_1234_N1 [vecnorm [veccross $vect23_12_N1 $vect23_34_N1]]
+      
+      set vect41_34_N1 [vecsub $rx41N1 $rx34N1]
+      set vect41_12_N1 [vecsub $rx41N1 $rx12N1]
+      
+      set vectAngl41_3412_N1 [vecnorm [veccross $vect41_34_N1 $vect41_12_N1]]
+      
+      # Angle between [ Angle between ( 23 -> 12 ) & ( 23 -> 34 ) ] & [ Angle between ( 41 -> 34 ) & ( 41 -> 12 ) ] for the atom N1
+      set angl123234_341412_N1_rad [vecdot $vectAngl23_1234_N1 $vectAngl41_3412_N1]
+      
+      set angl123234_341412_N1 [expr acos($angl123234_341412_N1_rad)  / $M_PI * 180]
+      
+      lappend listP3$ip $angl123234_341412_N1
+    }
+    
+    foreach j { 0 1 2 3 } {
+      set id1 [expr {$j + 1}]
+      set id2 [expr { ($id1) % 4 + 1 }]
+	
+      [set selrx[set id1][set id2]] delete
+      [set selrx[set id1][set id2]N1] delete
+	
+      if { $j == 0 || $j == 2 } {
+	[set selx[set id1][set id2]C8] delete
+      } else {
+	[set selx[set id1][set id2]C2] delete
+        [set selx[set id1][set id2]N9] delete
+      }
+    }
+  }
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP11 \
+                    -xlabel "Frame" -ylabel "Angle" -title "Lengthwise quartet bending" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "\u03b8(Triad(g1,g2) ; Triad(g3,g4))"];
+
+  # Adding the other calculated lists
+  $plothandle add $xlist $listP12 -lines -linewidth 1 -linecolor red -marker none -legend "\u03b8(Triad(g2,g3) ; Triad(g4,g1))"
+  $plothandle add $xlist $listP21 -lines -linewidth 1 -linecolor green -marker none -legend "\u03b8((->(g2,g1).->(g2,g3)) ; (->(g4,g3).->(g4,g1)))"
+  $plothandle add $xlist $listP22 -lines -linewidth 1 -linecolor magenta -marker none -legend "\u03b8((->(g3,g2).->(g3,g4)) ; (->(g1,g4).->(g1,g2)))"
+  $plothandle add $xlist $listP31 -lines -linewidth 1 -linecolor orange -marker none -legend "\u03b8((->(g2,g1).->(g2,g3)) ; (->(g4,g3).->(g4,g1))) using N1"
+  $plothandle add $xlist $listP32 -lines -linewidth 1 -linecolor black -marker none -legend "\u03b8((->(g3,g2).->(g3,g4)) ; (->(g1,g4).->(g1,g2))) using N1" -plot
 }
 
 proc curvespackage_tk {} {
