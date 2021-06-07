@@ -264,16 +264,19 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.gQuad.qua2.resName4] -row 4 -column 1
     grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
     
-    #Calculating the guanines' planarity compared to the quartet's perpendicular axis
+    # Calculating the guanines' planarity compared to the quartet's perpendicular axis
     grid [button $w.gQuad.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 1 -column 0
     grid [labelframe $w.gQuad.selGua -text "Which quartet's guanines ?"] -row 1 -column 1 -rowspan 3
     grid [entry $w.gQuad.selGua.quaSel -textvar ::curvespackage::quaNum]
     
-    #Calculating the guanines' planarity between themselves
+    # Calculating the guanines' planarity between themselves
     grid [button $w.gQuad.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 2 -column 0
     
-    #Calculating the quartet bending lengthwise
+    # Calculating the quartet bending lengthwise
     grid [button $w.gQuad.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 3 -column 0
+    
+    # Calculating the twist angles
+    grid [button $w.gQuad.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 4 -column 0
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -1972,6 +1975,10 @@ proc curvespackage::lenBend {} {
   $plothandle add $xlist $listP22 -lines -linewidth 1 -linecolor magenta -marker none -legend "\u03b8((->(g3,g2).->(g3,g4)) ; (->(g1,g4).->(g1,g2)))"
   $plothandle add $xlist $listP31 -lines -linewidth 1 -linecolor orange -marker none -legend "\u03b8((->(g2,g1).->(g2,g3)) ; (->(g4,g3).->(g4,g1))) using N1"
   $plothandle add $xlist $listP32 -lines -linewidth 1 -linecolor black -marker none -legend "\u03b8((->(g3,g2).->(g3,g4)) ; (->(g1,g4).->(g1,g2))) using N1" -plot
+}
+
+proc curvespackage::twistAngle {} {
+  
 }
 
 proc curvespackage_tk {} {
