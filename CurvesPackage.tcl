@@ -51,6 +51,7 @@ namespace eval ::curvespackage:: {
 
   variable nameAtomsGQuad "name N1 C2 N2 N3 C4 C5 C6 O6 N7 C8 N9"
   variable quaNum
+  variable numQuartets 2
 
   variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
   variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
@@ -1552,6 +1553,7 @@ proc curvespackage::guaPlanForQuaAxis {} {
   variable w
   variable nameAtomsGQuad
   variable quaNum
+  variable numQuartets
   
   # Set of variables determining the start, end and step of the calculations
   variable frameStart
@@ -1591,8 +1593,6 @@ proc curvespackage::guaPlanForQuaAxis {} {
   } else {
     set quaNum [expr int($quaNum)]
   }
-  
-  set numQuartets 2
   
   for { set i 1 } { $i <= $numQuartets } { incr i } {
     foreach j {1 2 3 4} {
@@ -1679,6 +1679,7 @@ proc curvespackage::guaPlan {} {
   global M_PI
   variable w
   variable quaNum
+  variable numQuartets
   
   # Set of variables determining the start, end and step of the calculations
   variable frameStart
@@ -2008,7 +2009,113 @@ proc curvespackage::lenBend {} {
 }
 
 proc curvespackage::twistAngle {} {
+  global M_PI
+  variable w
+  variable numQuartets
+  variable plotColors
   
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
+    foreach j {1 2 3 4} {
+      set r[set i][set j] [$w.gQuad.qua[set i].resId$j get]
+      #puts r[set i][set j]
+    }
+  }
+  
+  for { set i 1 } { $i < $numQuartets } { incr i } {
+    for { set j [expr $i + 1] } { $j <= $numQuartets } { incr j } {
+      foreach k { 1 2 3 4 } {
+        set sel[set i][set k]N9 [atomselect top "resid [set r[set i]$k] and name N9"]
+	set sel[set j][set k]N9 [atomselect top "resid [set r[set j]$k] and name N9"]
+      }
+      set listP[set i]$j {}
+      for { set k $frameStart } { $k < $frameEnd } { set k [expr {$k + $step}] } {
+        foreach l { 1 2 3 4 } {
+	  set id1 $l
+	  set id2 [expr $id1 % 4 + 1]
+	  [set sel[set i][set id1]N9] frame $k
+	  [set sel[set i][set id2]N9] frame $k
+	  [set sel[set j][set id1]N9] frame $k
+	  [set sel[set j][set id2]N9] frame $k
+	  [set sel[set i][set id1]N9] update
+	  [set sel[set i][set id2]N9] update
+	  [set sel[set j][set id1]N9] update
+	  [set sel[set j][set id2]N9] update
+	  
+	  set r[set i]$id1 [measure center [set sel[set i][set id1]N9] weight mass]
+	  set r[set i]$id2 [measure center [set sel[set i][set id2]N9] weight mass]
+	  set r[set j]$id1 [measure center [set sel[set j][set id1]N9] weight mass]
+	  set r[set j]$id2 [measure center [set sel[set j][set id2]N9] weight mass]
+	  
+	  set vect[set i][set id1]$id2 [vecnorm [vecsub [set r[set i]$id1] [set r[set i]$id2]]]
+	  set vect[set j][set id1]$id2 [vecnorm [vecsub [set r[set j]$id1] [set r[set j]$id2]]]
+	  
+	  set angle[set i][set j][set id1][set id2]_rad [vecdot [set vect[set i][set id1]$id2] [set vect[set j][set id1]$id2]]
+	  if {[set angle[set i][set j][set id1][set id2]_rad] > 1.0} {
+	    set angle[set i][set j][set id1][set id2]_rad 1.0
+	  }
+	  if {[set angle[set i][set j][set id1][set id2]_rad] < -1.0} {
+	    set angle[set i][set j][set id1][set id2]_rad -1.0
+	  }
+	  set angle[set i][set j][set id1][set id2] [expr acos([set angle[set i][set j][set id1][set id2]_rad]) / $M_PI * 180]
+	}
+	
+	set twist [vecscale 0.25 [vecadd [set angle[set i][set j]12] [set angle[set i][set j]23] [set angle[set i][set j]34] [set angle[set i][set j]41]]]
+	
+	lappend listP[set i]$j $twist
+      }
+      foreach k { 1 2 3 4 } {
+	[set sel[set i][set k]N9] delete
+	[set sel[set j][set k]N9] delete
+      }
+    }
+  }
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP12 \
+                    -xlabel "Frame" -ylabel "Angle" -title "Twist Angles" \
+                    -lines -linewidth 1 -linecolor black \
+                    -marker none -legend "Twist angle between the quartets 1 & 2" -plot];
+  for { set i 1 } { $i < $numQuartets } { incr i } {
+    for { set j [expr $i + 1] } { $j <= $numQuartets } { incr j } {
+      if { $i != 1 && $j != 2 } {
+        set plotColor [lindex plotColors [expr $i + $j - 1]]
+        $plothandle add $xlist [set listP[set i]$j] -lines -linewidth 1 -linecolor bl -marker none -legend "Twist angle between the quartets $i and $j" -plot
+       }
+    }
+  }
+  #$plothandle -plot
 }
 
 proc curvespackage_tk {} {
