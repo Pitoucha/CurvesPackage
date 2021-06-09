@@ -306,14 +306,17 @@ proc ::curvespackage::chargement {} {
     grid [labelframe $w.gQuad.noQua] -row 2 -columnspan 2
     grid [button $w.gQuad.noQua.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 0
     
-    #Calculating the distance between the CoM of guanines and [the CoM of their quartet ; the CoM of the 2 quartets (simulating the emplacement of the metallic ion)]
+    # Calculating the distance between the CoM of guanines and [the CoM of their quartet ; the CoM of the 2 quartets (simulating the emplacement of the metallic ion)]
     grid [labelframe $w.gQuad.twoQua] -row 3 -columnspan 2
     grid [button $w.gQuad.twoQua.comDistancesGua -text "Distances between guanines and multiple centers of mass" -command "curvespackage::guaCoMDistances"] -row 0 -column 0
-    grid [labelframe $w.gQuad.twoQua.selQua -text "From which quartet ?"] -row 0 -column 1
+    grid [labelframe $w.gQuad.twoQua.selQua -text "From which quartets ?"] -row 0 -column 1 -rowspan 2
     grid [label $w.gQuad.twoQua.selQua.mainLab -text "Main quartet"] -row 0 -column 0
     grid [entry $w.gQuad.twoQua.selQua.main -textvar ::curvespackage::mainQua] -row 0 -column 1
     grid [label $w.gQuad.twoQua.selQua.secLab -text "Other quartet (CoM calculated between the main and this one)"] -row 1 -column 0
     grid [entry $w.gQuad.twoQua.selQua.sec -textvar ::curvespackage::secQua] -row 1 -column 1
+    
+    # Calculating the distance between the CoM of the quartets
+    grid [button $w.gQuad.twoQua.comDistances -text "Distance between the CoM of the quartets" -command "curvespackage::comQua"] -row 1 -column 0
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -2160,13 +2163,168 @@ proc curvespackage::guaCoMDistances {} {
     return
   }
   
+  if {$mainQua eq ""} {
+    set mainQua 1
+  } else {
+    set mainQua [expr int($mainQua)]
+  }
+  if {$secQua eq ""} {
+    set secQua 2
+  } else {
+    set secQua [expr int($secQua)]
+  }
+  
   # We create the list used for the abscissa of the graphes
   set xlist {}
   for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
     lappend xlist $i
   }
   
+  foreach j { 1 2 3 4 } {
+    set r[set mainQua][set j] [$w.gQuad.qua[set mainQua].resId$j get]
+    set r[set secQua][set j] [$w.gQuad.qua[set secQua].resId$j get]
+  }
   
+  foreach i { 1 2 3 4 } {
+    set selr[set mainQua]$i [atomselect top "resid [set r[set mainQua]$i] and $nameAtomsGQuad"]
+    set listPr[set mainQua]$j {}
+    set listP[set mainQua]r[set mainQua]$j {}
+  }
+  
+  set selq [atomselect top "resid [set r[set mainQua]1] [set r[set mainQua]2] [set r[set mainQua]3] [set r[set mainQua]4] [set r[set secQua]1] [set r[set secQua]2] [set r[set secQua]3] [set r[set secQua]4] and $nameAtomsGQuad"]
+  
+  set selq$mainQua [atomselect top "resid [set r[set mainQua]1] [set r[set mainQua]2] [set r[set mainQua]3] [set r[set mainQua]4] and $nameAtomsGQuad"]
+  
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    
+    $selq frame $i
+    [set selq$mainQua] frame $i
+    $selq update
+    [set selq$mainQua] update
+    
+    set q [measure center $selq weight mass]
+    set q$mainQua [measure center [set selq$mainQua] weight mass]
+    
+    foreach j { 1 2 3 4 } {
+      
+      [set selr[set mainQua]$j] frame $i
+      [set selr[set mainQua]$j] update
+      
+      set r[set mainQua]$j [measure center [set selr[set mainQua]$j] weight mass]
+      set qr[set mainQua]$j [veclength [vecsub $q [set r[set mainQua]$j]]]
+      set q[set mainQua]r[set mainQua]$j [veclength [vecsub [set q$mainQua] [set r[set mainQua]$j]]]
+      
+      lappend listPr[set mainQua]$j [set qr[set mainQua]$j]
+      lappend listP[set mainQua]r[set mainQua]$j [set q[set mainQua]r[set mainQua]$j]
+    }
+  }
+  
+  foreach i { 1 2 3 4 } {
+    [set selr[set mainQua]$i] delete
+  }
+  
+  $selq delete
+  [set selq$mainQua] delete
+  
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listPr11 \
+                    -xlabel "Frame" -ylabel "Distance" -title "Distances between guanins CoM and \[the CoM of their quartet ; the CoM of quartets $mainQua and $secQua\]" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "Distance between G1 and CoM(Q$mainQua;Q$secQua)"];
+
+  # Adding the other calculated lists
+  $plothandle add $xlist $listPr12 -lines -linewidth 1 -linecolor red -marker none -legend "Distance between G2 and CoM(Q$mainQua;Q$secQua)"
+  $plothandle add $xlist $listPr13 -lines -linewidth 1 -linecolor green -marker none -legend "Distance between G3 and CoM(Q$mainQua;Q$secQua)"
+  $plothandle add $xlist $listPr14 -lines -linewidth 1 -linecolor magenta -marker none -legend "Distance between G4 and CoM(Q$mainQua;Q$secQua)"
+  $plothandle add $xlist [set listP[set mainQua]r11] -lines -linewidth 1 -linecolor orange -marker none -legend "Distance between G1 and CoM(Q$mainQua)"
+  $plothandle add $xlist [set listP[set mainQua]r12] -lines -linewidth 1 -linecolor OliveDrab2 -marker none -legend "Distance between G2 and CoM(Q$mainQua)"
+  $plothandle add $xlist [set listP[set mainQua]r13] -lines -linewidth 1 -linecolor cyan -marker none -legend "Distance between G3 and CoM(Q$mainQua)"
+  $plothandle add $xlist [set listP[set mainQua]r14] -lines -linewidth 1 -linecolor maroon -marker none -legend "Distance between G4 and CoM(Q$mainQua)" -plot
+}
+
+proc curvespackage::comQua {} {
+  global M_PI
+  variable w
+  variable nameAtomsGQuad
+  variable mainQua
+  variable secQua
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  if {$mainQua eq ""} {
+    set mainQua 1
+  } else {
+    set mainQua [expr int($mainQua)]
+  }
+  if {$secQua eq ""} {
+    set secQua 2
+  } else {
+    set secQua [expr int($secQua)]
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+
+  foreach i { 1 2 3 4 } {
+    set r[set mainQua]$i [$w.gQuad.qua[set mainQua].resId$i get]
+    set r[set secQua]$i [$w.gQuad.qua[set secQua].resId$i get]
+  }
+  
+  set selq$mainQua [atomselect top "resid [set r[set mainQua]1] [set r[set mainQua]2] [set r[set mainQua]3] [set r[set mainQua]4] and $nameAtomsGQuad"]
+  set selq$secQua [atomselect top "resid [set r[set secQua]1] [set r[set secQua]2] [set r[set secQua]3] [set r[set secQua]4] and $nameAtomsGQuad"]
+  
+  set listP {}
+  
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    [set selq$mainQua] frame $i
+    [set selq$secQua] frame $i
+    [set selq$mainQua] update
+    [set selq$secQua] update
+    
+    set q$mainQua [measure center [set selq$mainQua] weight mass]
+    set q$secQua [measure center [set selq$secQua] weight mass]
+    
+    set dist [veclength [vecsub [set q$mainQua] [set q$secQua]]]
+    
+    lappend listP $dist
+  }
+  
+  [set selq$mainQua] delete
+  [set selq$secQua] delete
+  
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP \
+                    -xlabel "Frame" -ylabel "Distance" -title "Distance between CoM(Q$mainQua) and CoM(Q$secQua)" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "Distance between CoM(Q$mainQua) and CoM(Q$secQua)" -plot];
 }
 
 proc curvespackage_tk {} {
