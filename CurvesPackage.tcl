@@ -1087,12 +1087,8 @@ proc ::curvespackage::plotBases { type {hist 0} } {
         # Calling computeFrames on our selection for an angle between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
 	
-	if { $hist != 0 } {
-	  return $listP
-	}
-	
 	# Deleting all our selections
-  $res1 delete
+        $res1 delete
 	$res2 delete
 	$res3 delete
 	$res4 delete
@@ -1102,16 +1098,16 @@ proc ::curvespackage::plotBases { type {hist 0} } {
                       -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Angle" -plot];
+		      
+        if { $hist != 0 } {
+	  return $listP
+	}
       
       # Case if we want to plot a distance
       } elseif { $type eq "dist" } {
       
         # Calling computeFrames on our selection for a distance between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
-	
-	if { $hist != 0 } {
-	  return $listP
-	}
 	
 	# Deleting all our selections
 	$res1 delete
@@ -1122,6 +1118,10 @@ proc ::curvespackage::plotBases { type {hist 0} } {
                       -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
                       -lines -linewidth 1 -linecolor $color1 \
                       -marker none -legend "Distance" -plot];
+	
+	if { $hist != 0 } {
+	  return $listP
+	}
       }
     
     # In case the fields are not empty for the second pair
@@ -2124,6 +2124,49 @@ proc curvespackage::twistAngle {} {
     }
   }
   #$plothandle -plot
+}
+
+proc curvespackage::guaCoMDistances {} {
+  global M_PI
+  variable w
+  variable nameAtomsGQuad
+  variable mainQua
+  variable secQua
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  
 }
 
 proc curvespackage_tk {} {
