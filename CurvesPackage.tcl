@@ -52,6 +52,8 @@ namespace eval ::curvespackage:: {
   variable nameAtomsGQuad "name N1 C2 N2 N3 C4 C5 C6 O6 N7 C8 N9"
   variable quaNum
   variable numQuartets 2
+  variable mainQua
+  variable secQua
 
   variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
   variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
@@ -305,7 +307,15 @@ proc ::curvespackage::chargement {} {
     grid [button $w.gQuad.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 3 -column 0
     
     # Calculating the twist angles
-    grid [button $w.gQuad.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 4 -column 0
+    grid [button $w.gQuad.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 4 -columnspan 2
+    
+    #Calculating the distance between the CoM of guanines and [the CoM of their quartet ; the CoM of the 2 quartets (simulating the emplacement of the metallic ion)]
+    grid [button $w.gQuad.CoMDistancesGua -text "Distances between guanines and multiple centers of mass"] -row 5 -column 0
+    #grid [labelframe $w.gQuad.selQua -text "From which quartet ?"] -row 5 -column 1
+    #grid [label $w.gQuad.selQua.mainLab -text "Main quartet"] -row 0 -column 0
+    #grid [entry $w.gQuad.selQua.main -textvar ::curvespackage::mainQua] -row 0 -column 1
+    #grid [label $w.gQuad.selQua.secLab -text "Other quartet (CoM calculated between the main and this one"] -row 1 -column 0
+    #grid [entry $w.gQuad.selQua.sec -textvar ::curvespackage::secQua] -row 1 -column 1
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
