@@ -102,13 +102,14 @@ proc ::curvespackage::Histograms {b} {
      exec mkdir "Ouput_Dat"
   }
 
-  #case 0 - distance variation between two atom of a base (base 1 / a1 -a2)
-  #case 1 - angle variation between two atom of a base (base 1 / a1 -a2)
+  #case 0 - distance variation between two atom of a base (base 1 / a1 - a2)
+  #case 1 - angle variation between two atom of a base (base 1 / a1 - a2)
   
-  #case 2 - distance variation between two atom of a base (base 2 / a1 -a2)
-  #case 3 - angle variation between two atom of a base (base 2 / a1 -a2)
+  #case 2 - distance variation between two atom of a base (base 2 / a1 - a2)
+  #case 3 - angle variation between two atom of a base (base 2 / a1 - a2)
 
-  #case 4 - distance variation bewtee
+  #case 4 - distance variation between the two bases (base 1 / base 2)
+  #case 5 - angle variation between the two bases (base 1 / base 2)
 
   switch $b {
     0 {
