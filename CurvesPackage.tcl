@@ -99,30 +99,30 @@ proc ::curvespackage::packageui {} {
 }
 
 
-proc ::curvespackage::Histograms {b} {
+proc ::curvespackage::HistogramsAtoms {b atm1 atm2 nbAtm1 nbAtm2} {
   if {![file exist "Ouput_Dat"] } {
      exec mkdir "Ouput_Dat"
   }
 
-  #case 0 - distance variation between two atom of a base (base 1 / a1 - a2)
-  #case 1 - angle variation between two atom of a base (base 1 / a1 - a2)
+  #case 0 - distance variation between two atom of a base (base 1 / base 2)
+  #case 1 - angle variation between two atom of a base (base 1 / base 2)
   
-  #case 2 - distance variation between two atom of a base (base 2 / a1 - a2)
-  #case 3 - angle variation between two atom of a base (base 2 / a1 - a2)
+  #case 2 - distance variation between two atom of a base (base 3 / base 4)
+  #case 3 - angle variation between two atom of a base (base 3 / base 4)
 
-  #case 4 - distance variation between the two bases (base 1 / base 2)
-  #case 5 - angle variation between the two bases (base 1 / base 2)
+  #case 4 - distance variation between the two pair of bases (b1b2 / b3b4)
+  #case 5 - angle variation between the two pair of bases (b1b2 / b3b4)
 
   switch $b {
     0 {
-      set name "Ouput_Dat/outdist1.dat"
+      set name "Ouput_Dat/distVar_$atm1(nbAtm1)_$atm2(nbAtm2).dat"
       set file [open $name w]
       set listP [::curvespackage::plotBases dist 1]
       for { set i 0 } { $i <= [llength $listP] } { incr i } {
         puts $file [lindex $listP $i]
       }
       close $file
-      ::curvespackage::gnuPlotting $name "outdist1"
+      ::curvespackage::gnuPlotting $name "distVar_$atm1(nbAtm1)_$atm2(nbAtm2)"
     }
     1 {
       set name "Ouput_Dat/outangl1.dat"
@@ -134,6 +134,12 @@ proc ::curvespackage::Histograms {b} {
       close $file
       ::curvespackage::gnuPlotting $name "outangl1"
     }
+    2 {
+
+    }
+    3 {}
+    4 {}
+    5 {}
   }
 }
 
