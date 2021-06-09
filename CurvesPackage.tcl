@@ -138,30 +138,24 @@ proc ::curvespackage::Histograms {b} {
 }
 
 proc ::curvespackage::gnuPlotting {nameDat name} {
-  if {$nameDat == "Ouput_Dat/outdist1.dat"} {
-    set path [pwd]
-    append path "/" 
-    append path $nameDat 
+  set path [pwd]
+  append path "/" 
+  append path $nameDat 
   
-    set savePath [pwd]
-    
-    puts $savePath
-    puts $path
-    puts $name 
+  set savePath [pwd]
 
-    variable CURVESPACKAGE_PATH
-    cd $CURVESPACKAGE_PATH
-    cd "GNU_Script"
+  variable CURVESPACKAGE_PATH
+  cd $CURVESPACKAGE_PATH
+  cd "GNU_Script"
     
-    set rounding [::curvespackage::callRoundingChooser]
-    set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path $name"
-                              #0                #1        #2        #3    #4
-    #eval $test
-    if [catch eval $test] {
-      puts ""
-    }
-    cd $savePath
+  set rounding [::curvespackage::callRoundingChooser]
+  set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path $name"
+                            #ARG0             #ARG1     #ARG2     #ARG3 #ARG4
+  #eval $test
+  if [catch eval $test] {
+    puts ""
   }
+  cd $savePath
 }
 
 proc ::curvespackage::callRoundingChooser {} {
