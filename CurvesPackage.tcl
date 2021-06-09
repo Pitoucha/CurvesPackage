@@ -296,26 +296,29 @@ proc ::curvespackage::chargement {} {
     grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
     
     # Calculating the guanines' planarity compared to the quartet's perpendicular axis
-    grid [button $w.gQuad.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 1 -column 0
-    grid [labelframe $w.gQuad.selGua -text "Which quartet's guanines ?"] -row 1 -column 1 -rowspan 3
-    grid [entry $w.gQuad.selGua.quaSel -textvar ::curvespackage::quaNum]
+    grid [labelframe $w.gQuad.oneQua] -row 1 -columnspan 2
+    grid [button $w.gQuad.oneQua.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 0 -column 0
+    grid [labelframe $w.gQuad.oneQua.selGua -text "Which quartet's guanines ?"] -row 0 -column 1 -rowspan 3
+    grid [entry $w.gQuad.oneQua.selGua.quaSel -textvar ::curvespackage::quaNum]
     
     # Calculating the guanines' planarity between themselves
-    grid [button $w.gQuad.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 2 -column 0
+    grid [button $w.gQuad.oneQua.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 1 -column 0
     
     # Calculating the quartet bending lengthwise
-    grid [button $w.gQuad.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 3 -column 0
+    grid [button $w.gQuad.oneQua.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 2 -column 0
     
     # Calculating the twist angles
-    grid [button $w.gQuad.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 4 -columnspan 2
+    grid [labelframe $w.gQuad.noQua] -row 2 -columnspan 2
+    grid [button $w.gQuad.noQua.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 0
     
     #Calculating the distance between the CoM of guanines and [the CoM of their quartet ; the CoM of the 2 quartets (simulating the emplacement of the metallic ion)]
-    grid [button $w.gQuad.CoMDistancesGua -text "Distances between guanines and multiple centers of mass"] -row 5 -column 0
-    #grid [labelframe $w.gQuad.selQua -text "From which quartet ?"] -row 5 -column 1
-    #grid [label $w.gQuad.selQua.mainLab -text "Main quartet"] -row 0 -column 0
-    #grid [entry $w.gQuad.selQua.main -textvar ::curvespackage::mainQua] -row 0 -column 1
-    #grid [label $w.gQuad.selQua.secLab -text "Other quartet (CoM calculated between the main and this one"] -row 1 -column 0
-    #grid [entry $w.gQuad.selQua.sec -textvar ::curvespackage::secQua] -row 1 -column 1
+    grid [labelframe $w.gQuad.twoQua] -row 3 -columnspan 2
+    grid [button $w.gQuad.twoQua.comDistancesGua -text "Distances between guanines and multiple centers of mass" -command "curvespackage::guaCoMDistances"] -row 0 -column 0
+    grid [labelframe $w.gQuad.twoQua.selQua -text "From which quartet ?"] -row 0 -column 1
+    grid [label $w.gQuad.twoQua.selQua.mainLab -text "Main quartet"] -row 0 -column 0
+    grid [entry $w.gQuad.twoQua.selQua.main -textvar ::curvespackage::mainQua] -row 0 -column 1
+    grid [label $w.gQuad.twoQua.selQua.secLab -text "Other quartet (CoM calculated between the main and this one)"] -row 1 -column 0
+    grid [entry $w.gQuad.twoQua.selQua.sec -textvar ::curvespackage::secQua] -row 1 -column 1
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
