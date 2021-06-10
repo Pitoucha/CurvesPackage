@@ -299,7 +299,7 @@ proc ::curvespackage::chargement {} {
     # Calculating the guanines' planarity compared to the quartet's perpendicular axis
     grid [labelframe $w.gQuad.oneQua] -row 1 -columnspan 2
     grid [button $w.gQuad.oneQua.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 0 -column 0
-    grid [labelframe $w.gQuad.oneQua.selGua -text "Which quartet's guanines ?"] -row 0 -column 1 -rowspan 3
+    grid [labelframe $w.gQuad.oneQua.selGua -text "Which quartet's guanines ?"] -row 0 -column 1 -rowspan 5
     grid [entry $w.gQuad.oneQua.selGua.quaSel -textvar ::curvespackage::quaNum]
     
     # Calculating the guanines' planarity between themselves
@@ -307,6 +307,12 @@ proc ::curvespackage::chargement {} {
     
     # Calculating the quartet bending lengthwise
     grid [button $w.gQuad.oneQua.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 2 -column 0
+    
+    # Calculating the angle between the guanines' axis
+    grid [button $w.gQuad.oneQua.guaAngles -text "Angles between the guanins' axis of the selected quartet" -command "curvespackage::guaAxisAngle"] -row 3 -column 0
+    
+    # Calculating the distance between the COMs of O6 and N9 squares on a quartet
+    grid [button $w.gQuad.oneQua.quaCom -text "Distance between CoM(O6) and CoM(N9)" -command "curvespackage::comO6N9"] -row 4 -column 0
     
     # Calculating the twist angles
     grid [labelframe $w.gQuad.noQua] -row 2 -columnspan 2
@@ -2428,6 +2434,189 @@ proc curvespackage::gyrationRadii {} {
     set plotColor [lindex $plotColors [expr $i]]
     $plothandle add $xlist [set listP$i] -lines -linewidth 1 -linecolor $plotColor -marker none -legend "Gyration radii of the quartet $i" -plot
   }
+  
+}
+
+proc curvespackage::guaAxisAngle {} {
+  global M_PI
+  variable w
+  variable quaNum
+  variable nameAtomsGQuad
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  if {$quaNum eq ""} {
+    set quaNum 1
+  } else {
+    set quaNum [expr int($quaNum)]
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  foreach i { 1 2 3 4 } {
+    set rx$i [$w.gQuad.qua[set quaNum].resId$i get]
+    set selrx[set i]C8 [atomselect top "resid [set rx$i] and name C8"]
+    set selrx[set i]C4C5 [atomselect top "resid [set rx$i] and name C4 C5"]
+    for { set j [expr $i + 1] } { $j <= 4 } { incr j } {
+      set listP[set i]$j {}
+    }
+  }
+  
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    
+    foreach j { 1 2 3 4 } {
+      [set selrx[set j]C8] frame $i
+      [set selrx[set j]C4C5] frame $i
+      [set selrx[set j]C8] update
+      [set selrx[set j]C4C5] update
+      
+      set rx[set j]C8 [measure center [set selrx[set j]C8] weight mass]
+      set rx[set j]C4C5 [measure center [set selrx[set j]C4C5] weight mass]
+      
+      set vectrx$j [vecnorm [vecsub [set rx[set j]C8] [set rx[set j]C4C5]]]
+      
+    }
+    
+    foreach j { 1 2 3 4 } {
+      for { set k [expr $j + 1] } { $k <= 4 } { incr k } {
+	
+	set rx[set j]rx[set k]C4C5_C8_rad [vecdot [set vectrx$j] [set vectrx$k]]
+	
+	set rx[set j]rx[set k]C4C5_C8 [expr acos([set rx[set j]rx[set k]C4C5_C8_rad]) / $M_PI * 180]
+	
+	lappend listP[set j]$k [set rx[set j]rx[set k]C4C5_C8]
+      }
+    }
+  }
+  
+  foreach i { 1 2 3 4 } {
+    [set selrx[set i]C8] delete
+    [set selrx[set i]C4C5] delete
+  }
+  
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP12 \
+                    -xlabel "Frame" -ylabel "Angle" -title "Angle between between the guanines' axes on the quartet $quaNum" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "Angle between the guanines 1 & 2"];
+
+  # Adding the other calculated lists
+  $plothandle add $xlist $listP13 -lines -linewidth 1 -linecolor red -marker none -legend "Angle between the guanines 1 & 3"
+  $plothandle add $xlist $listP14 -lines -linewidth 1 -linecolor green -marker none -legend "Angle between the guanines 1 & 4"
+  $plothandle add $xlist $listP23 -lines -linewidth 1 -linecolor magenta -marker none -legend "Angle between the guanines 2 & 3"
+  $plothandle add $xlist $listP24 -lines -linewidth 1 -linecolor orange -marker none -legend "Angle between the guanines 2 & 4"
+  $plothandle add $xlist $listP34 -lines -linewidth 1 -linecolor OliveDrab2 -marker none -legend "Angle between the guanines 3 & 4" -plot
+  
+}
+
+proc curvespackage::comO6N9 {} {
+  global M_PI
+  variable w
+  variable quaNum
+  variable nameAtomsGQuad
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  if {$quaNum eq ""} {
+    set quaNum 1
+  } else {
+    set quaNum [expr int($quaNum)]
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  foreach i { 1 2 3 4 } {
+    set rx$i [$w.gQuad.qua[set quaNum].resId$i get]
+  }
+  
+  set selO6 [atomselect top "resid $rx1 $rx2 $rx3 $rx4 and name O6"]
+  set selN9 [atomselect top "resid $rx1 $rx2 $rx3 $rx4 and name N9"]
+  
+  set listP {}
+  
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+  
+    $selO6 frame $i
+    $selN9 frame $i
+    $selO6 update
+    $selN9 update
+    
+    set O6 [measure center $selO6 weight mass]
+    set N9 [measure center $selN9 weight mass]
+    
+    set vectN9O6 [vecsub $N9 $O6]
+    
+    set dist [veclength $vectN9O6]
+    
+    lappend listP $dist
+  
+  }
+  
+  $selO6 delete
+  $selN9 delete
+  
+  set plothandle [multiplot -x $xlist -y $listP \
+                    -xlabel "Frame" -ylabel "Distance" -title "Distance between the CoM of the O6 \"square\" and the CoM of the N9 \"square\" of the quartet $quaNum" \
+                    -lines -linewidth 1 -linecolor blue \
+                    -marker none -legend "Distance between the CoMs" -plot];
   
 }
 
