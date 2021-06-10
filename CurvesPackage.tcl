@@ -312,6 +312,9 @@ proc ::curvespackage::chargement {} {
     grid [labelframe $w.gQuad.noQua] -row 2 -columnspan 2
     grid [button $w.gQuad.noQua.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 0
     
+    # Calculating the gyration radii
+    grid [button $w.gQuad.noQua.gyr -text "Gyration radii" -command "curvespackage::gyrationRadii"] -row 1
+    
     # Calculating the distance between the CoM of guanines and [the CoM of their quartet ; the CoM of the 2 quartets (simulating the emplacement of the metallic ion)]
     grid [labelframe $w.gQuad.twoQua] -row 3 -columnspan 2
     grid [button $w.gQuad.twoQua.comDistancesGua -text "Distances between guanines and multiple centers of mass" -command "curvespackage::guaCoMDistances"] -row 0 -column 0
@@ -2124,11 +2127,11 @@ proc curvespackage::twistAngle {} {
                     -xlabel "Frame" -ylabel "Angle" -title "Twist Angles" \
                     -lines -linewidth 1 -linecolor black \
                     -marker none -legend "Twist angle between the quartets 1 & 2" -plot];
-  for { set i 1 } { $i < $numQuartets } { incr i } {
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
     for { set j [expr $i + 1] } { $j <= $numQuartets } { incr j } {
       if { $i != 1 && $j != 2 } {
-        set plotColor [lindex plotColors [expr $i + $j - 1]]
-        $plothandle add $xlist [set listP[set i]$j] -lines -linewidth 1 -linecolor bl -marker none -legend "Twist angle between the quartets $i and $j" -plot
+        set plotColor [lindex $plotColors [expr $i + $j - 1]]
+        $plothandle add $xlist [set listP[set i]$j] -lines -linewidth 1 -linecolor plotColor -marker none -legend "Twist angle between the quartets $i and $j" -replot
        }
     }
   }
@@ -2331,6 +2334,101 @@ proc curvespackage::comQua {} {
                     -xlabel "Frame" -ylabel "Distance" -title "Distance between CoM(Q$mainQua) and CoM(Q$secQua)" \
                     -lines -linewidth 1 -linecolor blue \
                     -marker none -legend "Distance between CoM(Q$mainQua) and CoM(Q$secQua)" -plot];
+}
+
+proc curvespackage::gyrationRadii {} {
+  variable w
+  variable nameAtomsGQuad
+  variable numQuartets
+  variable plotColors
+  
+  # Set of variables determining the start, end and step of the calculations
+  variable frameStart
+  variable frameEnd
+  variable step
+  
+  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
+  if {$frameStart eq ""} {
+    set frameStart 0
+  } else {
+    set frameStart [expr int($frameStart)]
+  }
+  if {$frameEnd eq ""} {
+    set frameEnd [molinfo top get numframes]
+  } else {
+    set frameEnd [expr int($frameEnd)]
+  }
+  if {$step eq ""} {
+    set step 1
+  } else {
+    set step [expr int($step)]
+  }
+  
+  if { $frameStart == $frameEnd } {
+    tk_messageBox -message "Error, only one frame selected, graphing impossible"
+    return
+  }
+  
+  # We create the list used for the abscissa of the graphes
+  set xlist {}
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+    lappend xlist $i
+  }
+  
+  set residQ "resid "
+  
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
+    foreach j { 1 2 3 4 } {
+      set r[set i]$j [$w.gQuad.qua[set i].resId$j get]
+      append residQ "[set r[set i]$j] "
+    }
+    set selq$i [atomselect top "resid [set r[set i]1] [set r[set i]2] [set r[set i]3] [set r[set i]4] and $nameAtomsGQuad"]
+  }
+  
+  set selq [atomselect top $residQ]
+  
+  set listP {}
+  
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
+    set listP$i {}
+  }
+  
+  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
+  
+    $selq frame $i
+    $selq update
+    
+    set q [measure rgyr $selq]
+    
+    lappend listP $q
+    
+    for { set j 1 } { $j <= $numQuartets } { incr j } {
+      
+      [set selq$j] frame $i
+      [set selq$j] update
+      
+      set q$j [measure rgyr [set selq$j]]
+      
+      lappend listP$j [set q$j]
+    }
+  }
+  
+  $selq delete
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
+    [set selq$i] delete
+  }
+  
+  # Creating the multiplot for the first calculated list
+  set plothandle [multiplot -x $xlist -y $listP \
+                    -xlabel "Frame" -ylabel "Radii" -title "Gyration Radii " \
+                    -lines -linewidth 1 -linecolor black \
+                    -marker none -legend "Gyration radii of all the quartets" -plot];
+  
+  for { set i 1 } { $i <= $numQuartets } { incr i } {
+    set plotColor [lindex $plotColors [expr $i]]
+    $plothandle add $xlist [set listP$i] -lines -linewidth 1 -linecolor $plotColor -marker none -legend "Gyration radii of the quartet $i" -plot
+  }
+  
 }
 
 proc curvespackage_tk {} {
