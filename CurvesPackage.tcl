@@ -99,47 +99,137 @@ proc ::curvespackage::packageui {} {
 }
 
 
-proc ::curvespackage::HistogramsAtoms {b atm1 atm2 nbAtm1 nbAtm2} {
+proc ::curvespackage::Histograms {type} {
+  variable w 
   if {![file exist "Ouput_Dat"] } {
-     exec mkdir "Ouput_Dat"
-  }
+   exec mkdir "Ouput_Dat"
+ }
+
+ set base1 [$w.helix.resBase1.resNameBase1 get]
+ set idBase1 [$w.helix.resBase1.resIdBase1 get]
+
+ set base2 [$w.helix.resBase2.resNameBase2 get]
+ set idBase2 [$w.helix.resBase2.resIdBase2 get]
+
+ set match1 [$w.helix.resBase1.resNameMatch1 get]
+ set idMatch1 [$w.helix.resBase1.resIdMatch1 get]
+
+ set match2 [$w.helix.resBase2.resNameMatch2 get]
+ set idMatch2 [$w.helix.resBase2.resIdMatch2 get]
+
 
   #case 0 - distance variation between two atom of a base (base 1 / base 2)
   #case 1 - angle variation between two atom of a base (base 1 / base 2)
   
-  #case 2 - distance variation between two atom of a base (base 3 / base 4)
-  #case 3 - angle variation between two atom of a base (base 3 / base 4)
+  #case 2 - distance variation between the two pair of bases (b1b2 / b3b4)
+  #case 3 - angle variation between the two pair of bases (b1b2 / b3b4)
 
-  #case 4 - distance variation between the two pair of bases (b1b2 / b3b4)
-  #case 5 - angle variation between the two pair of bases (b1b2 / b3b4)
+  switch $type {
+    dist {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 == "" && $idBase2 == "" && $match2 == "" && $idMatch2 == "" } {
+        set name "Ouput_Dat/distVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases dist 1]
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
+          puts $file [lindex $listP $i]
+        }
+        close $file
+        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)_$match1\($idMatch1\)"
 
-  switch $b {
-    0 {
-      set name "Ouput_Dat/distVar_$atm1(nbAtm1)_$atm2(nbAtm2).dat"
-      set file [open $name w]
-      set listP [::curvespackage::plotBases dist 1]
-      for { set i 0 } { $i <= [llength $listP] } { incr i } {
+        } elseif {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 != "" && $idBase2 != "" && $match2 != "" && $idMatch2 != ""} {
+          set listP [::curvespackage::plotBases dist 1]
+          if {$base2 != ""} {
+            set list1 [lindex $listP 0]
+            set list2 [lindex $listP 1]
+
+            #First list
+            set name1 "Ouput_Dat/distVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+            set file1 [open $name1 w]
+
+            for { set i 0 } { $i <= [llength $list1] } { incr i } {
+              puts $file1 [lindex $list1 $i]
+            }
+            close $file1
+            ::curvespackage::gnuPlotting $name1 "distVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+
+            #second list 
+            set name2 "Ouput_Dat/distVar_$base2\($idBase2\)_$match2\($idMatch2\).dat"
+            set file2 [open $name2 w]
+
+            for { set i 0 } { $i <= [llength $list2] } { incr i } {
+              puts $file2 [lindex $list2 $i]
+            }
+            close $file2
+            ::curvespackage::gnuPlotting $name2 "distVar_$base2\($idBase2\)_$match2\($idMatch2\)"
+          }
+        }
+    }
+    angl {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 == "" && $idBase2 == "" && $match2 == "" && $idMatch2 == ""} {
+        set name "Ouput_Dat/anglVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases angl 1]
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
+          puts $file [lindex $listP $i]
+        }
+        close $file
+        ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+      } elseif {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 != "" && $idBase2 != "" && $match2 != "" && $idMatch2 != ""} {
+          set listP [::curvespackage::plotBases angl 1]
+          if {$base2 != ""} {
+            set list1 [lindex $listP 0]
+            set list2 [lindex $listP 1]
+
+            #First list
+            set name1 "Ouput_Dat/anglVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+            set file1 [open $name1 w]
+
+            for { set i 0 } { $i <= [llength $list1] } { incr i } {
+              puts $file1 [lindex $list1 $i]
+            }
+            close $file1
+            ::curvespackage::gnuPlotting $name1 "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+
+            #second list 
+            set name2 "Ouput_Dat/anglVar_$base2\($idBase2\)_$match2\($idMatch2\).dat"
+            set file2 [open $name2 w]
+
+            for { set i 0 } { $i <= [llength $list2] } { incr i } {
+              puts $file2 [lindex $list2 $i]
+            }
+            close $file2
+            ::curvespackage::gnuPlotting $name2 "anglVar_$base2\($idBase2\)_$match2\($idMatch2\)"
+        }
+      }
+    }
+    4dist {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != ""} {
+        set name "Ouput_Dat/distVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases 4dist 1]
+        puts $listP
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
+          puts $file [lindex $listP $i]
+        }
+        close $file
+        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\($idMatch2\)"
+      }
+    }
+    4angl {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != ""} {
+        set name "Ouput_Dat/anglVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases 4angl 1]
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
         puts $file [lindex $listP $i]
       }
       close $file
-      ::curvespackage::gnuPlotting $name "distVar_$atm1(nbAtm1)_$atm2(nbAtm2)"
+      ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\)"
     }
-    1 {
-      set name "Ouput_Dat/outangl1.dat"
-      set file [open $name w]
-      set listP [::curvespackage::plotBases angl 1]
-      for { set i 0 } { $i <= [llength $listP] } { incr i } {
-        puts $file [lindex $listP $i]
-      }
-      close $file
-      ::curvespackage::gnuPlotting $name "outangl1"
+  }
+    default {
+      puts "wtf"
     }
-    2 {
-
-    }
-    3 {}
-    4 {}
-    5 {}
   }
 }
 
@@ -147,20 +237,24 @@ proc ::curvespackage::gnuPlotting {nameDat name} {
   set path [pwd]
   append path "/" 
   append path $nameDat 
-  
+
   set savePath [pwd]
+  
+  if {![file exist "Histograms_Output"] } {
+   exec mkdir "Histograms_Output"
+ }
 
   variable CURVESPACKAGE_PATH
   cd $CURVESPACKAGE_PATH
   cd "GNU_Script"
-    
+
   set rounding [::curvespackage::callRoundingChooser]
   set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path $name"
                             #ARG0             #ARG1     #ARG2     #ARG3 #ARG4
-  #eval $test
-  if [catch eval $test] {
-    puts ""
-  }
+  eval $test
+  #if [catch eval $test] {
+  #  puts "There's been a problem, check your histograms"
+  #}
   cd $savePath
 }
 
@@ -337,9 +431,15 @@ proc ::curvespackage::chargement {} {
     grid [label $w.frames.stepLab -text "Step :"] -row 7 -column 4
     grid [entry $w.frames.step -textvar ::curvespackage::step] -row 7 -column 5
     
-    checkbutton $w.histogram -text "Histogram" -command "::curvespackage::Histograms {0}"
-    
-    pack $w.helix $w.gQuad $w.frames $w.histogram
+    checkbutton $w.histogram -text "Histogram" -variable isChecked -offvalue 0 -onvalue 1 -command {if {$isChecked == 1} {
+      ::curvespackage::enableCommand 2
+      puts "changed"
+      } elseif {$isChecked == 0} {
+        ::curvespackage::enableCommand 3
+        puts "changed back"
+      }}
+
+      pack $w.helix $w.gQuad $w.frames $w.histogram
     
     
     #call the function which create the list of resnames and resids 
@@ -490,7 +590,18 @@ proc ::curvespackage::enableCommand {b} {
         $w.helix.colorPair configure -state disabled
       }
     }
-    
+    2 {
+      $w.helix.distSel configure -command "::curvespackage::Histogram {dist}"
+      $w.helix.angVal configure -command "::curvespackage::Histogram {angl}"
+      $w.helix.distVal configure -command "::curvespackage::Histogram {4dist}"
+      $w.helix.angleVal configure -command "::curvespackage::Histogram {4angl}"
+    }
+    3 {
+      $w.helix.distSel configure -command "::curvespackage::plotBases {dist}"
+      $w.helix.angVal configure -command "::curvespackage::plotBases {angl}"
+      $w.helix.distVal configure -command "::curvespackage::plotBases {4dist}"
+      $w.helix.angleVal configure -command "::curvespackage::plotBases {4angl}"
+    }
     default {
       puts "you can't"
     }
@@ -998,29 +1109,29 @@ proc ::curvespackage::plotBases { type {hist 0} } {
   
   # We check if all the necessary fields for the first pair are filled
   if {$base1 ne "" && $match1 ne "" && $idBase1 ne "" && $idMatch1 ne ""} {
-  
+
     # If the frame parameters are empty, we switch to default values, else we convert their values to integer
     if {$frameStart eq ""} {
       set frameStart 0
-    } else {
-      set frameStart [expr int($frameStart)]
-    }
-    if {$frameEnd eq ""} {
-      set frameEnd [molinfo top get numframes]
-    } else {
-      set frameEnd [expr int($frameEnd)]
-    }
-    if {$step eq ""} {
-      set step 1
-    } else {
-      set step [expr int($step)]
-    }
-    
-    if { $frameStart == $frameEnd } {
-      tk_messageBox -message "Error, only one frame selected, graphing impossible"
-      return
-    }
-    
+      } else {
+        set frameStart [expr int($frameStart)]
+      }
+      if {$frameEnd eq ""} {
+        set frameEnd [molinfo top get numframes]
+        } else {
+          set frameEnd [expr int($frameEnd)]
+        }
+        if {$step eq ""} {
+          set step 1
+          } else {
+            set step [expr int($step)]
+          }
+
+          if { $frameStart == $frameEnd } {
+            tk_messageBox -message "Error, only one frame selected, graphing impossible"
+            return
+          }
+
     # We create the list used for the abscissa of the graphes
     set xlist {}
     for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -1029,60 +1140,60 @@ proc ::curvespackage::plotBases { type {hist 0} } {
     
     # If what we want is an angle, we create the selections (res) to use on our pair
     if { [regexp {angl$} $type] } {
-    
+
       # We select the atoms according to the base type for the first base of the pair
       if {[regexp {^DA} $base1]} {
-          set atoms [split [dict get $atomsDNA {DA}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res1 [atomselect top "resid $idBase1 and name $atom1"]
-          set res2 [atomselect top "resid $idBase1 and name $atom2"]
+        set atoms [split [dict get $atomsDNA {DA}] "\ "]
+        set atom1 [lindex $atoms 0]
+        set atom2 [lindex $atoms 1]
+        set res1 [atomselect top "resid $idBase1 and name $atom1"]
+        set res2 [atomselect top "resid $idBase1 and name $atom2"]
         } elseif {[regexp {^DT} $base1]} {
           set atoms [split [dict get $atomsDNA {DT}] "\ "]
           set atom1 [lindex $atoms 0]
           set atom2 [lindex $atoms 1]
           set res1 [atomselect top "resid $idBase1 and name $atom1"]
           set res2 [atomselect top "resid $idBase1 and name $atom2"]
-        } elseif {[regexp {^DC} $base1]} {
-          set atoms [split [dict get $atomsDNA {DC}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res1 [atomselect top "resid $idBase1 and name $atom1"]
-          set res2 [atomselect top "resid $idBase1 and name $atom2"]
-        } elseif {[regexp {^DG} $base1]} {
-          set atoms [split [dict get $atomsDNA {DG}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res1 [atomselect top "resid $idBase1 and name $atom1"]
-          set res2 [atomselect top "resid $idBase1 and name $atom2"]
-        }
-	
-	# We select the atoms according to the base type for the second base of the pair
-        if {[regexp {^DA} $match1]} {
-          set atoms [split [dict get $atomsDNA {DA}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res3 [atomselect top "resid $idMatch1 and name $atom1"]
-          set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+          } elseif {[regexp {^DC} $base1]} {
+            set atoms [split [dict get $atomsDNA {DC}] "\ "]
+            set atom1 [lindex $atoms 0]
+            set atom2 [lindex $atoms 1]
+            set res1 [atomselect top "resid $idBase1 and name $atom1"]
+            set res2 [atomselect top "resid $idBase1 and name $atom2"]
+            } elseif {[regexp {^DG} $base1]} {
+              set atoms [split [dict get $atomsDNA {DG}] "\ "]
+              set atom1 [lindex $atoms 0]
+              set atom2 [lindex $atoms 1]
+              set res1 [atomselect top "resid $idBase1 and name $atom1"]
+              set res2 [atomselect top "resid $idBase1 and name $atom2"]
+            }
+
+      # We select the atoms according to the base type for the second base of the pair
+      if {[regexp {^DA} $match1]} {
+        set atoms [split [dict get $atomsDNA {DA}] "\ "]
+        set atom1 [lindex $atoms 0]
+        set atom2 [lindex $atoms 1]
+        set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+        set res4 [atomselect top "resid $idMatch1 and name $atom2"]
         } elseif {[regexp {^DT} $match1]} {
           set atoms [split [dict get $atomsDNA {DT}] "\ "]
           set atom1 [lindex $atoms 0]
           set atom2 [lindex $atoms 1]
           set res3 [atomselect top "resid $idMatch1 and name $atom1"]
           set res4 [atomselect top "resid $idMatch1 and name $atom2"]
-        } elseif {[regexp {^DC} $match1]} {
-          set atoms [split [dict get $atomsDNA {DC}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res3 [atomselect top "resid $idMatch1 and name $atom1"]
-          set res4 [atomselect top "resid $idMatch1 and name $atom2"]
-        } elseif {[regexp {^DG} $match1]} {
-          set atoms [split [dict get $atomsDNA {DG}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res3 [atomselect top "resid $idMatch1 and name $atom1"]
-          set res4 [atomselect top "resid $idMatch1 and name $atom2"]
-        }
+          } elseif {[regexp {^DC} $match1]} {
+            set atoms [split [dict get $atomsDNA {DC}] "\ "]
+            set atom1 [lindex $atoms 0]
+            set atom2 [lindex $atoms 1]
+            set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+            set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+            } elseif {[regexp {^DG} $match1]} {
+              set atoms [split [dict get $atomsDNA {DG}] "\ "]
+              set atom1 [lindex $atoms 0]
+              set atom2 [lindex $atoms 1]
+              set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+              set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+            }
 
     # If what we want is a distance, we create the selections (res) to use on our pair
     } elseif { [regexp {dist$} $type] } {
@@ -1092,217 +1203,238 @@ proc ::curvespackage::plotBases { type {hist 0} } {
     
     # If there's nothing in the fields of the second pair, graphing only the first one
     if {$base2 eq ""} {
-      
+
       # Case if we want to plot an angle
       if { $type eq "angl" } {
-      
+
         # Calling computeFrames on our selection for an angle between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
-	
-	# Deleting all our selections
+
+
+        # Deleting all our selections
         $res1 delete
-	$res2 delete
-	$res3 delete
-	$res4 delete
-	
-	# Creating and plotting the multiplot for the calculated list
-	set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Angle" -plot];
-		      
+        $res2 delete
+        $res3 delete
+        $res4 delete
+        
+        # Creating and plotting the multiplot for the calculated list
+        set plothandle [multiplot -x $xlist -y $listP \
+        -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
+        -lines -linewidth 1 -linecolor $color1 \
+        -marker none -legend "Angle" -plot];
+        
         if { $hist != 0 } {
-	  return $listP
-	}
-      
+          return $listP
+        }    
       # Case if we want to plot a distance
       } elseif { $type eq "dist" } {
-      
+
         # Calling computeFrames on our selection for a distance between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
-	
-	# Deleting all our selections
-	$res1 delete
-	$res2 delete
-	
-	# Creating and plotting the multiplot for the calculated list
-	set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Distance" -plot];
-	
-	if { $hist != 0 } {
-	  return $listP
-	}
+
+        # Deleting all our selections
+        $res1 delete
+        $res2 delete
+        
+        # Creating and plotting the multiplot for the calculated list
+        set plothandle [multiplot -x $xlist -y $listP \
+        -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
+        -lines -linewidth 1 -linecolor $color1 \
+        -marker none -legend "Distance" -plot];
+
+        if { $hist != 0 } {
+          return $listP
+        }
       }
-    
-    # In case the fields are not empty for the second pair
-    } else {
-      set res5 ""
-      set res6 ""
-      set res7 ""
-      set res8 ""
+
+          # In case the fields are not empty for the second pair
+      } else {
+        set res5 ""
+        set res6 ""
+        set res7 ""
+        set res8 ""
       
       # Checking if the fields for the second pair are all set
       if {$base2 ne "" && $match2 ne "" && $idBase2 ne "" && $idMatch2 ne ""} {
-      
+
         # If what we want is an angle, we create the selections (res) to use on our pair
         if {[regexp {angl$} $type]} {
-	  
-	  # We select the atoms according to the base type for the first base of the pair
-	  if {[regexp {^DA} $base2]} {
-            set atoms [split [dict get $atomsDNA {DA}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          } elseif {[regexp {^DT} $base2]} {
-            set atoms [split [dict get $atomsDNA {DT}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          } elseif {[regexp {^DC} $base2]} {
-            set atoms [split [dict get $atomsDNA {DC}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          } elseif {[regexp {^DG} $base2]} {
-            set atoms [split [dict get $atomsDNA {DG}] "\ "]
-            puts "DG : $atoms"
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          }
-	  
-	  # We select the atoms according to the base type for the second base of the pair
-          if {[regexp {^DA} $match2]} {
-            set atoms [split [dict get $atomsDNA {DA}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          } elseif {[regexp {^DT} $match2]} {
-            set atoms [split [dict get $atomsDNA {DT}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          } elseif {[regexp {^DC} $match2]} {
-            set atoms [split [dict get $atomsDNA {DC}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          } elseif {[regexp {^DG} $match2]} {
-            set atoms [split [dict get $atomsDNA {DG}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          }
-	  
-	# If what we want is a distance, we create the selections (res) to use on our pair
-	} elseif {[regexp {dist$} $type]} {
-	  set res3 [atomselect top "resid $idBase2"]
-          set res4 [atomselect top "resid $idMatch2"]
-	}
-	
-	# Case if we want to plot an angle
-	if { $type eq "angl" } {
-	  
-	  # Calling computeFrames on our selection for an angle between the two bases of the first selected pair
-	  set listP1 [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
-	  
-	  # Calling computeFrames on our selection for an angle between the two bases of the second selected pair
-	  set listP2 [::curvespackage::computeFrames "angB" $res5 $res6 $res7 $res8]
-	  
-	  # Deleting all our selections
-          $res1 delete
-	  $res2 delete
-	  $res3 delete
-	  $res4 delete
-	  $res5 delete
-	  $res6 delete
-	  $res7 delete
-	  $res8 delete
-	  
-	  # Creating the multiplot for the first calculated list
-	  set plothandle [multiplot -x $xlist -y $listP1 \
-                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Angle between the first bases"];
-	  
-	  # Adding the second calculated list and plotting
-	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
-	  
-	# Case if we want to plot a distance
-	} elseif { $type eq "dist" } {
-	
-	  # Calling computeFrames on our selection for a distance between the two bases of the first selected pair
-	  set listP1 [::curvespackage::computeFrames "dist" $res1 $res2]
-	  
-	  # Calling computeFrames on our selection for a distance between the two bases of the second selected pair
-	  set listP2 [::curvespackage::computeFrames "dist" $res3 $res4]
-	  
-	  # Deleting all our selections
-	  $res1 delete
-	  $res2 delete
-	  $res3 delete
-	  $res4 delete
-	  
-	  # Creating the multiplot for the first calculated list
-	  set plothandle [multiplot -x $xlist -y $listP1 \
-                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Distance between the first bases"];
 
-	  # Adding the second calculated list and plotting
-	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
-	  
-	# Case if we want to plot the angle difference between two pairs
-	} elseif { $type eq "4angl" } {
-	
-	  # Calling computeFrames on our selection for an angle between the two selected pairs
-	  set listP [::curvespackage::computeFrames "ang4" $res1 $res2 $res3 $res4 $res5 $res6 $res7 $res8]
-	  
-	  # Deleting all our selections
-	  $res1 delete
-	  $res2 delete
-	  $res3 delete
-	  $res4 delete
-	  $res5 delete
-	  $res6 delete
-	  $res7 delete
-	  $res8 delete
-	  
-	  # Creating and plotting the multiplot for the calculated list
-	  set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
-                      -lines -linewidth 1 -linecolor $colorPair \
-                      -marker none -legend "Angle between the sets of bases" -plot];
-		      
-	# Case if we want to plot the distance between two pairs
-	} elseif { $type eq "4dist" } {
-	
-	  # Calling computeFrames on our selection for a distance between the two selected pairs
-	  set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
-	  
-	  # Deleting all our selections
-	  $res1 delete
-	  $res2 delete
-	  $res3 delete
-	  $res4 delete
-	  
-	  # Creating and plotting the multiplot for the calculated list
-	  set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
-                      -lines -linewidth 1 -linecolor $colorPair \
-                      -marker none -legend "Distance between the sets of bases" -plot];
-	}
-      
+          # We select the atoms according to the base type for the first base of the pair
+          if {[regexp {^DA} $base2]} {
+                set atoms [split [dict get $atomsDNA {DA}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+            } elseif {[regexp {^DT} $base2]} {
+                set atoms [split [dict get $atomsDNA {DT}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+            } elseif {[regexp {^DC} $base2]} {
+                set atoms [split [dict get $atomsDNA {DC}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+            } elseif {[regexp {^DG} $base2]} {
+                set atoms [split [dict get $atomsDNA {DG}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+                }
+
+          # We select the atoms according to the base type for the second base of the pair
+          if {[regexp {^DA} $match2]} {
+              set atoms [split [dict get $atomsDNA {DA}] "\ "]
+              set atom1 [lindex $atoms 0]
+              set atom2 [lindex $atoms 1]
+              set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+              set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+            } elseif {[regexp {^DT} $match2]} {
+                set atoms [split [dict get $atomsDNA {DT}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+                set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+            } elseif {[regexp {^DC} $match2]} {
+                set atoms [split [dict get $atomsDNA {DC}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+                set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+            } elseif {[regexp {^DG} $match2]} {
+                set atoms [split [dict get $atomsDNA {DG}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+                set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+              }
+
+  # If what we want is a distance, we create the selections (res) to use on our pair
+  } elseif {[regexp {dist$} $type]} {
+   set res3 [atomselect top "resid $idBase2"]
+   set res4 [atomselect top "resid $idMatch2"]
+ }
+
+  # Case if we want to plot an angle
+  if { $type eq "angl" } {
+
+    # Calling computeFrames on our selection for an angle between the two bases of the first selected pair
+    set listP1 [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
+    
+    # Calling computeFrames on our selection for an angle between the two bases of the second selected pair
+    set listP2 [::curvespackage::computeFrames "angB" $res5 $res6 $res7 $res8]
+    
+    # Deleting all our selections
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    $res5 delete
+    $res6 delete
+    $res7 delete
+    $res8 delete
+
+    # Creating the multiplot for the first calculated list
+    set plothandle [multiplot -x $xlist -y $listP1 \
+    -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
+    -lines -linewidth 1 -linecolor $color1 \
+    -marker none -legend "Angle between the first bases"];
+
+    # Adding the second calculated list and plotting
+    $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
+
+
+    if { $hist != 0 } {
+      set listReturn [list]
+      lappend listReturn $listP1 
+      lappend listReturn $listP2
+      return $listReturn
+    }
+
+  # Case if we want to plot a distance
+  } elseif { $type eq "dist" } {
+
+    # Calling computeFrames on our selection for a distance between the two bases of the first selected pair
+    set listP1 [::curvespackage::computeFrames "dist" $res1 $res2]
+    
+    # Calling computeFrames on our selection for a distance between the two bases of the second selected pair
+    set listP2 [::curvespackage::computeFrames "dist" $res3 $res4]
+    
+    # Deleting all our selections
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    
+    # Creating the multiplot for the first calculated list
+    set plothandle [multiplot -x $xlist -y $listP1 \
+    -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
+    -lines -linewidth 1 -linecolor $color1 \
+    -marker none -legend "Distance between the first bases"];
+
+    # Adding the second calculated list and plotting
+    $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
+
+
+     if { $hist != 0 } {
+      set listReturn [list]
+      lappend listReturn $listP1 
+      lappend listReturn $listP2
+      return $listReturn
+    }
+
+  # Case if we want to plot the angle difference between two pairs
+  } elseif { $type eq "4angl" } {
+
+    # Calling computeFrames on our selection for an angle between the two selected pairs
+    set listP [::curvespackage::computeFrames "ang4" $res1 $res2 $res3 $res4 $res5 $res6 $res7 $res8]
+    
+    # Deleting all our selections
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    $res5 delete
+    $res6 delete
+    $res7 delete
+    $res8 delete
+    
+    # Creating and plotting the multiplot for the calculated list
+    set plothandle [multiplot -x $xlist -y $listP \
+    -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
+    -lines -linewidth 1 -linecolor $colorPair \
+    -marker none -legend "Angle between the sets of bases" -plot];
+
+    if { $hist != 0 } {
+      return $listP
+    }
+  # Case if we want to plot the distance between two pairs
+  } elseif { $type eq "4dist" } {
+
+    # Calling computeFrames on our selection for a distance between the two selected pairs
+    set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
+    
+    # Deleting all our selections
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    
+    # Creating and plotting the multiplot for the calculated list
+    set plothandle [multiplot -x $xlist -y $listP \
+    -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
+    -lines -linewidth 1 -linecolor $colorPair \
+    -marker none -legend "Distance between the sets of bases" -plot];
+
+    if { $hist != 0 } {
+      return $listP
+    }
+  }
       # If the fields for the second pair are not properly filled
       } else {
         tk_messageBox -message "Error, some fields are empty"
