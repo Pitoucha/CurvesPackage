@@ -18,74 +18,76 @@ variable platform $tcl_platform(platform)
 switch $platform {
   unix {
       set TMPDIR "/tmp" ;  # or even $::env(TMPDIR), at times.
-  } macintosh {
+      } macintosh {
       set TMPDIR $::env(TRASH_FOLDER)  ;# a better place?
-  } default {
-      set TMPDIR [pwd]
-      catch {set TMPDIR $::env(TMP)}
-      catch {set TMPDIR $::env(TEMP)}
-  }
-}
+      } default {
+        set TMPDIR [pwd]
+        catch {set TMPDIR $::env(TMP)}
+        catch {set TMPDIR $::env(TEMP)}
+      }
+    }
 
-namespace eval ::curvespackage:: {
-  namespace export curvespackage
+    namespace eval ::curvespackage:: {
+      namespace export curvespackage
 
-  variable version 1.0
+      variable version 1.0
 
-  variable w 
-  
-  variable atom1
-  variable atom2
-  variable lAtoms1
-  variable lAtoms2
-  variable selectList
-  variable frameStart
-  variable frameEnd
-  variable step
-  variable maxDNA
-  variable minDNA
-  variable mid
-  variable atomsDNA
-  set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
-  variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
+      variable w 
 
-  variable nameAtomsGQuad "name N1 C2 N2 N3 C4 C5 C6 O6 N7 C8 N9"
-  variable quaNum
-  variable numQuartets 2
-  variable mainQua
-  variable secQua
+      variable atom1
+      variable atom2
+      variable lAtoms1
+      variable lAtoms2
+      variable selectList
+      variable frameStart
+      variable frameEnd
+      variable step
+      variable maxDNA
+      variable minDNA
+      variable mid
+      variable atomsDNA
+      set atomsDNA [dict create DA {C1' N6} DT {C1' O4} DC {C1' N4} DG {C1' N1}]
+      variable plotColors {black red green blue magenta orange OliveDrab2 cyan maroon gold2 yellow gray60 SkyBlue2 orchid3 ForestGreen PeachPuff LightSlateBlue}
 
-  variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
-  variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
-  variable PACKAGEPATH "$CURVESPACKAGE_PATH"
-}
+      variable nameAtomsGQuad "name N1 C2 N2 N3 C4 C5 C6 O6 N7 C8 N9"
+      variable quaNum
+      variable numQuartets 2
+      variable mainQua
+      variable secQua
+
+      variable checkedHist
+
+      variable CURVESPACKAGE_PATH $env(CURVESPACKAGE_PATH)
+      variable PACKAGE_PATH "$CURVESPACKAGE_PATH"
+      variable PACKAGEPATH "$CURVESPACKAGE_PATH"
+    }
 
 
-proc ::curvespackage::packageui {} {
-  variable w
+    proc ::curvespackage::packageui {} {
+      variable w
 
-  global env 
+      global env 
 
-  if [winfo exists .packageui] {
-    wm deiconify .packageui
-    return
-  }
-  
-  set w [toplevel .packageui]
-  wm title $w "CURVES+"
-  
-  grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
-  pack $w.menubar -padx 1 -fill x
-  
-  menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
-  menu $w.menubar.file.menu -tearoff no
-  
-  menubutton $w.menubar.edit -text Load -underline 0 -menu $w.menubar.edit.menu
-  menu $w.menubar.edit.menu -tearoff no
-  
-  $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
-  $w.menubar.edit.menu add command -label "Load new Mol" -command ::curvespackage::chargement
-  $w.menubar.edit.menu add command -label "Load new trajectory" -command ::curvespackage::trajectLoad
+      if [winfo exists .packageui] {
+        wm deiconify .packageui
+        return
+      }
+
+      set w [toplevel .packageui]
+      wm title $w "CURVES+"
+
+      grid [frame $w.menubar -relief raised -bd 2] -row 0 -column 0 -padx 1 -sticky ew;
+      pack $w.menubar -padx 1 -fill x
+
+      menubutton $w.menubar.file -text File -underline 0 -menu $w.menubar.file.menu
+      menu $w.menubar.file.menu -tearoff no
+
+      menubutton $w.menubar.edit -text Load -underline 0 -menu $w.menubar.edit.menu
+      menu $w.menubar.edit.menu -tearoff no
+
+      $w.menubar.file.menu add command -label "Quit" -command "destroy $w"
+      $w.menubar.edit.menu add command -label "Load new Mol" -command ::curvespackage::chargement
+      $w.menubar.edit.menu add command -label "Load new trajectory" -command ::curvespackage::trajectLoad
   #$w.menubar.edit.menu add command -label "test exec ls" -command ::curvespackage::testLs
   #$w.menubar.edit.menu add command -label "GNUplot" -command ::curvespackage::gnuPlotTest
   $w.menubar.file config -width 5
@@ -99,47 +101,137 @@ proc ::curvespackage::packageui {} {
 }
 
 
-proc ::curvespackage::HistogramsAtoms {b atm1 atm2 nbAtm1 nbAtm2} {
+proc ::curvespackage::Histograms {type} {
+  variable w 
   if {![file exist "Ouput_Dat"] } {
-     exec mkdir "Ouput_Dat"
-  }
+   exec mkdir "Ouput_Dat"
+ }
+
+ set base1 [$w.helix.resBase1.resNameBase1 get]
+ set idBase1 [$w.helix.resBase1.resIdBase1 get]
+
+ set base2 [$w.helix.resBase2.resNameBase2 get]
+ set idBase2 [$w.helix.resBase2.resIdBase2 get]
+
+ set match1 [$w.helix.resBase1.resNameMatch1 get]
+ set idMatch1 [$w.helix.resBase1.resIdMatch1 get]
+
+ set match2 [$w.helix.resBase2.resNameMatch2 get]
+ set idMatch2 [$w.helix.resBase2.resIdMatch2 get]
+
 
   #case 0 - distance variation between two atom of a base (base 1 / base 2)
   #case 1 - angle variation between two atom of a base (base 1 / base 2)
   
-  #case 2 - distance variation between two atom of a base (base 3 / base 4)
-  #case 3 - angle variation between two atom of a base (base 3 / base 4)
+  #case 2 - distance variation between the two pair of bases (b1b2 / b3b4)
+  #case 3 - angle variation between the two pair of bases (b1b2 / b3b4)
 
-  #case 4 - distance variation between the two pair of bases (b1b2 / b3b4)
-  #case 5 - angle variation between the two pair of bases (b1b2 / b3b4)
+  switch $type {
+    dist {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 == "" && $idBase2 == "" && $match2 == "" && $idMatch2 == "" } {
+        set name "Ouput_Dat/distVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases dist 1]
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
+          puts $file [lindex $listP $i]
+        }
+        close $file
+        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)_$match1\($idMatch1\)"
 
-  switch $b {
-    0 {
-      set name "Ouput_Dat/distVar_$atm1(nbAtm1)_$atm2(nbAtm2).dat"
-      set file [open $name w]
-      set listP [::curvespackage::plotBases dist 1]
-      for { set i 0 } { $i <= [llength $listP] } { incr i } {
+        } elseif {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 != "" && $idBase2 != "" && $match2 != "" && $idMatch2 != ""} {
+          set listP [::curvespackage::plotBases dist 1]
+          if {$base2 != ""} {
+            set list1 [lindex $listP 0]
+            set list2 [lindex $listP 1]
+
+            #First list
+            set name1 "Ouput_Dat/distVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+            set file1 [open $name1 w]
+
+            for { set i 0 } { $i <= [llength $list1] } { incr i } {
+              puts $file1 [lindex $list1 $i]
+            }
+            close $file1
+            ::curvespackage::gnuPlotting $name1 "distVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+
+            #second list 
+            set name2 "Ouput_Dat/distVar_$base2\($idBase2\)_$match2\($idMatch2\).dat"
+            set file2 [open $name2 w]
+
+            for { set i 0 } { $i <= [llength $list2] } { incr i } {
+              puts $file2 [lindex $list2 $i]
+            }
+            close $file2
+            ::curvespackage::gnuPlotting $name2 "distVar_$base2\($idBase2\)_$match2\($idMatch2\)"
+          }
+        }
+    }
+    angl {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 == "" && $idBase2 == "" && $match2 == "" && $idMatch2 == ""} {
+        set name "Ouput_Dat/anglVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases angl 1]
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
+          puts $file [lindex $listP $i]
+        }
+        close $file
+        ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+      } elseif {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 != "" && $idBase2 != "" && $match2 != "" && $idMatch2 != ""} {
+          set listP [::curvespackage::plotBases angl 1]
+          if {$base2 != ""} {
+            set list1 [lindex $listP 0]
+            set list2 [lindex $listP 1]
+
+            #First list
+            set name1 "Ouput_Dat/anglVar_$base1\($idBase1\)_$match1\($idMatch1\).dat"
+            set file1 [open $name1 w]
+
+            for { set i 0 } { $i <= [llength $list1] } { incr i } {
+              puts $file1 [lindex $list1 $i]
+            }
+            close $file1
+            ::curvespackage::gnuPlotting $name1 "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+
+            #second list 
+            set name2 "Ouput_Dat/anglVar_$base2\($idBase2\)_$match2\($idMatch2\).dat"
+            set file2 [open $name2 w]
+
+            for { set i 0 } { $i <= [llength $list2] } { incr i } {
+              puts $file2 [lindex $list2 $i]
+            }
+            close $file2
+            ::curvespackage::gnuPlotting $name2 "anglVar_$base2\($idBase2\)_$match2\($idMatch2\)"
+        }
+      }
+    }
+    4dist {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != ""} {
+        set name "Ouput_Dat/distVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases 4dist 1]
+        puts $listP
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
+          puts $file [lindex $listP $i]
+        }
+        close $file
+        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\($idMatch2\)"
+      }
+    }
+    4angl {
+      if {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != ""} {
+        set name "Ouput_Dat/anglVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\).dat"
+        set file [open $name w]
+        set listP [::curvespackage::plotBases 4angl 1]
+        for { set i 0 } { $i <= [llength $listP] } { incr i } {
         puts $file [lindex $listP $i]
       }
       close $file
-      ::curvespackage::gnuPlotting $name "distVar_$atm1(nbAtm1)_$atm2(nbAtm2)"
+      ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\)"
     }
-    1 {
-      set name "Ouput_Dat/outangl1.dat"
-      set file [open $name w]
-      set listP [::curvespackage::plotBases angl 1]
-      for { set i 0 } { $i <= [llength $listP] } { incr i } {
-        puts $file [lindex $listP $i]
-      }
-      close $file
-      ::curvespackage::gnuPlotting $name "outangl1"
+  }
+    default {
+      puts "wtf"
     }
-    2 {
-
-    }
-    3 {}
-    4 {}
-    5 {}
   }
 }
 
@@ -147,20 +239,24 @@ proc ::curvespackage::gnuPlotting {nameDat name} {
   set path [pwd]
   append path "/" 
   append path $nameDat 
-  
+
   set savePath [pwd]
+  
+  if {![file exist "Histograms_Output"] } {
+   exec mkdir "Histograms_Output"
+ }
 
   variable CURVESPACKAGE_PATH
   cd $CURVESPACKAGE_PATH
   cd "GNU_Script"
-    
+
   set rounding [::curvespackage::callRoundingChooser]
   set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path $name"
                             #ARG0             #ARG1     #ARG2     #ARG3 #ARG4
-  #eval $test
-  if [catch eval $test] {
-    puts ""
-  }
+  eval $test
+  #if [catch eval $test] {
+  #  puts "There's been a problem, check your histograms"
+  #}
   cd $savePath
 }
 
@@ -186,6 +282,8 @@ proc ::curvespackage::callRoundingChooser {} {
 proc ::curvespackage::chargement {} {
   variable w
   variable plotColors
+  variable checkedHist
+
   
   #deletes all others molecules present  
   mol delete all 
@@ -246,7 +344,7 @@ proc ::curvespackage::chargement {} {
     grid [label $w.helix.labelColorPair -text "Plotting color of the pairs"] -row 5 -column 1
     grid [ttk::combobox $w.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
     grid [button $w.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
-  
+
     # Labelframe for the G-Quadruplex section
     grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
     
@@ -331,11 +429,17 @@ proc ::curvespackage::chargement {} {
     grid [label $w.frames.stepLab -text "Step :"] -row 7 -column 4
     grid [entry $w.frames.step -textvar ::curvespackage::step] -row 7 -column 5
     
-    checkbutton $w.histogram -text "Histogram" -command "::curvespackage::Histograms {0}"
-    
-    pack $w.helix $w.gQuad $w.frames $w.histogram
-    
-    
+    checkbutton $w.histogram -text "Histogram" -variable isChecked -offvalue 0 -onvalue 1 -command {if {$isChecked == 1} {
+      ::curvespackage::enableCommand 2
+      puts "changed"
+      } elseif {$isChecked == 0} {
+        ::curvespackage::enableCommand 3
+        puts "changed back"
+        }}
+
+        pack $w.helix $w.gQuad $w.frames $w.histogram
+
+
     #call the function which create the list of resnames and resids 
     ::curvespackage::listeResname
 
@@ -395,7 +499,7 @@ proc ::curvespackage::chargement {} {
     bind $w.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 0
       ::curvespackage::enableCommand 0
-    
+
     }
 
     bind $w.helix.resBase2.resIdBase2 <<ComboboxSelected>> {
@@ -440,8 +544,8 @@ proc ::curvespackage::chargement {} {
 #enable the function call when the two bases are correctly filled
 #receive parameter b wich is the id of the dropdown list that called the Function
   #through binding 
-proc ::curvespackage::enableCommand {b} {
-  variable w
+  proc ::curvespackage::enableCommand {b} {
+    variable w
 
   #determine which dropdown list has called
   switch $b {
@@ -457,7 +561,7 @@ proc ::curvespackage::enableCommand {b} {
         $w.helix.distVal configure -state normal
         $w.helix.angleVal configure -state normal
         $w.helix.colorPair configure -state readonly
-      } else {
+        } else {
 
         #if the event is a supression the button is disabled
         $w.helix.distVal configure -state disabled
@@ -467,8 +571,8 @@ proc ::curvespackage::enableCommand {b} {
     } 
     1 {
     #case $w.helix.resBase2.resIdBase2
-      set test [$w.helix.resBase1.resIdBase1 get]
-      
+    set test [$w.helix.resBase1.resIdBase1 get]
+
       #verify that the selection is not empty 
       if {$test != ""} {
 
@@ -476,13 +580,25 @@ proc ::curvespackage::enableCommand {b} {
         $w.helix.distVal configure -state normal
         $w.helix.angleVal configure -state normal
         $w.helix.colorPair configure -state readonly
-      } else {
+        } else {
 
         #if the event is a supression the button is disabled
         $w.helix.distVal configure -state disabled
         $w.helix.angleVal configure -state disabled
         $w.helix.colorPair configure -state disabled
       }
+    }
+    2 {
+      $w.helix.distSel configure -command "::curvespackage::Histogram {dist}"
+      $w.helix.angVal configure -command "::curvespackage::Histogram {angl}"
+      $w.helix.distVal configure -command "::curvespackage::Histogram {4dist}"
+      $w.helix.angleVal configure -command "::curvespackage::Histogram {4angl}"
+    }
+    3 {
+      $w.helix.distSel configure -command "::curvespackage::plotBases {dist}"
+      $w.helix.angVal configure -command "::curvespackage::plotBases {angl}"
+      $w.helix.distVal configure -command "::curvespackage::plotBases {4dist}"
+      $w.helix.angleVal configure -command "::curvespackage::plotBases {4angl}"
     }
     
     default {
@@ -513,11 +629,11 @@ proc ::curvespackage::listeResname {} {
     #min resid for the DNA contained
     #resid at the middle of the DNA chain
     #dictonary for the resname/resid 
-  variable w
-  variable maxDNA
-  variable minDNA
-  variable mid 
-  variable selectList
+    variable w
+    variable maxDNA
+    variable minDNA
+    variable mid 
+    variable selectList
 
   #we get all the components of the mol loaded
   set sel [atomselect top "all"]
@@ -548,9 +664,9 @@ proc ::curvespackage::listeResname {} {
       #added the couple in the dict with the syntax {{"RESNAME":"id1" "id2"}{"RESNAME2":"id3" "id4"}}
       if {![dict exist $selectList $rsn]} {
         dict set ::curvespackage::selectList $rsn $rsi 
-      } else {
-        dict lappend ::curvespackage::selectList $rsn $rsi 
-      }
+        } else {
+          dict lappend ::curvespackage::selectList $rsn $rsi 
+        }
 
       #fill our DNA lists 
       if {[regexp {^DA} $rsn] || [regexp {^DT} $rsn] || [regexp {^DC} $rsn] || [regexp {^DG} $rsn] || [regexp {^RA} $rsn] || [regexp {^RU} $rsn] || [regexp {^RC} $rsn] || [regexp {^RG} $rsn]} {
@@ -583,35 +699,35 @@ proc ::curvespackage::listeResname {} {
 
     #set the values for all the dropdown lists 
       #resname
-    $w.helix.resBase1.resNameBase1 configure -values $stc
-    $w.helix.resBase1.resNameMatch1 configure -values $stc
-    $w.helix.resBase2.resNameBase2 configure -values $stc
-    $w.helix.resBase2.resNameMatch2 configure -values $stc
-    
-    $w.gQuad.qua1.resName1 configure -values $stcQuad
-    $w.gQuad.qua1.resName2 configure -values $stcQuad
-    $w.gQuad.qua1.resName3 configure -values $stcQuad
-    $w.gQuad.qua1.resName4 configure -values $stcQuad
-    $w.gQuad.qua2.resName1 configure -values $stcQuad
-    $w.gQuad.qua2.resName2 configure -values $stcQuad
-    $w.gQuad.qua2.resName3 configure -values $stcQuad
-    $w.gQuad.qua2.resName4 configure -values $stcQuad
+      $w.helix.resBase1.resNameBase1 configure -values $stc
+      $w.helix.resBase1.resNameMatch1 configure -values $stc
+      $w.helix.resBase2.resNameBase2 configure -values $stc
+      $w.helix.resBase2.resNameMatch2 configure -values $stc
+
+      $w.gQuad.qua1.resName1 configure -values $stcQuad
+      $w.gQuad.qua1.resName2 configure -values $stcQuad
+      $w.gQuad.qua1.resName3 configure -values $stcQuad
+      $w.gQuad.qua1.resName4 configure -values $stcQuad
+      $w.gQuad.qua2.resName1 configure -values $stcQuad
+      $w.gQuad.qua2.resName2 configure -values $stcQuad
+      $w.gQuad.qua2.resName3 configure -values $stcQuad
+      $w.gQuad.qua2.resName4 configure -values $stcQuad
 
       #resid
-    $w.helix.resBase1.resIdBase1 configure -values $stcId
-    $w.helix.resBase2.resIdBase2 configure -values $stcId
-    
-    $w.gQuad.qua1.resId1 configure -values $stcQuadId
-    $w.gQuad.qua1.resId2 configure -values $stcQuadId
-    $w.gQuad.qua1.resId3 configure -values $stcQuadId
-    $w.gQuad.qua1.resId4 configure -values $stcQuadId
-    $w.gQuad.qua2.resId1 configure -values $stcQuadId
-    $w.gQuad.qua2.resId2 configure -values $stcQuadId
-    $w.gQuad.qua2.resId3 configure -values $stcQuadId
-    $w.gQuad.qua2.resId4 configure -values $stcQuadId
-    
-    $sel delete
-}
+      $w.helix.resBase1.resIdBase1 configure -values $stcId
+      $w.helix.resBase2.resIdBase2 configure -values $stcId
+
+      $w.gQuad.qua1.resId1 configure -values $stcQuadId
+      $w.gQuad.qua1.resId2 configure -values $stcQuadId
+      $w.gQuad.qua1.resId3 configure -values $stcQuadId
+      $w.gQuad.qua1.resId4 configure -values $stcQuadId
+      $w.gQuad.qua2.resId1 configure -values $stcQuadId
+      $w.gQuad.qua2.resId2 configure -values $stcQuadId
+      $w.gQuad.qua2.resId3 configure -values $stcQuadId
+      $w.gQuad.qua2.resId4 configure -values $stcQuadId
+
+      $sel delete
+    }
 
 #set the list of resid which goes with the resname b passed in parameters
 proc ::curvespackage::selectWithResname {b} {
@@ -675,47 +791,47 @@ proc ::curvespackage::selectWithResname {b} {
     
     #set the values of the associated dropdown list 
     switch $b {
-    0 {
-      $w.helix.resBase1.resIdBase1 configure -values $stc
-    }
-    1 {
-      $w.helix.resBase2.resIdBase2 configure -values $stc
-    }
-    2 {
-      $w.helix.resBase1.resIdMatch1 configure -values $stc
-    }
-    3 {
-      $w.helix.resBase2.resIdMatch2 configure -values $stc
-    }
-    4 {
-      $w.gQuad.qua1.resId1 configure -values $stc 
-    }
-    5 {
-      $w.gQuad.qua1.resId2 configure -values $stc 
-    }
-    6 {
-      $w.gQuad.qua1.resId3 configure -values $stc 
-    }
-    7 {
-      $w.gQuad.qua1.resId4 configure -values $stc 
-    }
-    8 {
-      $w.gQuad.qua2.resId1 configure -values $stc 
-    }
-    9 {
-      $w.gQuad.qua2.resId2 configure -values $stc 
-    }
-    10 {
-      $w.gQuad.qua2.resId3 configure -values $stc 
-    }
-    11 {
-      $w.gQuad.qua2.resId4 configure -values $stc 
-    }
-    default {
+      0 {
+        $w.helix.resBase1.resIdBase1 configure -values $stc
+      }
+      1 {
+        $w.helix.resBase2.resIdBase2 configure -values $stc
+      }
+      2 {
+        $w.helix.resBase1.resIdMatch1 configure -values $stc
+      }
+      3 {
+        $w.helix.resBase2.resIdMatch2 configure -values $stc
+      }
+      4 {
+        $w.gQuad.qua1.resId1 configure -values $stc 
+      }
+      5 {
+        $w.gQuad.qua1.resId2 configure -values $stc 
+      }
+      6 {
+        $w.gQuad.qua1.resId3 configure -values $stc 
+      }
+      7 {
+        $w.gQuad.qua1.resId4 configure -values $stc 
+      }
+      8 {
+        $w.gQuad.qua2.resId1 configure -values $stc 
+      }
+      9 {
+        $w.gQuad.qua2.resId2 configure -values $stc 
+      }
+      10 {
+        $w.gQuad.qua2.resId3 configure -values $stc 
+      }
+      11 {
+        $w.gQuad.qua2.resId4 configure -values $stc 
+      }
+      default {
         puts "there is a problem, call us!" 
       }
     }
-  } else {
+    } else {
     #prompts the user to make a choice if the name is empty 
     tk_messageBox -message "Please make a selection"
   } 
@@ -770,34 +886,34 @@ proc ::curvespackage::selectWithResid {b} {
         if {[lsearch -exact $info $stcId] >= 0} {
           switch $b {
             0 {
-                $w.helix.resBase1.resNameBase1 set $id
-              }
+              $w.helix.resBase1.resNameBase1 set $id
+            }
             1 {
-                $w.helix.resBase2.resNameBase2 set $id
+              $w.helix.resBase2.resNameBase2 set $id
             }
             2 {
-                $w.gQuad.qua1.resName1 set $id 
+              $w.gQuad.qua1.resName1 set $id 
             }
             3 {
-                $w.gQuad.qua1.resName2 set $id 
+              $w.gQuad.qua1.resName2 set $id 
             }
             4 {
-                $w.gQuad.qua1.resName3 set $id 
+              $w.gQuad.qua1.resName3 set $id 
             }
             5 {
-                $w.gQuad.qua1.resName4 set $id 
+              $w.gQuad.qua1.resName4 set $id 
             }
             6 {
-                $w.gQuad.qua2.resName1 set $id 
+              $w.gQuad.qua2.resName1 set $id 
             }
             7 {
-                $w.gQuad.qua2.resName2 set $id 
+              $w.gQuad.qua2.resName2 set $id 
             }
             8 {
-                $w.gQuad.qua2.resName3 set $id 
+              $w.gQuad.qua2.resName3 set $id 
             }
             9 {
-                $w.gQuad.qua2.resName4 set $id 
+              $w.gQuad.qua2.resName4 set $id 
             }
             default {
               puts "W.T.F ?"
@@ -818,20 +934,20 @@ proc ::curvespackage::matchList {} {
     #max resid for the DNA contained
     #min resid for the DNA contained
     #resid at the middle of the DNA chain
-  variable selectList
-  variable w
-  variable maxDNA
-  variable minDNA
-  variable mid 
+    variable selectList
+    variable w
+    variable maxDNA
+    variable minDNA
+    variable mid 
 
   #part with the first and second bases
     #get the name and the resid of the base
-  set name1 [$w.helix.resBase1.resNameBase1 get]
-  set idSel1 [$w.helix.resBase1.resIdBase1 get]
+    set name1 [$w.helix.resBase1.resNameBase1 get]
+    set idSel1 [$w.helix.resBase1.resIdBase1 get]
 
   #if the resid is inferior to the mid and the resname and resid aren't empty we continue
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
-    
+
     set diff [expr {$mid - [expr {int($idSel1)}]}]
     set match [expr {$mid + 1 + $diff}]
     
@@ -843,41 +959,41 @@ proc ::curvespackage::matchList {} {
           append stc "\ "
         }
       }
-    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.helix.resBase1.resIdMatch1 set $match 
+      if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+        $w.helix.resBase1.resIdMatch1 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
               $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
+              } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
                 $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
-            } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
-            } else {
-                $w.helix.resBase1.resIdMatch1 set -1
-                $w.helix.resBase1.resNameMatch1 set "NO MATCH"
-                tk_messageBox -message "No match, your DNA is damaged"
-            }
-            break
-          }
-        }
-      } else {
-          $w.helix.resBase1.resIdMatch1 set -1
-          $w.helix.resBase1.resNameMatch1 set "NO MATCH"
-          tk_messageBox -message "No match, your DNA is damaged"
-      }
-    }
-  } 
+                } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
+                  $w.helix.resBase1.resNameMatch1 set $id
+                  } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
+                    $w.helix.resBase1.resNameMatch1 set $id
+                    } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
+                      $w.helix.resBase1.resNameMatch1 set $id
+                      } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
+                        $w.helix.resBase1.resNameMatch1 set $id
+                        } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
+                          $w.helix.resBase1.resNameMatch1 set $id
+                          } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
+                            $w.helix.resBase1.resNameMatch1 set $id
+                            } else {
+                              $w.helix.resBase1.resIdMatch1 set -1
+                              $w.helix.resBase1.resNameMatch1 set "NO MATCH"
+                              tk_messageBox -message "No match, your DNA is damaged"
+                            }
+                            break
+                          }
+                        }
+                        } else {
+                          $w.helix.resBase1.resIdMatch1 set -1
+                          $w.helix.resBase1.resNameMatch1 set "NO MATCH"
+                          tk_messageBox -message "No match, your DNA is damaged"
+                        }
+                      }
+                    } 
   #else {
    #   $w.helix.resBase1.resIdMatch1 set -1
     #  $w.helix.resBase1.resNameMatch1 set "NO MATCH"
@@ -888,14 +1004,14 @@ proc ::curvespackage::matchList {} {
    #$w.helix.resNameMatch1 configure -values $stc
     #$w.helix.resNameMatch2 configure -values $stc
     
-  set name1 [$w.helix.resBase2.resNameBase2 get]
-  set idSel1 [$w.helix.resBase2.resIdBase2 get]
+    set name1 [$w.helix.resBase2.resNameBase2 get]
+    set idSel1 [$w.helix.resBase2.resIdBase2 get]
 
-  if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
-    
-    set diff [expr {$mid - [expr {int($idSel1)}]}]
-    set match [expr {$mid + 1 + $diff}]
-    
+    if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
+
+      set diff [expr {$mid - [expr {int($idSel1)}]}]
+      set match [expr {$mid + 1 + $diff}]
+
     #verifies that the resname is one from a DNA residue
     if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
       dict for {id info} $selectList {
@@ -904,47 +1020,47 @@ proc ::curvespackage::matchList {} {
           append stc "\ "
         }
       }
-    if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.helix.resBase2.resIdMatch2 set $match 
+      if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
+        $w.helix.resBase2.resIdMatch2 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
               $w.helix.resBase2.resNameMatch2 set $id
-            } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
+              } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
                 $w.helix.resBase2.resNameMatch2 set $id
-            } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.helix.resBase2.resNameMatch2 set $id
-            } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.helix.resBase2.resNameMatch2 set $id
-            } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
-            } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
-            } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
-            } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
-            } else {
-                $w.helix.resBase2.resIdMatch2 set -1
-                $w.helix.resBase2.resNameMatch2 set "NO MATCH"
-                tk_messageBox -message "No match, your DNA is damaged"
-              }
-            break
-          }
-        }
-      } else {
-          $w.helix.resBase2.resIdMatch2 set -1
-          $w.helix.resBase2.resNameMatch2 set "NO MATCH"
-          tk_messageBox -message "No match, your DNA is damaged"
-      }
-    }
-  } 
+                } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
+                  $w.helix.resBase2.resNameMatch2 set $id
+                  } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
+                    $w.helix.resBase2.resNameMatch2 set $id
+                    } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
+                      $w.helix.resBase1.resNameMatch2 set $id
+                      } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
+                        $w.helix.resBase1.resNameMatch2 set $id
+                        } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
+                          $w.helix.resBase1.resNameMatch2 set $id
+                          } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
+                            $w.helix.resBase1.resNameMatch2 set $id
+                            } else {
+                              $w.helix.resBase2.resIdMatch2 set -1
+                              $w.helix.resBase2.resNameMatch2 set "NO MATCH"
+                              tk_messageBox -message "No match, your DNA is damaged"
+                            }
+                            break
+                          }
+                        }
+                        } else {
+                          $w.helix.resBase2.resIdMatch2 set -1
+                          $w.helix.resBase2.resNameMatch2 set "NO MATCH"
+                          tk_messageBox -message "No match, your DNA is damaged"
+                        }
+                      }
+                    } 
   #else {
    #   $w.helix.resBase2.resIdMatch2 set -1
     #  $w.helix.resBase2.resNameMatch2 set "NO MATCH"
      # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     #}
-}
+  }
 
 # Procedure that plots the angle and distance between selected pairs
 proc ::curvespackage::plotBases { type {hist 0} } {
@@ -992,29 +1108,29 @@ proc ::curvespackage::plotBases { type {hist 0} } {
   
   # We check if all the necessary fields for the first pair are filled
   if {$base1 ne "" && $match1 ne "" && $idBase1 ne "" && $idMatch1 ne ""} {
-  
+
     # If the frame parameters are empty, we switch to default values, else we convert their values to integer
     if {$frameStart eq ""} {
       set frameStart 0
-    } else {
-      set frameStart [expr int($frameStart)]
-    }
-    if {$frameEnd eq ""} {
-      set frameEnd [molinfo top get numframes]
-    } else {
-      set frameEnd [expr int($frameEnd)]
-    }
-    if {$step eq ""} {
-      set step 1
-    } else {
-      set step [expr int($step)]
-    }
-    
-    if { $frameStart == $frameEnd } {
-      tk_messageBox -message "Error, only one frame selected, graphing impossible"
-      return
-    }
-    
+      } else {
+        set frameStart [expr int($frameStart)]
+      }
+      if {$frameEnd eq ""} {
+        set frameEnd [molinfo top get numframes]
+        } else {
+          set frameEnd [expr int($frameEnd)]
+        }
+        if {$step eq ""} {
+          set step 1
+          } else {
+            set step [expr int($step)]
+          }
+
+          if { $frameStart == $frameEnd } {
+            tk_messageBox -message "Error, only one frame selected, graphing impossible"
+            return
+          }
+
     # We create the list used for the abscissa of the graphes
     set xlist {}
     for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -1023,60 +1139,60 @@ proc ::curvespackage::plotBases { type {hist 0} } {
     
     # If what we want is an angle, we create the selections (res) to use on our pair
     if { [regexp {angl$} $type] } {
-    
+
       # We select the atoms according to the base type for the first base of the pair
       if {[regexp {^DA} $base1]} {
-          set atoms [split [dict get $atomsDNA {DA}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res1 [atomselect top "resid $idBase1 and name $atom1"]
-          set res2 [atomselect top "resid $idBase1 and name $atom2"]
+        set atoms [split [dict get $atomsDNA {DA}] "\ "]
+        set atom1 [lindex $atoms 0]
+        set atom2 [lindex $atoms 1]
+        set res1 [atomselect top "resid $idBase1 and name $atom1"]
+        set res2 [atomselect top "resid $idBase1 and name $atom2"]
         } elseif {[regexp {^DT} $base1]} {
           set atoms [split [dict get $atomsDNA {DT}] "\ "]
           set atom1 [lindex $atoms 0]
           set atom2 [lindex $atoms 1]
           set res1 [atomselect top "resid $idBase1 and name $atom1"]
           set res2 [atomselect top "resid $idBase1 and name $atom2"]
-        } elseif {[regexp {^DC} $base1]} {
-          set atoms [split [dict get $atomsDNA {DC}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res1 [atomselect top "resid $idBase1 and name $atom1"]
-          set res2 [atomselect top "resid $idBase1 and name $atom2"]
-        } elseif {[regexp {^DG} $base1]} {
-          set atoms [split [dict get $atomsDNA {DG}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res1 [atomselect top "resid $idBase1 and name $atom1"]
-          set res2 [atomselect top "resid $idBase1 and name $atom2"]
-        }
-	
-	# We select the atoms according to the base type for the second base of the pair
-        if {[regexp {^DA} $match1]} {
-          set atoms [split [dict get $atomsDNA {DA}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res3 [atomselect top "resid $idMatch1 and name $atom1"]
-          set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+          } elseif {[regexp {^DC} $base1]} {
+            set atoms [split [dict get $atomsDNA {DC}] "\ "]
+            set atom1 [lindex $atoms 0]
+            set atom2 [lindex $atoms 1]
+            set res1 [atomselect top "resid $idBase1 and name $atom1"]
+            set res2 [atomselect top "resid $idBase1 and name $atom2"]
+            } elseif {[regexp {^DG} $base1]} {
+              set atoms [split [dict get $atomsDNA {DG}] "\ "]
+              set atom1 [lindex $atoms 0]
+              set atom2 [lindex $atoms 1]
+              set res1 [atomselect top "resid $idBase1 and name $atom1"]
+              set res2 [atomselect top "resid $idBase1 and name $atom2"]
+            }
+
+    	# We select the atoms according to the base type for the second base of the pair
+      if {[regexp {^DA} $match1]} {
+        set atoms [split [dict get $atomsDNA {DA}] "\ "]
+        set atom1 [lindex $atoms 0]
+        set atom2 [lindex $atoms 1]
+        set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+        set res4 [atomselect top "resid $idMatch1 and name $atom2"]
         } elseif {[regexp {^DT} $match1]} {
           set atoms [split [dict get $atomsDNA {DT}] "\ "]
           set atom1 [lindex $atoms 0]
           set atom2 [lindex $atoms 1]
           set res3 [atomselect top "resid $idMatch1 and name $atom1"]
           set res4 [atomselect top "resid $idMatch1 and name $atom2"]
-        } elseif {[regexp {^DC} $match1]} {
-          set atoms [split [dict get $atomsDNA {DC}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res3 [atomselect top "resid $idMatch1 and name $atom1"]
-          set res4 [atomselect top "resid $idMatch1 and name $atom2"]
-        } elseif {[regexp {^DG} $match1]} {
-          set atoms [split [dict get $atomsDNA {DG}] "\ "]
-          set atom1 [lindex $atoms 0]
-          set atom2 [lindex $atoms 1]
-          set res3 [atomselect top "resid $idMatch1 and name $atom1"]
-          set res4 [atomselect top "resid $idMatch1 and name $atom2"]
-        }
+          } elseif {[regexp {^DC} $match1]} {
+            set atoms [split [dict get $atomsDNA {DC}] "\ "]
+            set atom1 [lindex $atoms 0]
+            set atom2 [lindex $atoms 1]
+            set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+            set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+            } elseif {[regexp {^DG} $match1]} {
+              set atoms [split [dict get $atomsDNA {DG}] "\ "]
+              set atom1 [lindex $atoms 0]
+              set atom2 [lindex $atoms 1]
+              set res3 [atomselect top "resid $idMatch1 and name $atom1"]
+              set res4 [atomselect top "resid $idMatch1 and name $atom2"]
+            }
 
     # If what we want is a distance, we create the selections (res) to use on our pair
     } elseif { [regexp {dist$} $type] } {
@@ -1086,127 +1202,126 @@ proc ::curvespackage::plotBases { type {hist 0} } {
     
     # If there's nothing in the fields of the second pair, graphing only the first one
     if {$base2 eq ""} {
-      
+
       # Case if we want to plot an angle
       if { $type eq "angl" } {
-      
+
         # Calling computeFrames on our selection for an angle between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
-	
-	# Deleting all our selections
+
+
+        # Deleting all our selections
         $res1 delete
-	$res2 delete
-	$res3 delete
-	$res4 delete
-	
-	# Creating and plotting the multiplot for the calculated list
-	set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Angle" -plot];
-		      
+        $res2 delete
+        $res3 delete
+        $res4 delete
+        
+        # Creating and plotting the multiplot for the calculated list
+        set plothandle [multiplot -x $xlist -y $listP \
+        -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
+        -lines -linewidth 1 -linecolor $color1 \
+        -marker none -legend "Angle" -plot];
+        
         if { $hist != 0 } {
-	  return $listP
-	}
-      
+          return $listP
+        }    
       # Case if we want to plot a distance
       } elseif { $type eq "dist" } {
-      
+
         # Calling computeFrames on our selection for a distance between the two bases of the selected pair
         set listP [::curvespackage::computeFrames "dist" $res1 $res2]
-	
-	# Deleting all our selections
-	$res1 delete
-	$res2 delete
-	
-	# Creating and plotting the multiplot for the calculated list
-	set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Distance" -plot];
-	
-	if { $hist != 0 } {
-	  return $listP
-	}
+
+      	# Deleting all our selections
+      	$res1 delete
+      	$res2 delete
+      	
+      	# Creating and plotting the multiplot for the calculated list
+      	set plothandle [multiplot -x $xlist -y $listP \
+        -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
+        -lines -linewidth 1 -linecolor $color1 \
+        -marker none -legend "Distance" -plot];
+
+        if { $hist != 0 } {
+          return $listP
+        }
       }
-    
-    # In case the fields are not empty for the second pair
-    } else {
-      set res5 ""
-      set res6 ""
-      set res7 ""
-      set res8 ""
+
+          # In case the fields are not empty for the second pair
+      } else {
+        set res5 ""
+        set res6 ""
+        set res7 ""
+        set res8 ""
       
       # Checking if the fields for the second pair are all set
       if {$base2 ne "" && $match2 ne "" && $idBase2 ne "" && $idMatch2 ne ""} {
-      
+
         # If what we want is an angle, we create the selections (res) to use on our pair
         if {[regexp {angl$} $type]} {
-	  
-	  # We select the atoms according to the base type for the first base of the pair
-	  if {[regexp {^DA} $base2]} {
-            set atoms [split [dict get $atomsDNA {DA}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          } elseif {[regexp {^DT} $base2]} {
-            set atoms [split [dict get $atomsDNA {DT}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          } elseif {[regexp {^DC} $base2]} {
-            set atoms [split [dict get $atomsDNA {DC}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          } elseif {[regexp {^DG} $base2]} {
-            set atoms [split [dict get $atomsDNA {DG}] "\ "]
-            puts "DG : $atoms"
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res5 [atomselect top "resid $idBase2 and name $atom1"]
-            set res6 [atomselect top "resid $idBase2 and name $atom2"]
-          }
-	  
-	  # We select the atoms according to the base type for the second base of the pair
+
+      	  # We select the atoms according to the base type for the first base of the pair
+      	  if {[regexp {^DA} $base2]} {
+                set atoms [split [dict get $atomsDNA {DA}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+            } elseif {[regexp {^DT} $base2]} {
+                set atoms [split [dict get $atomsDNA {DT}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+            } elseif {[regexp {^DC} $base2]} {
+                set atoms [split [dict get $atomsDNA {DC}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+            } elseif {[regexp {^DG} $base2]} {
+                set atoms [split [dict get $atomsDNA {DG}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res5 [atomselect top "resid $idBase2 and name $atom1"]
+                set res6 [atomselect top "resid $idBase2 and name $atom2"]
+                }
+
+      	  # We select the atoms according to the base type for the second base of the pair
           if {[regexp {^DA} $match2]} {
-            set atoms [split [dict get $atomsDNA {DA}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          } elseif {[regexp {^DT} $match2]} {
-            set atoms [split [dict get $atomsDNA {DT}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          } elseif {[regexp {^DC} $match2]} {
-            set atoms [split [dict get $atomsDNA {DC}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          } elseif {[regexp {^DG} $match2]} {
-            set atoms [split [dict get $atomsDNA {DG}] "\ "]
-            set atom1 [lindex $atoms 0]
-            set atom2 [lindex $atoms 1]
-            set res7 [atomselect top "resid $idMatch2 and name $atom1"]
-            set res8 [atomselect top "resid $idMatch2 and name $atom2"]
-          }
-	  
+              set atoms [split [dict get $atomsDNA {DA}] "\ "]
+              set atom1 [lindex $atoms 0]
+              set atom2 [lindex $atoms 1]
+              set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+              set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+            } elseif {[regexp {^DT} $match2]} {
+                set atoms [split [dict get $atomsDNA {DT}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+                set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+            } elseif {[regexp {^DC} $match2]} {
+                set atoms [split [dict get $atomsDNA {DC}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+                set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+            } elseif {[regexp {^DG} $match2]} {
+                set atoms [split [dict get $atomsDNA {DG}] "\ "]
+                set atom1 [lindex $atoms 0]
+                set atom2 [lindex $atoms 1]
+                set res7 [atomselect top "resid $idMatch2 and name $atom1"]
+                set res8 [atomselect top "resid $idMatch2 and name $atom2"]
+              }
+
 	# If what we want is a distance, we create the selections (res) to use on our pair
 	} elseif {[regexp {dist$} $type]} {
-	  set res3 [atomselect top "resid $idBase2"]
-          set res4 [atomselect top "resid $idMatch2"]
-	}
-	
+   set res3 [atomselect top "resid $idBase2"]
+   set res4 [atomselect top "resid $idMatch2"]
+ }
+
 	# Case if we want to plot an angle
 	if { $type eq "angl" } {
-	  
+
 	  # Calling computeFrames on our selection for an angle between the two bases of the first selected pair
 	  set listP1 [::curvespackage::computeFrames "angB" $res1 $res2 $res3 $res4]
 	  
@@ -1214,27 +1329,35 @@ proc ::curvespackage::plotBases { type {hist 0} } {
 	  set listP2 [::curvespackage::computeFrames "angB" $res5 $res6 $res7 $res8]
 	  
 	  # Deleting all our selections
-          $res1 delete
-	  $res2 delete
-	  $res3 delete
-	  $res4 delete
-	  $res5 delete
-	  $res6 delete
-	  $res7 delete
-	  $res8 delete
-	  
+    $res1 delete
+    $res2 delete
+    $res3 delete
+    $res4 delete
+    $res5 delete
+    $res6 delete
+    $res7 delete
+    $res8 delete
+
 	  # Creating the multiplot for the first calculated list
 	  set plothandle [multiplot -x $xlist -y $listP1 \
-                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Angle between the first bases"];
-	  
+    -xlabel "Frame" -ylabel "Angle" -title "Angle between the bases" \
+    -lines -linewidth 1 -linecolor $color1 \
+    -marker none -legend "Angle between the first bases"];
+
 	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Angle between the second bases" -plot
-	  
+
+
+    if { $hist != 0 } {
+      set listReturn [list]
+      lappend listReturn $listP1 
+      lappend listReturn $listP2
+      return $listReturn
+    }
+
 	# Case if we want to plot a distance
 	} elseif { $type eq "dist" } {
-	
+
 	  # Calling computeFrames on our selection for a distance between the two bases of the first selected pair
 	  set listP1 [::curvespackage::computeFrames "dist" $res1 $res2]
 	  
@@ -1249,16 +1372,24 @@ proc ::curvespackage::plotBases { type {hist 0} } {
 	  
 	  # Creating the multiplot for the first calculated list
 	  set plothandle [multiplot -x $xlist -y $listP1 \
-                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
-                      -lines -linewidth 1 -linecolor $color1 \
-                      -marker none -legend "Distance between the first bases"];
+    -xlabel "Frame" -ylabel "Distance" -title "Distance between the bases" \
+    -lines -linewidth 1 -linecolor $color1 \
+    -marker none -legend "Distance between the first bases"];
 
 	  # Adding the second calculated list and plotting
 	  $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor $color2 -marker none -legend "Distance between the second bases" -plot
-	  
+
+
+     if { $hist != 0 } {
+      set listReturn [list]
+      lappend listReturn $listP1 
+      lappend listReturn $listP2
+      return $listReturn
+    }
+
 	# Case if we want to plot the angle difference between two pairs
 	} elseif { $type eq "4angl" } {
-	
+
 	  # Calling computeFrames on our selection for an angle between the two selected pairs
 	  set listP [::curvespackage::computeFrames "ang4" $res1 $res2 $res3 $res4 $res5 $res6 $res7 $res8]
 	  
@@ -1274,13 +1405,16 @@ proc ::curvespackage::plotBases { type {hist 0} } {
 	  
 	  # Creating and plotting the multiplot for the calculated list
 	  set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
-                      -lines -linewidth 1 -linecolor $colorPair \
-                      -marker none -legend "Angle between the sets of bases" -plot];
-		      
+    -xlabel "Frame" -ylabel "Angle" -title "Angle between the sets of bases" \
+    -lines -linewidth 1 -linecolor $colorPair \
+    -marker none -legend "Angle between the sets of bases" -plot];
+
+    if { $hist != 0 } {
+      return $listP
+    }
 	# Case if we want to plot the distance between two pairs
 	} elseif { $type eq "4dist" } {
-	
+
 	  # Calling computeFrames on our selection for a distance between the two selected pairs
 	  set listP [::curvespackage::computeFrames "dist4" $res1 $res2 $res3 $res4]
 	  
@@ -1292,11 +1426,14 @@ proc ::curvespackage::plotBases { type {hist 0} } {
 	  
 	  # Creating and plotting the multiplot for the calculated list
 	  set plothandle [multiplot -x $xlist -y $listP \
-                      -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
-                      -lines -linewidth 1 -linecolor $colorPair \
-                      -marker none -legend "Distance between the sets of bases" -plot];
-	}
-      
+    -xlabel "Frame" -ylabel "Distance" -title "Distance between the sets of bases" \
+    -lines -linewidth 1 -linecolor $colorPair \
+    -marker none -legend "Distance between the sets of bases" -plot];
+
+    if { $hist != 0 } {
+      return $listP
+    }
+  }
       # If the fields for the second pair are not properly filled
       } else {
         tk_messageBox -message "Error, some fields are empty"
@@ -1311,7 +1448,7 @@ proc ::curvespackage::plotBases { type {hist 0} } {
 
 # Procedure that calculates a predifined formula for a certain selection for each selected frame
 proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} {res6 0} {res7 0} {res8 0} } {
-  
+
   # Set of variables determining the start, end and step of the calculations
   variable frameStart
   variable frameEnd
@@ -1320,20 +1457,20 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
   # If the frame parameters are empty, we switch to default values, else we convert their values to integer
   if {$frameStart eq ""} {
     set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+      } else {
+        set frameEnd [expr int($frameEnd)]
+      }
+      if {$step eq ""} {
+        set step 1
+        } else {
+          set step [expr int($step)]
+        }
+
   # We check which type of calculus we are supposed to do
   switch $type {
     "dist" {
@@ -1344,7 +1481,7 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
       
       # For each selected frame
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-        
+
 	# Updating the selections for the frame i
 	$res1 frame $i
 	$res2 frame $i
@@ -1353,12 +1490,12 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	
 	# Calculating the center of mass of each selection
 	set com1 [measure center $res1]
-        set com2 [measure center $res2]
-	
+  set com2 [measure center $res2]
+
 	# Calculating the distance between each center of mass and adding it to the list
 	lappend lDist [vecdist $com1 $com2]
-      }
-      
+}
+
       # Returns the list
       return $lDist
     }
@@ -1370,17 +1507,17 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
       
       #For each selected frame from the loaded trajectory
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-        
+
 	# Updating the selections for the frame i
-        $res1 frame $i
-	$res2 frame $i
-	$res3 frame $i
-	$res4 frame $i
-	$res1 update
-	$res2 update
-	$res3 update
-	$res4 update
-	
+  $res1 frame $i
+  $res2 frame $i
+  $res3 frame $i
+  $res4 frame $i
+  $res1 update
+  $res2 update
+  $res3 update
+  $res4 update
+
 	# Get the x, y and z positions as vectors of the two atoms used in the first base
 	set xyzA1 [split [string range [$res1 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res2 get {x y z}] 1 end-1] "\ "]
@@ -1407,19 +1544,19 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	
 	# Correcting the scalar dot product (in case of bad rounding)
 	if {$dotprodcor > 1.0} {
-	  set dotprodcor 1.0
-	}
-	if {$dotprodcor < -1.0} {
-	  set dotprodcor -1.0
-	}
-	
+   set dotprodcor 1.0
+ }
+ if {$dotprodcor < -1.0} {
+   set dotprodcor -1.0
+ }
+
 	# Calculating the angle in degrees from the scalar dot product
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
 	
 	# Adding the angle to the returned list
 	lappend lAngl $ang
-      }
-      
+}
+
       # Returns the list
       return $lAngl
     }
@@ -1431,25 +1568,25 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
       
       # For each selected frame from the loaded trajectory 
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-        
+
 	# Updating the selections for the frame i
-        $res1 frame $i
-	$res2 frame $i
-	$res3 frame $i
-	$res4 frame $i
-	$res5 frame $i
-	$res6 frame $i
-	$res7 frame $i
-	$res8 frame $i
-	$res1 update
-	$res2 update
-	$res3 update
-	$res4 update
-	$res5 update
-	$res6 update
-	$res7 update
-	$res8 update
-	
+  $res1 frame $i
+  $res2 frame $i
+  $res3 frame $i
+  $res4 frame $i
+  $res5 frame $i
+  $res6 frame $i
+  $res7 frame $i
+  $res8 frame $i
+  $res1 update
+  $res2 update
+  $res3 update
+  $res4 update
+  $res5 update
+  $res6 update
+  $res7 update
+  $res8 update
+
 	# Get the x, y and z positions as vectors of the two atoms used in the first base of the first pair
 	set xyzA1 [split [string range [$res1 get {x y z}] 1 end-1] "\ "]
 	set xyzA2 [split [string range [$res2 get {x y z}] 1 end-1] "\ "]
@@ -1496,19 +1633,19 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	
 	# Correcting the scalar dot product (in case of bad rounding)
 	if {$dotprodcor > 1.0} {
-	  set dotprodcor 1.0
-	}
-	if {$dotprodcor < -1.0} {
-	  set dotprodcor -1.0
-	}
-	
+   set dotprodcor 1.0
+ }
+ if {$dotprodcor < -1.0} {
+   set dotprodcor -1.0
+ }
+
 	# Calculating the angle in degrees from the scalar dot product
 	set ang [expr {57.2958 * [::tcl::mathfunc::acos $dotprodcor]}]
 	
 	# Adding the angle to the returned list
 	lappend lAngl $ang
-      }
-      
+}
+
       # Returns the list
       return $lAngl
     }
@@ -1520,17 +1657,17 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
       
       # For each selected frame from the loaded trajectory
       for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-        
+
 	# Updating the selections for each frame
-        $res1 frame $i
-	$res2 frame $i
-	$res3 frame $i
-	$res4 frame $i
-	$res1 update
-	$res2 update
-	$res3 update
-	$res4 update
-	
+  $res1 frame $i
+  $res2 frame $i
+  $res3 frame $i
+  $res4 frame $i
+  $res1 update
+  $res2 update
+  $res3 update
+  $res4 update
+
 	# Calculating the center of mass of the first base of the first pair
 	set center1 [measure center $res1]
 	
@@ -1551,8 +1688,8 @@ proc ::curvespackage::computeFrames { type res1 res2 {res3 0} {res4 0} {res5 0} 
 	
 	# Calculating the distance between the two vectors and adding it to the returned list
 	lappend lDist [vecdist $vect1 $vect2]
-      }
-      
+}
+
       # Returns the list
       return $lDist
     }
@@ -1577,25 +1714,25 @@ proc curvespackage::guaPlanForQuaAxis {} {
   # If the frame parameters are empty, we switch to default values, else we convert their values to integer
   if {$frameStart eq ""} {
     set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  if { $frameStart == $frameEnd } {
-    tk_messageBox -message "Error, only one frame selected, graphing impossible"
-    return
-  }
-  
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+      } else {
+        set frameEnd [expr int($frameEnd)]
+      }
+      if {$step eq ""} {
+        set step 1
+        } else {
+          set step [expr int($step)]
+        }
+
+        if { $frameStart == $frameEnd } {
+          tk_messageBox -message "Error, only one frame selected, graphing impossible"
+          return
+        }
+
   # We create the list used for the abscissa of the graphes
   set xlist {}
   for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -1604,21 +1741,21 @@ proc curvespackage::guaPlanForQuaAxis {} {
   
   if {$quaNum eq ""} {
     set quaNum 1
-  } else {
-    set quaNum [expr int($quaNum)]
-  }
-  
-  for { set i 1 } { $i <= $numQuartets } { incr i } {
-    foreach j {1 2 3 4} {
-      set r[set i][set j] [$w.gQuad.qua[set i].resId$j get]
+    } else {
+      set quaNum [expr int($quaNum)]
     }
-  }
-  
-  for { set i 1 } { $i <= $numQuartets } {incr i } {
-    set selq$i [atomselect top "resid [set r[set i]1] [set r[set i]2] [set r[set i]3] [set r[set i]4] and $nameAtomsGQuad"]
-  }
-  
-  foreach i {1 2 3 4} {
+
+    for { set i 1 } { $i <= $numQuartets } { incr i } {
+      foreach j {1 2 3 4} {
+        set r[set i][set j] [$w.gQuad.qua[set i].resId$j get]
+      }
+    }
+
+    for { set i 1 } { $i <= $numQuartets } {incr i } {
+      set selq$i [atomselect top "resid [set r[set i]1] [set r[set i]2] [set r[set i]3] [set r[set i]4] and $nameAtomsGQuad"]
+    }
+
+    foreach i {1 2 3 4} {
     #puts "resid \[set r[set quaNum][set i]\] and name N9"
     set selx[set i]N9 [atomselect top "resid [set r[set quaNum][set i]] and name N9"]
     set selx[set i]N2 [atomselect top "resid [set r[set quaNum][set i]] and name N2"]
@@ -1631,44 +1768,44 @@ proc curvespackage::guaPlanForQuaAxis {} {
       $selq2 frame $j
       $selq1 update
       $selq2 update
-	  
+
       [set selx[set i]N9] frame $j
       [set selx[set i]N2] frame $j
       [set selx[set i]O6] frame $j
       [set selx[set i]N9] update
       [set selx[set i]N2] update
       [set selx[set i]O6] update
-	  
+
       set q1 [measure center $selq1 weight mass]
       set q2 [measure center $selq2 weight mass]
-	  
+
       set axis [vecnorm [vecsub $q1 $q2]]
-	
+
       set rxxN9 [measure center [set selx[set i]N9] weight mass]
       set rxxN2 [measure center [set selx[set i]N2] weight mass]
       set rxxO6 [measure center [set selx[set i]O6] weight mass]
-	  
+
       set vectN9N2 [vecsub $rxxN9 $rxxN2]
       set vectN9O6 [vecsub $rxxN9 $rxxO6]
-	  
+
       set vectAngle [vecnorm [veccross $vectN9N2 $vectN9O6]]
-	  
+
       set angleRad [vecdot $vectAngle $axis]
-	  
+
       set angle [expr acos($angleRad)/$M_PI * 180]
       
       lappend listP[set i] $angle
     }
-	
+
     [set selx[set i]N9] delete
     [set selx[set i]N2] delete
     [set selx[set i]O6] delete
     
     set COMMENT {
-    set plothandle [multiplot -x $xlist -y [set listP$i] \
-                      -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanin $i of the quartet $quaNum" \
-                      -lines -linewidth 1 -linecolor blue \
-                      -marker none -legend "Planarity of the guanin $i" -plot];
+      set plothandle [multiplot -x $xlist -y [set listP$i] \
+      -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanin $i of the quartet $quaNum" \
+      -lines -linewidth 1 -linecolor blue \
+      -marker none -legend "Planarity of the guanin $i" -plot];
     }
     
   }
@@ -1678,9 +1815,9 @@ proc curvespackage::guaPlanForQuaAxis {} {
   
   # Creating the multiplot for the first calculated list
   set plothandle [multiplot -x $xlist -y $listP1 \
-                    -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanins of the quartet $quaNum compared to the quartets' axis" \
-                    -lines -linewidth 1 -linecolor blue \
-                    -marker none -legend "Planarity of the first guanin"];
+  -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanins of the quartet $quaNum compared to the quartets' axis" \
+  -lines -linewidth 1 -linecolor blue \
+  -marker none -legend "Planarity of the first guanin"];
 
   # Adding the second calculated list
   $plothandle add $xlist $listP2 -lines -linewidth 1 -linecolor red -marker none -legend "Planarity of the second guanin"
@@ -1703,25 +1840,25 @@ proc curvespackage::guaPlan {} {
   # If the frame parameters are empty, we switch to default values, else we convert their values to integer
   if {$frameStart eq ""} {
     set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  if { $frameStart == $frameEnd } {
-    tk_messageBox -message "Error, only one frame selected, graphing impossible"
-    return
-  }
-  
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+      } else {
+        set frameEnd [expr int($frameEnd)]
+      }
+      if {$step eq ""} {
+        set step 1
+        } else {
+          set step [expr int($step)]
+        }
+
+        if { $frameStart == $frameEnd } {
+          tk_messageBox -message "Error, only one frame selected, graphing impossible"
+          return
+        }
+
   # We create the list used for the abscissa of the graphes
   set xlist {}
   for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -1730,70 +1867,70 @@ proc curvespackage::guaPlan {} {
   
   if {$quaNum eq ""} {
     set quaNum 1
-  } else {
-    set quaNum [expr int($quaNum)]
-  }
-  
-  foreach i {1 2 3 4} {
-    set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
-  }
-  
-  foreach i {1 2 3} {
-    
-    set selx[set i]N9 [atomselect top "resid [set r[set quaNum][set i]] and name N9"]
-    set selx[set i]N2 [atomselect top "resid [set r[set quaNum][set i]] and name N2"]
-    set selx[set i]O6 [atomselect top "resid [set r[set quaNum][set i]] and name O6"]
-    
-    for { set j [expr $i + 1] } { $j < 5 } { incr j } {
-    
-      set selx[set j]N9 [atomselect top "resid [set r[set quaNum][set j]] and name N9"]
-      set selx[set j]N2 [atomselect top "resid [set r[set quaNum][set j]] and name N2"]
-      set selx[set j]O6 [atomselect top "resid [set r[set quaNum][set j]] and name O6"]
-      
-      set listP[set i]$j {}
-      
-      for { set k $frameStart } { $k < $frameEnd } { set k [expr {$k + $step}] } {
-        [set selx[set i]N9] frame $k
-	[set selx[set i]N2] frame $k
-	[set selx[set i]O6] frame $k
-	
-	[set selx[set j]N9] frame $k
-	[set selx[set j]N2] frame $k
-	[set selx[set j]O6] frame $k
-	
-        [set selx[set i]N9] update
-	[set selx[set i]N2] update
-	[set selx[set i]O6] update
-	
-	[set selx[set j]N9] update
-	[set selx[set j]N2] update
-	[set selx[set j]O6] update
-	
-	set rx[set i]N9 [measure center [set selx[set i]N9] weight mass]
-	set rx[set i]N2 [measure center [set selx[set i]N2] weight mass]
-	set rx[set i]O6 [measure center [set selx[set i]O6] weight mass]
-	
-	set rx[set j]N9 [measure center [set selx[set j]N9] weight mass]
-	set rx[set j]N2 [measure center [set selx[set j]N2] weight mass]
-	set rx[set j]O6 [measure center [set selx[set j]O6] weight mass]
-	
-	set vect[set i]N9N2 [vecsub [set rx[set i]N9] [set rx[set i]N2]]
-        set vect[set i]N9O6 [vecsub [set rx[set i]N9] [set rx[set i]O6]]
-	
-	set vect[set j]N9N2 [vecsub [set rx[set j]N9] [set rx[set j]N2]]
-        set vect[set j]N9O6 [vecsub [set rx[set j]N9] [set rx[set j]O6]]
-	
-	set vectAngle$i [vecnorm [veccross [set vect[set i]N9N2] [set vect[set i]N9O6]]]
-	
-	set vectAngle$j [vecnorm [veccross [set vect[set j]N9N2] [set vect[set j]N9O6]]]
-	
-	set angleRad [vecdot [set vectAngle$i] [set vectAngle$j]]
-	
-	set angle [expr acos($angleRad)/$M_PI * 180]
-	
-	lappend listP[set i]$j $angle
-      }
-      
+    } else {
+      set quaNum [expr int($quaNum)]
+    }
+
+    foreach i {1 2 3 4} {
+      set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
+    }
+
+    foreach i {1 2 3} {
+
+      set selx[set i]N9 [atomselect top "resid [set r[set quaNum][set i]] and name N9"]
+      set selx[set i]N2 [atomselect top "resid [set r[set quaNum][set i]] and name N2"]
+      set selx[set i]O6 [atomselect top "resid [set r[set quaNum][set i]] and name O6"]
+
+      for { set j [expr $i + 1] } { $j < 5 } { incr j } {
+
+        set selx[set j]N9 [atomselect top "resid [set r[set quaNum][set j]] and name N9"]
+        set selx[set j]N2 [atomselect top "resid [set r[set quaNum][set j]] and name N2"]
+        set selx[set j]O6 [atomselect top "resid [set r[set quaNum][set j]] and name O6"]
+
+        set listP[set i]$j {}
+
+        for { set k $frameStart } { $k < $frameEnd } { set k [expr {$k + $step}] } {
+          [set selx[set i]N9] frame $k
+          [set selx[set i]N2] frame $k
+          [set selx[set i]O6] frame $k
+
+          [set selx[set j]N9] frame $k
+          [set selx[set j]N2] frame $k
+          [set selx[set j]O6] frame $k
+
+          [set selx[set i]N9] update
+          [set selx[set i]N2] update
+          [set selx[set i]O6] update
+
+          [set selx[set j]N9] update
+          [set selx[set j]N2] update
+          [set selx[set j]O6] update
+
+          set rx[set i]N9 [measure center [set selx[set i]N9] weight mass]
+          set rx[set i]N2 [measure center [set selx[set i]N2] weight mass]
+          set rx[set i]O6 [measure center [set selx[set i]O6] weight mass]
+
+          set rx[set j]N9 [measure center [set selx[set j]N9] weight mass]
+          set rx[set j]N2 [measure center [set selx[set j]N2] weight mass]
+          set rx[set j]O6 [measure center [set selx[set j]O6] weight mass]
+
+          set vect[set i]N9N2 [vecsub [set rx[set i]N9] [set rx[set i]N2]]
+          set vect[set i]N9O6 [vecsub [set rx[set i]N9] [set rx[set i]O6]]
+
+          set vect[set j]N9N2 [vecsub [set rx[set j]N9] [set rx[set j]N2]]
+          set vect[set j]N9O6 [vecsub [set rx[set j]N9] [set rx[set j]O6]]
+
+          set vectAngle$i [vecnorm [veccross [set vect[set i]N9N2] [set vect[set i]N9O6]]]
+
+          set vectAngle$j [vecnorm [veccross [set vect[set j]N9N2] [set vect[set j]N9O6]]]
+
+          set angleRad [vecdot [set vectAngle$i] [set vectAngle$j]]
+
+          set angle [expr acos($angleRad)/$M_PI * 180]
+
+          lappend listP[set i]$j $angle
+        }
+
       #puts "listP[set i]$j : [set listP[set i]$j"
       
       [set selx[set j]N9] delete
@@ -1810,9 +1947,9 @@ proc curvespackage::guaPlan {} {
   
   # Creating the multiplot for the first calculated list
   set plothandle [multiplot -x $xlist -y $listP12 \
-                    -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanins of the quartet $quaNum compared to each other" \
-                    -lines -linewidth 1 -linecolor blue \
-                    -marker none -legend "Planarity between the guanin 1 & 2"];
+  -xlabel "Frame" -ylabel "Angle" -title "Planarity of the guanins of the quartet $quaNum compared to each other" \
+  -lines -linewidth 1 -linecolor blue \
+  -marker none -legend "Planarity between the guanin 1 & 2"];
 
   # Adding the other calculated lists
   $plothandle add $xlist $listP13 -lines -linewidth 1 -linecolor red -marker none -legend "Planarity between the guanin 1 & 3"
@@ -1837,25 +1974,25 @@ proc curvespackage::lenBend {} {
   # If the frame parameters are empty, we switch to default values, else we convert their values to integer
   if {$frameStart eq ""} {
     set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  if { $frameStart == $frameEnd } {
-    tk_messageBox -message "Error, only one frame selected, graphing impossible"
-    return
-  }
-  
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+      } else {
+        set frameEnd [expr int($frameEnd)]
+      }
+      if {$step eq ""} {
+        set step 1
+        } else {
+          set step [expr int($step)]
+        }
+
+        if { $frameStart == $frameEnd } {
+          tk_messageBox -message "Error, only one frame selected, graphing impossible"
+          return
+        }
+
   # We create the list used for the abscissa of the graphes
   set xlist {}
   for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -1864,39 +2001,39 @@ proc curvespackage::lenBend {} {
   
   if {$quaNum eq ""} {
     set quaNum 1
-  } else {
-    set quaNum [expr int($quaNum)]
-  }
-  
-  foreach i {1 2 3 4} {
-    set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
-  }
-  
-  foreach i { 0 1 } {
-  
-    set ip [expr $i + 1]
-    foreach j { 1 2 3 } {
-      set listP[set j]$ip {}
+    } else {
+      set quaNum [expr int($quaNum)]
     }
-    
-    foreach j { 0 1 2 3 } {
-      set guaX [expr {(($j + $i) % 4) + 1}]
-      
-      set id1 [expr {$j + 1}]
-      set id2 [expr { ($id1) % 4 + 1 }]
-      
-      set selrx[set id1][set id2] [atomselect top "resid [set r[set quaNum]$guaX] and $nameAtomsGQuad"]
-      set selrx[set id1][set id2]N1 [atomselect top "resid [set r[set quaNum]$guaX] and name N1"]
-      
-      if { $j == 0 || $j == 2 } {
-        set selx[set id1][set id2]C8 [atomselect top "resid [set r[set quaNum]$guaX] and name C8"]
-	#puts "C8 -> $guaX , indice $id1$id2 ; i = $i"
-      } else {
-        set selx[set id1][set id2]C2 [atomselect top "resid [set r[set quaNum]$guaX] and name C2"]
-        set selx[set id1][set id2]N9 [atomselect top "resid [set r[set quaNum]$guaX] and name N9"]
-	#puts "C2,N9 -> $guaX , indice $id1$id2 ; i = $i"
+
+    foreach i {1 2 3 4} {
+      set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
+    }
+
+    foreach i { 0 1 } {
+
+      set ip [expr $i + 1]
+      foreach j { 1 2 3 } {
+        set listP[set j]$ip {}
       }
-      
+
+      foreach j { 0 1 2 3 } {
+        set guaX [expr {(($j + $i) % 4) + 1}]
+
+        set id1 [expr {$j + 1}]
+        set id2 [expr { ($id1) % 4 + 1 }]
+
+        set selrx[set id1][set id2] [atomselect top "resid [set r[set quaNum]$guaX] and $nameAtomsGQuad"]
+        set selrx[set id1][set id2]N1 [atomselect top "resid [set r[set quaNum]$guaX] and name N1"]
+
+        if { $j == 0 || $j == 2 } {
+          set selx[set id1][set id2]C8 [atomselect top "resid [set r[set quaNum]$guaX] and name C8"]
+	#puts "C8 -> $guaX , indice $id1$id2 ; i = $i"
+  } else {
+    set selx[set id1][set id2]C2 [atomselect top "resid [set r[set quaNum]$guaX] and name C2"]
+    set selx[set id1][set id2]N9 [atomselect top "resid [set r[set quaNum]$guaX] and name N9"]
+	#puts "C2,N9 -> $guaX , indice $id1$id2 ; i = $i"
+}
+
       #puts $id1$id2
     }
     
@@ -1904,47 +2041,47 @@ proc curvespackage::lenBend {} {
       foreach k { 0 1 2 3 } {
         set id1 [expr {$k + 1}]
         set id2 [expr { ($id1) % 4 + 1 }]
-	
-	[set selrx[set id1][set id2]] frame $j
-	[set selrx[set id1][set id2]N1] frame $j
-	[set selrx[set id1][set id2]] update
-	[set selrx[set id1][set id2]N1] update
-	
-	set rx[set id1][set id2] [measure center [set selrx[set id1][set id2]] weight mass]
-	set rx[set id1][set id2]N1 [measure center [set selrx[set id1][set id2]] weight mass]
-	
-	if { $k == 0 || $k == 2 } {
-	  [set selx[set id1][set id2]C8] frame $j
-	  [set selx[set id1][set id2]C8] update
-	  
-	  set rx[set id1][set id2]C8 [measure center [set selx[set id1][set id2]C8] weight mass]
-	  
+
+        [set selrx[set id1][set id2]] frame $j
+        [set selrx[set id1][set id2]N1] frame $j
+        [set selrx[set id1][set id2]] update
+        [set selrx[set id1][set id2]N1] update
+
+        set rx[set id1][set id2] [measure center [set selrx[set id1][set id2]] weight mass]
+        set rx[set id1][set id2]N1 [measure center [set selrx[set id1][set id2]] weight mass]
+
+        if { $k == 0 || $k == 2 } {
+         [set selx[set id1][set id2]C8] frame $j
+         [set selx[set id1][set id2]C8] update
+
+         set rx[set id1][set id2]C8 [measure center [set selx[set id1][set id2]C8] weight mass]
+
 	  #puts rx[set id1][set id2]C8
 	  
-	} else {
-	  [set selx[set id1][set id2]C2] frame $j
-          [set selx[set id1][set id2]N9] frame $j
-	  [set selx[set id1][set id2]C2] update
-          [set selx[set id1][set id2]N9] update
-	  
-	  set rx[set id1][set id2]C2 [measure center [set selx[set id1][set id2]C2] weight mass]
-	  set rx[set id1][set id2]N9 [measure center [set selx[set id1][set id2]N9] weight mass]
-	  
+   } else {
+     [set selx[set id1][set id2]C2] frame $j
+     [set selx[set id1][set id2]N9] frame $j
+     [set selx[set id1][set id2]C2] update
+     [set selx[set id1][set id2]N9] update
+
+     set rx[set id1][set id2]C2 [measure center [set selx[set id1][set id2]C2] weight mass]
+     set rx[set id1][set id2]N9 [measure center [set selx[set id1][set id2]N9] weight mass]
+
 	  #puts "rx[set id1][set id2]C2 + N9"
 	}
-      }
-      
-      
-      set vect12_23_C8C2 [vecsub $rx12C8 $rx23C2]
-      set vect12_23_C8N9 [vecsub $rx12C8 $rx23N9]
-      
-      set vectAngl12_23_C8C2_C8N9 [vecnorm [veccross $vect12_23_C8C2 $vect12_23_C8N9]]
-      
-      set vect34_41_C8C2 [vecsub $rx34C8 $rx41C2]
-      set vect34_41_C8N9 [vecsub $rx34C8 $rx41N9]
-      
-      set vectAngl34_41_C8C2_C8N9 [vecnorm [veccross $vect34_41_C8C2 $vect34_41_C8N9]]
-      
+}
+
+
+set vect12_23_C8C2 [vecsub $rx12C8 $rx23C2]
+set vect12_23_C8N9 [vecsub $rx12C8 $rx23N9]
+
+set vectAngl12_23_C8C2_C8N9 [vecnorm [veccross $vect12_23_C8C2 $vect12_23_C8N9]]
+
+set vect34_41_C8C2 [vecsub $rx34C8 $rx41C2]
+set vect34_41_C8N9 [vecsub $rx34C8 $rx41N9]
+
+set vectAngl34_41_C8C2_C8N9 [vecnorm [veccross $vect34_41_C8C2 $vect34_41_C8N9]]
+
       # Angle between 12 & 34 then 23 & 41
       set angl1223_3441_rad [vecdot $vectAngl12_23_C8C2_C8N9 $vectAngl34_41_C8C2_C8N9]
       
@@ -1996,23 +2133,23 @@ proc curvespackage::lenBend {} {
     foreach j { 0 1 2 3 } {
       set id1 [expr {$j + 1}]
       set id2 [expr { ($id1) % 4 + 1 }]
-	
+
       [set selrx[set id1][set id2]] delete
       [set selrx[set id1][set id2]N1] delete
-	
+
       if { $j == 0 || $j == 2 } {
-	[set selx[set id1][set id2]C8] delete
-      } else {
-	[set selx[set id1][set id2]C2] delete
-        [set selx[set id1][set id2]N9] delete
-      }
-    }
-  }
+       [set selx[set id1][set id2]C8] delete
+       } else {
+         [set selx[set id1][set id2]C2] delete
+         [set selx[set id1][set id2]N9] delete
+       }
+     }
+   }
   # Creating the multiplot for the first calculated list
   set plothandle [multiplot -x $xlist -y $listP11 \
-                    -xlabel "Frame" -ylabel "Angle" -title "Lengthwise quartet bending" \
-                    -lines -linewidth 1 -linecolor blue \
-                    -marker none -legend "\u03b8(Triad(g1,g2) ; Triad(g3,g4))"];
+  -xlabel "Frame" -ylabel "Angle" -title "Lengthwise quartet bending" \
+  -lines -linewidth 1 -linecolor blue \
+  -marker none -legend "\u03b8(Triad(g1,g2) ; Triad(g3,g4))"];
 
   # Adding the other calculated lists
   $plothandle add $xlist $listP12 -lines -linewidth 1 -linecolor red -marker none -legend "\u03b8(Triad(g2,g3) ; Triad(g4,g1))"
@@ -2036,25 +2173,25 @@ proc curvespackage::twistAngle {} {
   # If the frame parameters are empty, we switch to default values, else we convert their values to integer
   if {$frameStart eq ""} {
     set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  if { $frameStart == $frameEnd } {
-    tk_messageBox -message "Error, only one frame selected, graphing impossible"
-    return
-  }
-  
+    } else {
+      set frameStart [expr int($frameStart)]
+    }
+    if {$frameEnd eq ""} {
+      set frameEnd [molinfo top get numframes]
+      } else {
+        set frameEnd [expr int($frameEnd)]
+      }
+      if {$step eq ""} {
+        set step 1
+        } else {
+          set step [expr int($step)]
+        }
+
+        if { $frameStart == $frameEnd } {
+          tk_messageBox -message "Error, only one frame selected, graphing impossible"
+          return
+        }
+
   # We create the list used for the abscissa of the graphes
   set xlist {}
   for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
@@ -2072,107 +2209,64 @@ proc curvespackage::twistAngle {} {
     for { set j [expr $i + 1] } { $j <= $numQuartets } { incr j } {
       foreach k { 1 2 3 4 } {
         set sel[set i][set k]N9 [atomselect top "resid [set r[set i]$k] and name N9"]
-	set sel[set j][set k]N9 [atomselect top "resid [set r[set j]$k] and name N9"]
+        set sel[set j][set k]N9 [atomselect top "resid [set r[set j]$k] and name N9"]
       }
       set listP[set i]$j {}
       for { set k $frameStart } { $k < $frameEnd } { set k [expr {$k + $step}] } {
         foreach l { 1 2 3 4 } {
-	  set id1 $l
-	  set id2 [expr $id1 % 4 + 1]
-	  [set sel[set i][set id1]N9] frame $k
-	  [set sel[set i][set id2]N9] frame $k
-	  [set sel[set j][set id1]N9] frame $k
-	  [set sel[set j][set id2]N9] frame $k
-	  [set sel[set i][set id1]N9] update
-	  [set sel[set i][set id2]N9] update
-	  [set sel[set j][set id1]N9] update
-	  [set sel[set j][set id2]N9] update
-	  
-	  set r[set i]$id1 [measure center [set sel[set i][set id1]N9] weight mass]
-	  set r[set i]$id2 [measure center [set sel[set i][set id2]N9] weight mass]
-	  set r[set j]$id1 [measure center [set sel[set j][set id1]N9] weight mass]
-	  set r[set j]$id2 [measure center [set sel[set j][set id2]N9] weight mass]
-	  
-	  set vect[set i][set id1]$id2 [vecnorm [vecsub [set r[set i]$id1] [set r[set i]$id2]]]
-	  set vect[set j][set id1]$id2 [vecnorm [vecsub [set r[set j]$id1] [set r[set j]$id2]]]
-	  
-	  set angle[set i][set j][set id1][set id2]_rad [vecdot [set vect[set i][set id1]$id2] [set vect[set j][set id1]$id2]]
-	  if {[set angle[set i][set j][set id1][set id2]_rad] > 1.0} {
-	    set angle[set i][set j][set id1][set id2]_rad 1.0
-	  }
-	  if {[set angle[set i][set j][set id1][set id2]_rad] < -1.0} {
-	    set angle[set i][set j][set id1][set id2]_rad -1.0
-	  }
-	  set angle[set i][set j][set id1][set id2] [expr acos([set angle[set i][set j][set id1][set id2]_rad]) / $M_PI * 180]
-	}
-	
-	set twist [vecscale 0.25 [vecadd [set angle[set i][set j]12] [set angle[set i][set j]23] [set angle[set i][set j]34] [set angle[set i][set j]41]]]
-	
-	lappend listP[set i]$j $twist
-      }
-      foreach k { 1 2 3 4 } {
-	[set sel[set i][set k]N9] delete
-	[set sel[set j][set k]N9] delete
-      }
-    }
-  }
+         set id1 $l
+         set id2 [expr $id1 % 4 + 1]
+         [set sel[set i][set id1]N9] frame $k
+         [set sel[set i][set id2]N9] frame $k
+         [set sel[set j][set id1]N9] frame $k
+         [set sel[set j][set id2]N9] frame $k
+         [set sel[set i][set id1]N9] update
+         [set sel[set i][set id2]N9] update
+         [set sel[set j][set id1]N9] update
+         [set sel[set j][set id2]N9] update
+
+         set r[set i]$id1 [measure center [set sel[set i][set id1]N9] weight mass]
+         set r[set i]$id2 [measure center [set sel[set i][set id2]N9] weight mass]
+         set r[set j]$id1 [measure center [set sel[set j][set id1]N9] weight mass]
+         set r[set j]$id2 [measure center [set sel[set j][set id2]N9] weight mass]
+
+         set vect[set i][set id1]$id2 [vecnorm [vecsub [set r[set i]$id1] [set r[set i]$id2]]]
+         set vect[set j][set id1]$id2 [vecnorm [vecsub [set r[set j]$id1] [set r[set j]$id2]]]
+
+         set angle[set i][set j][set id1][set id2]_rad [vecdot [set vect[set i][set id1]$id2] [set vect[set j][set id1]$id2]]
+         if {[set angle[set i][set j][set id1][set id2]_rad] > 1.0} {
+           set angle[set i][set j][set id1][set id2]_rad 1.0
+         }
+         if {[set angle[set i][set j][set id1][set id2]_rad] < -1.0} {
+           set angle[set i][set j][set id1][set id2]_rad -1.0
+         }
+         set angle[set i][set j][set id1][set id2] [expr acos([set angle[set i][set j][set id1][set id2]_rad]) / $M_PI * 180]
+       }
+
+       set twist [vecscale 0.25 [vecadd [set angle[set i][set j]12] [set angle[set i][set j]23] [set angle[set i][set j]34] [set angle[set i][set j]41]]]
+
+       lappend listP[set i]$j $twist
+     }
+     foreach k { 1 2 3 4 } {
+       [set sel[set i][set k]N9] delete
+       [set sel[set j][set k]N9] delete
+     }
+   }
+ }
   # Creating the multiplot for the first calculated list
   set plothandle [multiplot -x $xlist -y $listP12 \
-                    -xlabel "Frame" -ylabel "Angle" -title "Twist Angles" \
-                    -lines -linewidth 1 -linecolor black \
-                    -marker none -legend "Twist angle between the quartets 1 & 2" -plot];
+  -xlabel "Frame" -ylabel "Angle" -title "Twist Angles" \
+  -lines -linewidth 1 -linecolor black \
+  -marker none -legend "Twist angle between the quartets 1 & 2" -plot];
   for { set i 1 } { $i < $numQuartets } { incr i } {
     for { set j [expr $i + 1] } { $j <= $numQuartets } { incr j } {
       if { $i != 1 && $j != 2 } {
         set plotColor [lindex plotColors [expr $i + $j - 1]]
         $plothandle add $xlist [set listP[set i]$j] -lines -linewidth 1 -linecolor bl -marker none -legend "Twist angle between the quartets $i and $j" -plot
-       }
+      }
     }
   }
   #$plothandle -plot
-}
-
-proc curvespackage::guaCoMDistances {} {
-  global M_PI
-  variable w
-  variable nameAtomsGQuad
-  variable mainQua
-  variable secQua
-  
-  # Set of variables determining the start, end and step of the calculations
-  variable frameStart
-  variable frameEnd
-  variable step
-  
-  # If the frame parameters are empty, we switch to default values, else we convert their values to integer
-  if {$frameStart eq ""} {
-    set frameStart 0
-  } else {
-    set frameStart [expr int($frameStart)]
-  }
-  if {$frameEnd eq ""} {
-    set frameEnd [molinfo top get numframes]
-  } else {
-    set frameEnd [expr int($frameEnd)]
-  }
-  if {$step eq ""} {
-    set step 1
-  } else {
-    set step [expr int($step)]
-  }
-  
-  if { $frameStart == $frameEnd } {
-    tk_messageBox -message "Error, only one frame selected, graphing impossible"
-    return
-  }
-  
-  # We create the list used for the abscissa of the graphes
-  set xlist {}
-  for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-    lappend xlist $i
-  }
-  
-  
 }
 
 proc curvespackage_tk {} {

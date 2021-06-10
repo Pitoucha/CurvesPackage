@@ -6,13 +6,9 @@
 #print "number of arguments: ", ARGC 
 
 cd ARG2
-if (!exist("Histograms_Output")) {
-	system "mkdir Histograms_Output"
-}
+
 set terminal postscript eps enhanced solid color
 set output "Histograms_Output/".ARG4.".eps"
-
-print "Histograms_Output/".ARG4.".eps"
 
 set tmargin 3
 set bmargin 3
