@@ -105,17 +105,17 @@ proc ::curvespackage::Histograms {type} {
    exec mkdir "Ouput_Dat"
  }
 
- set base1 [$w.helix.resBase1.resNameBase1 get]
- set idBase1 [$w.helix.resBase1.resIdBase1 get]
+ set base1 [$w.nb.tab1.helix.resBase1.resNameBase1 get]
+ set idBase1 [$w.nb.tab1.helix.resBase1.resIdBase1 get]
 
- set base2 [$w.helix.resBase2.resNameBase2 get]
- set idBase2 [$w.helix.resBase2.resIdBase2 get]
+ set base2 [$w.nb.tab1.helix.resBase2.resNameBase2 get]
+ set idBase2 [$w.nb.tab1.helix.resBase2.resIdBase2 get]
 
- set match1 [$w.helix.resBase1.resNameMatch1 get]
- set idMatch1 [$w.helix.resBase1.resIdMatch1 get]
+ set match1 [$w.nb.tab1.helix.resBase1.resNameMatch1 get]
+ set idMatch1 [$w.nb.tab1.helix.resBase1.resIdMatch1 get]
 
- set match2 [$w.helix.resBase2.resNameMatch2 get]
- set idMatch2 [$w.helix.resBase2.resIdMatch2 get]
+ set match2 [$w.nb.tab1.helix.resBase2.resNameMatch2 get]
+ set idMatch2 [$w.nb.tab1.helix.resBase2.resIdMatch2 get]
 
 
   #case 0 - distance variation between two atom of a base (base 1 / base 2)
@@ -249,7 +249,7 @@ proc ::curvespackage::gnuPlotting {nameDat name} {
   cd "GNU_Script"
 
   set rounding [::curvespackage::callRoundingChooser]
-  set test "exec gnuplot -c distGNUScript.plt $rounding $savePath $path $name"
+  set test "exec gnuplot -c GNUScript.plt $rounding $savePath $path $name"
                             #ARG0             #ARG1     #ARG2     #ARG3 #ARG4
   eval $test
   #if [catch eval $test] {
@@ -287,145 +287,149 @@ proc ::curvespackage::chargement {} {
   #get path file to open
   set newMol [tk_getOpenFile]
 
-  #verifie que le chemin a bien été pris en compte
+  #verify that the user choose a file
   if {$newMol != ""} {
     #load the mol 
     mol new $newMol
 
     #delete the represention in use 
-    mol delrep 0 [molinfo 0 get id]
+    #mol delrep 0 [molinfo 0 get id]
     
     #creates a new representation and adds it 
-    mol representation CPK
-    mol addrep [molinfo 0 get id]
+    #mol representation CPK
+    #mol addrep [molinfo 0 get id]
     
+    pack [ttk::notebook $w.nb]
+    $w.nb add [frame $w.nb.tab1] -text "Single strand DNA"
+    $w.nb add [frame $w.nb.tab2] -text "Quadruplex DNA"
+
     #Label frame for Helix
-    grid [labelframe $w.helix -text "In case you're working on a single double helix of DNA" -bd 2]
+    grid [labelframe $w.nb.tab1.helix -text "In case you're working on a single double helix of DNA" -bd 2]
     
     #Label frame for the first base 
-    grid [labelframe $w.helix.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
+    grid [labelframe $w.nb.tab1.helix.resBase1 -text "Select the first base to match"] -row 0 -columnspan 2
     
     #first base
-    grid [ttk::combobox $w.helix.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
-    grid [ttk::combobox $w.helix.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase1.resNameBase1] -row 0 -column 0 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase1.resIdBase1] -row 2 -column 0 -columnspan 2
     
-    grid [label $w.helix.resBase1.lab -text ""] -row 0 -column 2
+    grid [label $w.nb.tab1.helix.resBase1.lab -text ""] -row 0 -column 2
     
     #first match
-    grid [ttk::combobox $w.helix.resBase1.resNameMatch1 -state readonly] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.helix.resBase1.colorB1 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
-    grid [ttk::combobox $w.helix.resBase1.resIdMatch1 -state readonly] -row 2 -column 3 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase1.resNameMatch1 -state readonly] -row 0 -column 3 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase1.colorB1 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
+    grid [ttk::combobox $w.nb.tab1.helix.resBase1.resIdMatch1 -state readonly] -row 2 -column 3 -columnspan 2
     
     #button for calling the matching of bases
-    grid [button $w.helix.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
+    grid [button $w.nb.tab1.helix.btnMatch -text "Match these resId to get the facing resId" -command "::curvespackage::matchList"] -row 1 -columnspan 2
     
     #Label frame for the second base
-    grid [labelframe $w.helix.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
+    grid [labelframe $w.nb.tab1.helix.resBase2 -text "Select the second base to match (optional)"] -row 2 -columnspan 2
     
     #second base
-    grid [ttk::combobox $w.helix.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
-    grid [ttk::combobox $w.helix.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase2.resNameBase2] -row 0 -column 0 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase2.resIdBase2] -row 2 -column 0 -columnspan 2
     
-    grid [label $w.helix.resBase2.lab2 -text ""] -row 0 -column 2
+    grid [label $w.nb.tab1.helix.resBase2.lab2 -text ""] -row 0 -column 2
     
     #second match
-    grid [ttk::combobox $w.helix.resBase2.resNameMatch2 -state readonly] -row 0 -column 3 -columnspan 2
-    grid [ttk::combobox $w.helix.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
-    grid [ttk::combobox $w.helix.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase2.resNameMatch2 -state readonly] -row 0 -column 3 -columnspan 2
+    grid [ttk::combobox $w.nb.tab1.helix.resBase2.colorB2 -values $plotColors -state readonly] -row 0 -column 5 -columnspan 2 -rowspan 3
+    grid [ttk::combobox $w.nb.tab1.helix.resBase2.resIdMatch2 -state readonly] -row 2 -column 3 -columnspan 2
     
     #plotting buttons
-    grid [button $w.helix.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
-    grid [button $w.helix.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
-    grid [button $w.helix.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
-    grid [label $w.helix.labelColorPair -text "Plotting color of the pairs"] -row 5 -column 1
-    grid [ttk::combobox $w.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
-    grid [button $w.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
+    grid [button $w.nb.tab1.helix.distSel -text "Plot the distance variation between these two bases" -command "::curvespackage::plotBases {dist}"] -row 3 -columnspan 2
+    grid [button $w.nb.tab1.helix.angVal -text "Plot the angle variation between these two bases" -command "::curvespackage::plotBases {angl}"] -row 4 -columnspan 2
+    grid [button $w.nb.tab1.helix.distVal -text "Plot the distance between the two pairs of bases " -command "::curvespackage::plotBases {4dist}" -state disabled] -row 5 -column 0
+    grid [label $w.nb.tab1.helix.labelColorPair -text "Plotting color of the pairs"] -row 5 -column 1
+    grid [ttk::combobox $w.nb.tab1.helix.colorPair -values $plotColors -state disabled] -row 6 -column 1
+    grid [button $w.nb.tab1.helix.angleVal -text "Plot the angle between the two pairs of bases " -command "::curvespackage::plotBases {4angl}" -state disabled] -row 6 -column 0
   
     # Labelframe for the G-Quadruplex section
-    grid [labelframe $w.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
+    grid [labelframe $w.nb.tab2.gQuad -text "In case you're working on G-Quadruplex DNA" -bd 2]
     
     #First quartet
-    grid [labelframe $w.gQuad.qua1 -text "First Quartet"] -row 0 -column 0
+    grid [labelframe $w.nb.tab2.gQuad.qua1 -text "First Quartet"] -row 0 -column 0
     
     # First base
-    grid [label $w.gQuad.qua1.labelRes1 -text "First base"] -row 0 -column 0
-    grid [ttk::combobox $w.gQuad.qua1.resName1] -row 1 -column 0
-    grid [ttk::combobox $w.gQuad.qua1.resId1] -row 2 -column 0
+    grid [label $w.nb.tab2.gQuad.qua1.labelRes1 -text "First base"] -row 0 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resName1] -row 1 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resId1] -row 2 -column 0
     
     # Second base
-    grid [label $w.gQuad.qua1.labelRes2 -text "Second base"] -row 0 -column 1
-    grid [ttk::combobox $w.gQuad.qua1.resName2] -row 1 -column 1
-    grid [ttk::combobox $w.gQuad.qua1.resId2] -row 2 -column 1
+    grid [label $w.nb.tab2.gQuad.qua1.labelRes2 -text "Second base"] -row 0 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resName2] -row 1 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resId2] -row 2 -column 1
     
     # Third base
-    grid [label $w.gQuad.qua1.labelRes3 -text "Third base"] -row 3 -column 0
-    grid [ttk::combobox $w.gQuad.qua1.resName3] -row 4 -column 0
-    grid [ttk::combobox $w.gQuad.qua1.resId3] -row 5 -column 0
+    grid [label $w.nb.tab2.gQuad.qua1.labelRes3 -text "Third base"] -row 3 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resName3] -row 4 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resId3] -row 5 -column 0
     
     # Fourth base
-    grid [label $w.gQuad.qua1.labelRes4 -text "Fourth base"] -row 3 -column 1
-    grid [ttk::combobox $w.gQuad.qua1.resName4] -row 4 -column 1
-    grid [ttk::combobox $w.gQuad.qua1.resId4] -row 5 -column 1
+    grid [label $w.nb.tab2.gQuad.qua1.labelRes4 -text "Fourth base"] -row 3 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resName4] -row 4 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua1.resId4] -row 5 -column 1
     
     #Second quartet
-    grid [labelframe $w.gQuad.qua2 -text "Second Quartet"] -row 0 -column 1
+    grid [labelframe $w.nb.tab2.gQuad.qua2 -text "Second Quartet"] -row 0 -column 1
     
     # First base
-    grid [label $w.gQuad.qua2.labelRes1 -text "First base"] -row 0 -column 0
-    grid [ttk::combobox $w.gQuad.qua2.resName1] -row 1 -column 0
-    grid [ttk::combobox $w.gQuad.qua2.resId1] -row 2 -column 0
+    grid [label $w.nb.tab2.gQuad.qua2.labelRes1 -text "First base"] -row 0 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resName1] -row 1 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resId1] -row 2 -column 0
     
     # Second base
-    grid [label $w.gQuad.qua2.labelRes2 -text "Second base"] -row 0 -column 1
-    grid [ttk::combobox $w.gQuad.qua2.resName2] -row 1 -column 1
-    grid [ttk::combobox $w.gQuad.qua2.resId2] -row 2 -column 1
+    grid [label $w.nb.tab2.gQuad.qua2.labelRes2 -text "Second base"] -row 0 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resName2] -row 1 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resId2] -row 2 -column 1
     
     # Third base
-    grid [label $w.gQuad.qua2.labelRes3 -text "Third base"] -row 3 -column 0
-    grid [ttk::combobox $w.gQuad.qua2.resName3] -row 4 -column 0
-    grid [ttk::combobox $w.gQuad.qua2.resId3] -row 5 -column 0
+    grid [label $w.nb.tab2.gQuad.qua2.labelRes3 -text "Third base"] -row 3 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resName3] -row 4 -column 0
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resId3] -row 5 -column 0
     
     # Fourth base
-    grid [label $w.gQuad.qua2.labelRes4 -text "Fourth base"] -row 3 -column 1
-    grid [ttk::combobox $w.gQuad.qua2.resName4] -row 4 -column 1
-    grid [ttk::combobox $w.gQuad.qua2.resId4] -row 5 -column 1
+    grid [label $w.nb.tab2.gQuad.qua2.labelRes4 -text "Fourth base"] -row 3 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resName4] -row 4 -column 1
+    grid [ttk::combobox $w.nb.tab2.gQuad.qua2.resId4] -row 5 -column 1
     
     # Calculating the guanines' planarity compared to the quartet's perpendicular axis
-    grid [labelframe $w.gQuad.oneQua] -row 1 -columnspan 2
-    grid [button $w.gQuad.oneQua.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 0 -column 0
-    grid [labelframe $w.gQuad.oneQua.selGua -text "Which quartet's guanines ?"] -row 0 -column 1 -rowspan 5
-    grid [entry $w.gQuad.oneQua.selGua.quaSel -textvar ::curvespackage::quaNum]
+    grid [labelframe $w.nb.tab2.gQuad.oneQua] -row 1 -columnspan 2
+    grid [button $w.nb.tab2.gQuad.oneQua.planGuaAxis -text "Planarity of the guanines compared to the quartets' perpendicular axis" -command "curvespackage::guaPlanForQuaAxis"] -row 0 -column 0
+    grid [labelframe $w.nb.tab2.gQuad.oneQua.selGua -text "Which quartet's guanines ?"] -row 0 -column 1 -rowspan 5
+    grid [entry $w.nb.tab2.gQuad.oneQua.selGua.quaSel -textvar ::curvespackage::quaNum]
     
     # Calculating the guanines' planarity between themselves
-    grid [button $w.gQuad.oneQua.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 1 -column 0
+    grid [button $w.nb.tab2.gQuad.oneQua.planGua -text "Planarity of the guanins compared to each other" -command "curvespackage::guaPlan"] -row 1 -column 0
     
     # Calculating the quartet bending lengthwise
-    grid [button $w.gQuad.oneQua.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 2 -column 0
+    grid [button $w.nb.tab2.gQuad.oneQua.lenBendB -text "Lengthwise quartet bending" -command "curvespackage::lenBend"] -row 2 -column 0
     
     # Calculating the angle between the guanines' axis
-    grid [button $w.gQuad.oneQua.guaAngles -text "Angles between the guanins' axis of the selected quartet" -command "curvespackage::guaAxisAngle"] -row 3 -column 0
+    grid [button $w.nb.tab2.gQuad.oneQua.guaAngles -text "Angles between the guanins' axis of the selected quartet" -command "curvespackage::guaAxisAngle"] -row 3 -column 0
     
     # Calculating the distance between the COMs of O6 and N9 squares on a quartet
-    grid [button $w.gQuad.oneQua.quaCom -text "Distance between CoM(O6) and CoM(N9)" -command "curvespackage::comO6N9"] -row 4 -column 0
+    grid [button $w.nb.tab2.gQuad.oneQua.quaCom -text "Distance between CoM(O6) and CoM(N9)" -command "curvespackage::comO6N9"] -row 4 -column 0
     
     # Calculating the twist angles
-    grid [labelframe $w.gQuad.noQua] -row 2 -columnspan 2
-    grid [button $w.gQuad.noQua.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 0
+    grid [labelframe $w.nb.tab2.gQuad.noQua] -row 2 -columnspan 2
+    grid [button $w.nb.tab2.gQuad.noQua.twist -text "Twist angles" -command "curvespackage::twistAngle"] -row 0
     
     # Calculating the gyration radii
-    grid [button $w.gQuad.noQua.gyr -text "Gyration radii" -command "curvespackage::gyrationRadii"] -row 1
+    grid [button $w.nb.tab2.gQuad.noQua.gyr -text "Gyration radii" -command "curvespackage::gyrationRadii"] -row 1
     
     # Calculating the distance between the CoM of guanines and [the CoM of their quartet ; the CoM of the 2 quartets (simulating the emplacement of the metallic ion)]
-    grid [labelframe $w.gQuad.twoQua] -row 3 -columnspan 2
-    grid [button $w.gQuad.twoQua.comDistancesGua -text "Distances between guanines and multiple centers of mass" -command "curvespackage::guaCoMDistances"] -row 0 -column 0
-    grid [labelframe $w.gQuad.twoQua.selQua -text "From which quartets ?"] -row 0 -column 1 -rowspan 2
-    grid [label $w.gQuad.twoQua.selQua.mainLab -text "Main quartet"] -row 0 -column 0
-    grid [entry $w.gQuad.twoQua.selQua.main -textvar ::curvespackage::mainQua] -row 0 -column 1
-    grid [label $w.gQuad.twoQua.selQua.secLab -text "Other quartet (CoM calculated between the main and this one)"] -row 1 -column 0
-    grid [entry $w.gQuad.twoQua.selQua.sec -textvar ::curvespackage::secQua] -row 1 -column 1
+    grid [labelframe $w.nb.tab2.gQuad.twoQua] -row 3 -columnspan 2
+    grid [button $w.nb.tab2.gQuad.twoQua.comDistancesGua -text "Distances between guanines and multiple centers of mass" -command "curvespackage::guaCoMDistances"] -row 0 -column 0
+    grid [labelframe $w.nb.tab2.gQuad.twoQua.selQua -text "From which quartets ?"] -row 0 -column 1 -rowspan 2
+    grid [label $w.nb.tab2.gQuad.twoQua.selQua.mainLab -text "Main quartet"] -row 0 -column 0
+    grid [entry $w.nb.tab2.gQuad.twoQua.selQua.main -textvar ::curvespackage::mainQua] -row 0 -column 1
+    grid [label $w.nb.tab2.gQuad.twoQua.selQua.secLab -text "Other quartet (CoM calculated between the main and this one)"] -row 1 -column 0
+    grid [entry $w.nb.tab2.gQuad.twoQua.selQua.sec -textvar ::curvespackage::secQua] -row 1 -column 1
     
     # Calculating the distance between the CoM of the quartets
-    grid [button $w.gQuad.twoQua.comDistances -text "Distance between the CoM of the quartets" -command "curvespackage::comQua"] -row 1 -column 0
+    grid [button $w.nb.tab2.gQuad.twoQua.comDistances -text "Distance between the CoM of the quartets" -command "curvespackage::comQua"] -row 1 -column 0
 
     #Frame selections for the plotting
     grid [labelframe $w.frames -text "Frames to study"]
@@ -445,105 +449,106 @@ proc ::curvespackage::chargement {} {
         puts "changed back"
       }}
 
-      pack $w.helix $w.gQuad $w.frames $w.histogram
-    
-    
+    $w.nb select $w.nb.tab1
+
+    pack $w.frames $w.histogram
+
     #call the function which create the list of resnames and resids 
     ::curvespackage::listeResname
 
     #bind the selection of an element in the combobox with a function that puts the list 
     #of resids for the resname
-    bind $w.helix.resBase1.resNameBase1 <<ComboboxSelected>> {
+    bind $w.nb.tab1.helix.resBase1.resNameBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 0
     }
 
-    bind $w.helix.resBase1.resNameMatch1 <<ComboboxSelected>> {
+    bind $w.nb.tab1.helix.resBase1.resNameMatch1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 2
     }
 
-    bind $w.helix.resBase2.resNameBase2 <<ComboboxSelected>> {
+    bind $w.nb.tab1.helix.resBase2.resNameBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 1
     }
 
-    bind $w.helix.resBase2.resNameMatch2 <<ComboboxSelected>> {
+    bind $w.nb.tab1.helix.resBase2.resNameMatch2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 3
     }
 
-    bind $w.gQuad.qua1.resName1 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resName1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 4
 
     }
-    bind $w.gQuad.qua1.resName2 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resName2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 5
 
     }
-    bind $w.gQuad.qua1.resName3 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resName3 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 6
 
     }
-    bind $w.gQuad.qua1.resName4 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resName4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 7
 
     }
-    bind $w.gQuad.qua2.resName1 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resName1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 8
 
     }
-    bind $w.gQuad.qua2.resName2 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resName2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 9
 
     }
-    bind $w.gQuad.qua2.resName3 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resName3 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 10
 
     }
-    bind $w.gQuad.qua2.resName4 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resName4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResname 11
 
     }
 
     #binding with a function that reacts to a selection of the combobox
     #enable the function plot if at least two bases are selected (next one same)
-    bind $w.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
+    bind $w.nb.tab1.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 0
       ::curvespackage::enableCommand 0
     
     }
 
-    bind $w.helix.resBase2.resIdBase2 <<ComboboxSelected>> {
+    bind $w.nb.tab1.helix.resBase2.resIdBase2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 1
       ::curvespackage::enableCommand 1
     }
 
-    bind $w.gQuad.qua1.resId1 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resId1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 2
     }
 
-    bind $w.gQuad.qua1.resId2 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resId2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 3
     }
 
-    bind $w.gQuad.qua1.resId3 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resId3 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 4
     }
 
-    bind $w.gQuad.qua1.resId4 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua1.resId4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 5
     }
     
-    bind $w.gQuad.qua2.resId1 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resId1 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 6
     }
 
-    bind $w.gQuad.qua2.resId2 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resId2 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 7
     }
 
-    bind $w.gQuad.qua2.resId3 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resId3 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 8
     }
 
-    bind $w.gQuad.qua2.resId4 <<ComboboxSelected>> {
+    bind $w.nb.tab2.gQuad.qua2.resId4 <<ComboboxSelected>> {
       ::curvespackage::selectWithResid 9
     }
   }
@@ -558,55 +563,55 @@ proc ::curvespackage::enableCommand {b} {
   #determine which dropdown list has called
   switch $b {
     0 {
-    # case $w.helix.resBase1.resIdBase1
+    # case $w.nb.tab1.helix.resBase1.resIdBase1
       #get the opposed resid in the dropdown list 
-      set test [$w.helix.resBase2.resIdBase2 get]
+      set test [$w.nb.tab1.helix.resBase2.resIdBase2 get]
 
       #verify that the selection is not empty 
       if {$test != ""} {
 
         #set the state to normal which allow the user to call the plotting function
-        $w.helix.distVal configure -state normal
-        $w.helix.angleVal configure -state normal
-        $w.helix.colorPair configure -state readonly
+        $w.nb.tab1.helix.distVal configure -state normal
+        $w.nb.tab1.helix.angleVal configure -state normal
+        $w.nb.tab1.helix.colorPair configure -state readonly
       } else {
 
         #if the event is a supression the button is disabled
-        $w.helix.distVal configure -state disabled
-        $w.helix.angleVal configure -state disabled
-        $w.helix.colorPair configure -state disabled
+        $w.nb.tab1.helix.distVal configure -state disabled
+        $w.nb.tab1.helix.angleVal configure -state disabled
+        $w.nb.tab1.helix.colorPair configure -state disabled
       }
     } 
     1 {
-    #case $w.helix.resBase2.resIdBase2
-      set test [$w.helix.resBase1.resIdBase1 get]
+    #case $w.nb.tab1.helix.resBase2.resIdBase2
+      set test [$w.nb.tab1.helix.resBase1.resIdBase1 get]
       
       #verify that the selection is not empty 
       if {$test != ""} {
 
         #set the state to normal which allow the user to call the plotting function
-        $w.helix.distVal configure -state normal
-        $w.helix.angleVal configure -state normal
-        $w.helix.colorPair configure -state readonly
+        $w.nb.tab1.helix.distVal configure -state normal
+        $w.nb.tab1.helix.angleVal configure -state normal
+        $w.nb.tab1.helix.colorPair configure -state readonly
       } else {
 
         #if the event is a supression the button is disabled
-        $w.helix.distVal configure -state disabled
-        $w.helix.angleVal configure -state disabled
-        $w.helix.colorPair configure -state disabled
+        $w.nb.tab1.helix.distVal configure -state disabled
+        $w.nb.tab1.helix.angleVal configure -state disabled
+        $w.nb.tab1.helix.colorPair configure -state disabled
       }
     }
     2 {
-      $w.helix.distSel configure -command "::curvespackage::Histogram {dist}"
-      $w.helix.angVal configure -command "::curvespackage::Histogram {angl}"
-      $w.helix.distVal configure -command "::curvespackage::Histogram {4dist}"
-      $w.helix.angleVal configure -command "::curvespackage::Histogram {4angl}"
+      $w.nb.tab1.helix.distSel configure -command "::curvespackage::Histogram {dist}"
+      $w.nb.tab1.helix.angVal configure -command "::curvespackage::Histogram {angl}"
+      $w.nb.tab1.helix.distVal configure -command "::curvespackage::Histogram {4dist}"
+      $w.nb.tab1.helix.angleVal configure -command "::curvespackage::Histogram {4angl}"
     }
     3 {
-      $w.helix.distSel configure -command "::curvespackage::plotBases {dist}"
-      $w.helix.angVal configure -command "::curvespackage::plotBases {angl}"
-      $w.helix.distVal configure -command "::curvespackage::plotBases {4dist}"
-      $w.helix.angleVal configure -command "::curvespackage::plotBases {4angl}"
+      $w.nb.tab1.helix.distSel configure -command "::curvespackage::plotBases {dist}"
+      $w.nb.tab1.helix.angVal configure -command "::curvespackage::plotBases {angl}"
+      $w.nb.tab1.helix.distVal configure -command "::curvespackage::plotBases {4dist}"
+      $w.nb.tab1.helix.angleVal configure -command "::curvespackage::plotBases {4angl}"
     }
     default {
       puts "you can't"
@@ -706,32 +711,32 @@ proc ::curvespackage::listeResname {} {
 
     #set the values for all the dropdown lists 
       #resname
-    $w.helix.resBase1.resNameBase1 configure -values $stc
-    $w.helix.resBase1.resNameMatch1 configure -values $stc
-    $w.helix.resBase2.resNameBase2 configure -values $stc
-    $w.helix.resBase2.resNameMatch2 configure -values $stc
+    $w.nb.tab1.helix.resBase1.resNameBase1 configure -values $stc
+    $w.nb.tab1.helix.resBase1.resNameMatch1 configure -values $stc
+    $w.nb.tab1.helix.resBase2.resNameBase2 configure -values $stc
+    $w.nb.tab1.helix.resBase2.resNameMatch2 configure -values $stc
     
-    $w.gQuad.qua1.resName1 configure -values $stcQuad
-    $w.gQuad.qua1.resName2 configure -values $stcQuad
-    $w.gQuad.qua1.resName3 configure -values $stcQuad
-    $w.gQuad.qua1.resName4 configure -values $stcQuad
-    $w.gQuad.qua2.resName1 configure -values $stcQuad
-    $w.gQuad.qua2.resName2 configure -values $stcQuad
-    $w.gQuad.qua2.resName3 configure -values $stcQuad
-    $w.gQuad.qua2.resName4 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua1.resName1 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua1.resName2 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua1.resName3 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua1.resName4 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua2.resName1 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua2.resName2 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua2.resName3 configure -values $stcQuad
+    $w.nb.tab2.gQuad.qua2.resName4 configure -values $stcQuad
 
       #resid
-    $w.helix.resBase1.resIdBase1 configure -values $stcId
-    $w.helix.resBase2.resIdBase2 configure -values $stcId
+    $w.nb.tab1.helix.resBase1.resIdBase1 configure -values $stcId
+    $w.nb.tab1.helix.resBase2.resIdBase2 configure -values $stcId
     
-    $w.gQuad.qua1.resId1 configure -values $stcQuadId
-    $w.gQuad.qua1.resId2 configure -values $stcQuadId
-    $w.gQuad.qua1.resId3 configure -values $stcQuadId
-    $w.gQuad.qua1.resId4 configure -values $stcQuadId
-    $w.gQuad.qua2.resId1 configure -values $stcQuadId
-    $w.gQuad.qua2.resId2 configure -values $stcQuadId
-    $w.gQuad.qua2.resId3 configure -values $stcQuadId
-    $w.gQuad.qua2.resId4 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua1.resId1 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua1.resId2 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua1.resId3 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua1.resId4 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua2.resId1 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua2.resId2 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua2.resId3 configure -values $stcQuadId
+    $w.nb.tab2.gQuad.qua2.resId4 configure -values $stcQuadId
     
     $sel delete
 }
@@ -743,40 +748,40 @@ proc ::curvespackage::selectWithResname {b} {
   #get the resname selected 
   switch $b {
     0 {
-      set name [$w.helix.resBase1.resNameBase1 get]
+      set name [$w.nb.tab1.helix.resBase1.resNameBase1 get]
     }
     1 {
-      set name [$w.helix.resBase2.resNameBase2 get]
+      set name [$w.nb.tab1.helix.resBase2.resNameBase2 get]
     }
     2 {
-      set name [$w.helix.resBase1.resNameMatch1 get]
+      set name [$w.nb.tab1.helix.resBase1.resNameMatch1 get]
     }
     3 {
-      set name [$w.helix.resBase2.resNameMatch2 get]
+      set name [$w.nb.tab1.helix.resBase2.resNameMatch2 get]
     }
     4 {
-      set name [$w.gQuad.qua1.resName1 get]
+      set name [$w.nb.tab2.gQuad.qua1.resName1 get]
     }
     5 {
-      set name [$w.gQuad.qua1.resName2 get]
+      set name [$w.nb.tab2.gQuad.qua1.resName2 get]
     }
     6 {
-      set name [$w.gQuad.qua1.resName3 get]
+      set name [$w.nb.tab2.gQuad.qua1.resName3 get]
     }
     7 {
-      set name [$w.gQuad.qua1.resName4 get]
+      set name [$w.nb.tab2.gQuad.qua1.resName4 get]
     }
     8 {
-      set name [$w.gQuad.qua2.resName1 get]
+      set name [$w.nb.tab2.gQuad.qua2.resName1 get]
     }
     9 {
-      set name [$w.gQuad.qua2.resName2 get]
+      set name [$w.nb.tab2.gQuad.qua2.resName2 get]
     }
     10 {
-      set name [$w.gQuad.qua2.resName3 get]
+      set name [$w.nb.tab2.gQuad.qua2.resName3 get]
     }
     11 {
-      set name [$w.gQuad.qua2.resName4 get]
+      set name [$w.nb.tab2.gQuad.qua2.resName4 get]
     }
     default {
       puts "there is a problem, call us!" 
@@ -799,40 +804,40 @@ proc ::curvespackage::selectWithResname {b} {
     #set the values of the associated dropdown list 
     switch $b {
     0 {
-      $w.helix.resBase1.resIdBase1 configure -values $stc
+      $w.nb.tab1.helix.resBase1.resIdBase1 configure -values $stc
     }
     1 {
-      $w.helix.resBase2.resIdBase2 configure -values $stc
+      $w.nb.tab1.helix.resBase2.resIdBase2 configure -values $stc
     }
     2 {
-      $w.helix.resBase1.resIdMatch1 configure -values $stc
+      $w.nb.tab1.helix.resBase1.resIdMatch1 configure -values $stc
     }
     3 {
-      $w.helix.resBase2.resIdMatch2 configure -values $stc
+      $w.nb.tab1.helix.resBase2.resIdMatch2 configure -values $stc
     }
     4 {
-      $w.gQuad.qua1.resId1 configure -values $stc 
+      $w.nb.tab2.gQuad.qua1.resId1 configure -values $stc 
     }
     5 {
-      $w.gQuad.qua1.resId2 configure -values $stc 
+      $w.nb.tab2.gQuad.qua1.resId2 configure -values $stc 
     }
     6 {
-      $w.gQuad.qua1.resId3 configure -values $stc 
+      $w.nb.tab2.gQuad.qua1.resId3 configure -values $stc 
     }
     7 {
-      $w.gQuad.qua1.resId4 configure -values $stc 
+      $w.nb.tab2.gQuad.qua1.resId4 configure -values $stc 
     }
     8 {
-      $w.gQuad.qua2.resId1 configure -values $stc 
+      $w.nb.tab2.gQuad.qua2.resId1 configure -values $stc 
     }
     9 {
-      $w.gQuad.qua2.resId2 configure -values $stc 
+      $w.nb.tab2.gQuad.qua2.resId2 configure -values $stc 
     }
     10 {
-      $w.gQuad.qua2.resId3 configure -values $stc 
+      $w.nb.tab2.gQuad.qua2.resId3 configure -values $stc 
     }
     11 {
-      $w.gQuad.qua2.resId4 configure -values $stc 
+      $w.nb.tab2.nb.tab2.gQuad.qua2.resId4 configure -values $stc 
     }
     default {
         puts "there is a problem, call us!" 
@@ -852,34 +857,34 @@ proc ::curvespackage::selectWithResid {b} {
   #get the resid input 
   switch $b {
     0 {
-      set stcId [$w.helix.resBase1.resIdBase1 get]
+      set stcId [$w.nb.tab1.helix.resBase1.resIdBase1 get]
     }
     1 {
-      set stcId [$w.helix.resBase2.resIdBase2 get]
+      set stcId [$w.nb.tab1.helix.resBase2.resIdBase2 get]
     }
     2 {
-      set stcId [$w.gQuad.qua1.resId1 get]
+      set stcId [$w.nb.tab2.gQuad.qua1.resId1 get]
     }
     3 {
-      set stcId [$w.gQuad.qua1.resId2 get]
+      set stcId [$w.nb.tab2.gQuad.qua1.resId2 get]
     }
     4 {
-      set stcId [$w.gQuad.qua1.resId3 get]
+      set stcId [$w.nb.tab2.gQuad.qua1.resId3 get]
     }
     5 {
-      set stcId [$w.gQuad.qua1.resId4 get]
+      set stcId [$w.nb.tab2.gQuad.qua1.resId4 get]
     }
     6 {
-      set stcId [$w.gQuad.qua2.resId1 get]
+      set stcId [$w.nb.tab2.gQuad.qua2.resId1 get]
     }
     7 {
-      set stcId [$w.gQuad.qua2.resId2 get]
+      set stcId [$w.nb.tab2.gQuad.qua2.resId2 get]
     }
     8 {
-      set stcId [$w.gQuad.qua2.resId3 get]
+      set stcId [$w.nb.tab2.gQuad.qua2.resId3 get]
     }
     9 {
-      set stcId [$w.gQuad.qua2.resId4 get]
+      set stcId [$w.nb.tab2.gQuad.qua2.resId4 get]
     }
     default {
       set stcId ""
@@ -893,34 +898,34 @@ proc ::curvespackage::selectWithResid {b} {
         if {[lsearch -exact $info $stcId] >= 0} {
           switch $b {
             0 {
-                $w.helix.resBase1.resNameBase1 set $id
+                $w.nb.tab1.helix.resBase1.resNameBase1 set $id
               }
             1 {
-                $w.helix.resBase2.resNameBase2 set $id
+                $w.nb.tab1.helix.resBase2.resNameBase2 set $id
             }
             2 {
-                $w.gQuad.qua1.resName1 set $id 
+                $w.nb.tab2.gQuad.qua1.resName1 set $id 
             }
             3 {
-                $w.gQuad.qua1.resName2 set $id 
+                $w.nb.tab2.gQuad.qua1.resName2 set $id 
             }
             4 {
-                $w.gQuad.qua1.resName3 set $id 
+                $w.nb.tab2.gQuad.qua1.resName3 set $id 
             }
             5 {
-                $w.gQuad.qua1.resName4 set $id 
+                $w.nb.tab2.gQuad.qua1.resName4 set $id 
             }
             6 {
-                $w.gQuad.qua2.resName1 set $id 
+                $w.nb.tab2.gQuad.qua2.resName1 set $id 
             }
             7 {
-                $w.gQuad.qua2.resName2 set $id 
+                $w.nb.tab2.gQuad.qua2.resName2 set $id 
             }
             8 {
-                $w.gQuad.qua2.resName3 set $id 
+                $w.nb.tab2.gQuad.qua2.resName3 set $id 
             }
             9 {
-                $w.gQuad.qua2.resName4 set $id 
+                $w.nb.tab2.gQuad.qua2.resName4 set $id 
             }
             default {
               puts "W.T.F ?"
@@ -949,8 +954,8 @@ proc ::curvespackage::matchList {} {
 
   #part with the first and second bases
     #get the name and the resid of the base
-  set name1 [$w.helix.resBase1.resNameBase1 get]
-  set idSel1 [$w.helix.resBase1.resIdBase1 get]
+  set name1 [$w.nb.tab1.helix.resBase1.resNameBase1 get]
+  set idSel1 [$w.nb.tab1.helix.resBase1.resIdBase1 get]
 
   #if the resid is inferior to the mid and the resname and resid aren't empty we continue
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
@@ -967,52 +972,52 @@ proc ::curvespackage::matchList {} {
         }
       }
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.helix.resBase1.resIdMatch1 set $match 
+      $w.nb.tab1.helix.resBase1.resIdMatch1 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
-              $w.helix.resBase1.resNameMatch1 set $id
+              $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
-                $w.helix.resBase1.resNameMatch1 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set $id
             } else {
-                $w.helix.resBase1.resIdMatch1 set -1
-                $w.helix.resBase1.resNameMatch1 set "NO MATCH"
+                $w.nb.tab1.helix.resBase1.resIdMatch1 set -1
+                $w.nb.tab1.helix.resBase1.resNameMatch1 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
             }
             break
           }
         }
       } else {
-          $w.helix.resBase1.resIdMatch1 set -1
-          $w.helix.resBase1.resNameMatch1 set "NO MATCH"
+          $w.nb.tab1.helix.resBase1.resIdMatch1 set -1
+          $w.nb.tab1.helix.resBase1.resNameMatch1 set "NO MATCH"
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } 
   #else {
-   #   $w.helix.resBase1.resIdMatch1 set -1
-    #  $w.helix.resBase1.resNameMatch1 set "NO MATCH"
+   #   $w.nb.tab1.helix.resBase1.resIdMatch1 set -1
+    #  $w.nb.tab1.helix.resBase1.resNameMatch1 set "NO MATCH"
      # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     #}
 
   #part with the third and fourth bases 
-   #$w.helix.resNameMatch1 configure -values $stc
-    #$w.helix.resNameMatch2 configure -values $stc
+   #$w.nb.tab1.helix.resNameMatch1 configure -values $stc
+    #$w.nb.tab1.helix.resNameMatch2 configure -values $stc
     
-  set name1 [$w.helix.resBase2.resNameBase2 get]
-  set idSel1 [$w.helix.resBase2.resIdBase2 get]
+  set name1 [$w.nb.tab1.helix.resBase2.resNameBase2 get]
+  set idSel1 [$w.nb.tab1.helix.resBase2.resIdBase2 get]
 
   if {$idSel1 <= $mid && $name1 != "" && $idSel1 != ""} {
     
@@ -1028,43 +1033,43 @@ proc ::curvespackage::matchList {} {
         }
       }
     if {[lsearch -exact $stc $match] >= 0 && $match > $mid } {
-      $w.helix.resBase2.resIdMatch2 set $match 
+      $w.nb.tab1.helix.resBase2.resIdMatch2 set $match 
         dict for {id info} $selectList {
           if {[lsearch -exact $info $match] >= 0 } {
             if {[regexp {^DA} $name1] && [regexp {^DT} $id] } {
-              $w.helix.resBase2.resNameMatch2 set $id
+              $w.nb.tab1.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DT} $name1] && [regexp {^DA} $id]} {
-                $w.helix.resBase2.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DC} $name1] && [regexp {^DG} $id]} {
-                $w.helix.resBase2.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^DG} $name1] && [regexp {^DC} $id]} {
-                $w.helix.resBase2.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase2.resNameMatch2 set $id
             } elseif {[regexp {^RA} $name1] && [regexp {^RU} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch2 set $id
             } elseif {[regexp {^RU} $name1] && [regexp {^RA} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch2 set $id
             } elseif {[regexp {^RC} $name1] && [regexp {^RG} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch2 set $id
             } elseif {[regexp {^RG} $name1] && [regexp {^RC} $id]} {
-                $w.helix.resBase1.resNameMatch2 set $id
+                $w.nb.tab1.helix.resBase1.resNameMatch2 set $id
             } else {
-                $w.helix.resBase2.resIdMatch2 set -1
-                $w.helix.resBase2.resNameMatch2 set "NO MATCH"
+                $w.nb.tab1.helix.resBase2.resIdMatch2 set -1
+                $w.nb.tab1.helix.resBase2.resNameMatch2 set "NO MATCH"
                 tk_messageBox -message "No match, your DNA is damaged"
               }
             break
           }
         }
       } else {
-          $w.helix.resBase2.resIdMatch2 set -1
-          $w.helix.resBase2.resNameMatch2 set "NO MATCH"
+          $w.nb.tab1.helix.resBase2.resIdMatch2 set -1
+          $w.nb.tab1.helix.resBase2.resNameMatch2 set "NO MATCH"
           tk_messageBox -message "No match, your DNA is damaged"
       }
     }
   } 
   #else {
-   #   $w.helix.resBase2.resIdMatch2 set -1
-    #  $w.helix.resBase2.resNameMatch2 set "NO MATCH"
+   #   $w.nb.tab1.helix.resBase2.resIdMatch2 set -1
+    #  $w.nb.tab1.helix.resBase2.resNameMatch2 set "NO MATCH"
      # tk_messageBox -message "Select something on the first strand (See mid to determine this)"
     #}
 }
@@ -1081,18 +1086,18 @@ proc ::curvespackage::plotBases { type {hist 0} } {
   variable step
   
   # Set of variables used to get the resnames and resids of the pairs to plot
-  set base1 [$w.helix.resBase1.resNameBase1 get]
-  set idBase1 [$w.helix.resBase1.resIdBase1 get]
-  set base2 [$w.helix.resBase2.resNameBase2 get]
-  set idBase2 [$w.helix.resBase2.resIdBase2 get]
-  set match1 [$w.helix.resBase1.resNameMatch1 get]
-  set idMatch1 [$w.helix.resBase1.resIdMatch1 get]
-  set match2 [$w.helix.resBase2.resNameMatch2 get]
-  set idMatch2 [$w.helix.resBase2.resIdMatch2 get]
+  set base1 [$w.nb.tab1.helix.resBase1.resNameBase1 get]
+  set idBase1 [$w.nb.tab1.helix.resBase1.resIdBase1 get]
+  set base2 [$w.nb.tab1.helix.resBase2.resNameBase2 get]
+  set idBase2 [$w.nb.tab1.helix.resBase2.resIdBase2 get]
+  set match1 [$w.nb.tab1.helix.resBase1.resNameMatch1 get]
+  set idMatch1 [$w.nb.tab1.helix.resBase1.resIdMatch1 get]
+  set match2 [$w.nb.tab1.helix.resBase2.resNameMatch2 get]
+  set idMatch2 [$w.nb.tab1.helix.resBase2.resIdMatch2 get]
   # Set of variables used to get the colors of the base plotting
-  set color1 [$w.helix.resBase1.colorB1 get]
-  set color2 [$w.helix.resBase2.colorB2 get]
-  set colorPair [$w.helix.colorPair get]
+  set color1 [$w.nb.tab1.helix.resBase1.colorB1 get]
+  set color2 [$w.nb.tab1.helix.resBase2.colorB2 get]
+  set colorPair [$w.nb.tab1.helix.colorPair get]
   
   # If the colors are not set, switching to default coloring
   if { $color1 eq "" } {
@@ -1754,7 +1759,7 @@ proc curvespackage::guaPlanForQuaAxis {} {
   
   for { set i 1 } { $i <= $numQuartets } { incr i } {
     foreach j {1 2 3 4} {
-      set r[set i][set j] [$w.gQuad.qua[set i].resId$j get]
+      set r[set i][set j] [$w.nb.tab2.gQuad.qua[set i].resId$j get]
     }
   }
   
@@ -1879,7 +1884,7 @@ proc curvespackage::guaPlan {} {
   }
   
   foreach i {1 2 3 4} {
-    set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
+    set r[set quaNum][set i] [$w.nb.tab2.gQuad.qua[set quaNum].resId$i get]
   }
   
   foreach i {1 2 3} {
@@ -2013,7 +2018,7 @@ proc curvespackage::lenBend {} {
   }
   
   foreach i {1 2 3 4} {
-    set r[set quaNum][set i] [$w.gQuad.qua[set quaNum].resId$i get]
+    set r[set quaNum][set i] [$w.nb.tab2.gQuad.qua[set quaNum].resId$i get]
   }
   
   foreach i { 0 1 } {
@@ -2207,7 +2212,7 @@ proc curvespackage::twistAngle {} {
   
   for { set i 1 } { $i <= $numQuartets } { incr i } {
     foreach j {1 2 3 4} {
-      set r[set i][set j] [$w.gQuad.qua[set i].resId$j get]
+      set r[set i][set j] [$w.nb.tab2.gQuad.qua[set i].resId$j get]
       #puts r[set i][set j]
     }
   }
@@ -2328,8 +2333,8 @@ proc curvespackage::guaCoMDistances {} {
   }
   
   foreach j { 1 2 3 4 } {
-    set r[set mainQua][set j] [$w.gQuad.qua[set mainQua].resId$j get]
-    set r[set secQua][set j] [$w.gQuad.qua[set secQua].resId$j get]
+    set r[set mainQua][set j] [$w.nb.tab2.gQuad.qua[set mainQua].resId$j get]
+    set r[set secQua][set j] [$w.nb.tab2.gQuad.qua[set secQua].resId$j get]
   }
   
   foreach i { 1 2 3 4 } {
@@ -2441,8 +2446,8 @@ proc curvespackage::comQua {} {
   }
 
   foreach i { 1 2 3 4 } {
-    set r[set mainQua]$i [$w.gQuad.qua[set mainQua].resId$i get]
-    set r[set secQua]$i [$w.gQuad.qua[set secQua].resId$i get]
+    set r[set mainQua]$i [$w.nb.tab2.gQuad.qua[set mainQua].resId$i get]
+    set r[set secQua]$i [$w.nb.tab2.gQuad.qua[set secQua].resId$i get]
   }
   
   set selq$mainQua [atomselect top "resid [set r[set mainQua]1] [set r[set mainQua]2] [set r[set mainQua]3] [set r[set mainQua]4] and $nameAtomsGQuad"]
@@ -2517,7 +2522,7 @@ proc curvespackage::gyrationRadii {} {
   
   for { set i 1 } { $i <= $numQuartets } { incr i } {
     foreach j { 1 2 3 4 } {
-      set r[set i]$j [$w.gQuad.qua[set i].resId$j get]
+      set r[set i]$j [$w.nb.tab2.gQuad.qua[set i].resId$j get]
       append residQ "[set r[set i]$j] "
     }
     set selq$i [atomselect top "resid [set r[set i]1] [set r[set i]2] [set r[set i]3] [set r[set i]4] and $nameAtomsGQuad"]
@@ -2615,7 +2620,7 @@ proc curvespackage::guaAxisAngle {} {
   }
   
   foreach i { 1 2 3 4 } {
-    set rx$i [$w.gQuad.qua[set quaNum].resId$i get]
+    set rx$i [$w.nb.tab2.gQuad.qua[set quaNum].resId$i get]
     set selrx[set i]C8 [atomselect top "resid [set rx$i] and name C8"]
     set selrx[set i]C4C5 [atomselect top "resid [set rx$i] and name C4 C5"]
     for { set j [expr $i + 1] } { $j <= 4 } { incr j } {
@@ -2716,7 +2721,7 @@ proc curvespackage::comO6N9 {} {
   }
   
   foreach i { 1 2 3 4 } {
-    set rx$i [$w.gQuad.qua[set quaNum].resId$i get]
+    set rx$i [$w.nb.tab2.gQuad.qua[set quaNum].resId$i get]
   }
   
   set selO6 [atomselect top "resid $rx1 $rx2 $rx3 $rx4 and name O6"]
