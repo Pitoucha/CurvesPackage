@@ -36,4 +36,6 @@ set xtics font ",14"
 set auto y
 set ytics nomirror
 
-plot ARG3 using (rounded($1)):(1) smooth frequency with boxes lt rgb "#2E49F4" title "Distance"
+set xlabel ARG5." ".ARG6." ".ARG7 
+
+plot ARG3 using (rounded($1)):(1) smooth frequency with boxes lt rgb "#2E49F4" notitle 

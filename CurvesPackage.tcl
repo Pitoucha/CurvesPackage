@@ -134,7 +134,7 @@ proc ::curvespackage::Histograms {type} {
           puts $file [lindex $listP $i]
         }
         close $file
-        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)_$match1\($idMatch1\)" "Distance in Angstrom" 
 
         } elseif {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 != "" && $idBase2 != "" && $match2 != "" && $idMatch2 != ""} {
           set listP [::curvespackage::plotBases dist 1]
@@ -150,7 +150,7 @@ proc ::curvespackage::Histograms {type} {
               puts $file1 [lindex $list1 $i]
             }
             close $file1
-            ::curvespackage::gnuPlotting $name1 "distVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+            ::curvespackage::gnuPlotting $name1 "distVar_$base1\($idBase1\)_$match1\($idMatch1\)" "Distance in Angstrom" 
 
             #second list 
             set name2 "Ouput_Dat/distVar_$base2\($idBase2\)_$match2\($idMatch2\).dat"
@@ -160,7 +160,7 @@ proc ::curvespackage::Histograms {type} {
               puts $file2 [lindex $list2 $i]
             }
             close $file2
-            ::curvespackage::gnuPlotting $name2 "distVar_$base2\($idBase2\)_$match2\($idMatch2\)"
+            ::curvespackage::gnuPlotting $name2 "distVar_$base2\($idBase2\)_$match2\($idMatch2\)" "Distance in Angstrom" 
           }
         }
     }
@@ -173,7 +173,7 @@ proc ::curvespackage::Histograms {type} {
           puts $file [lindex $listP $i]
         }
         close $file
-        ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+        ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)" "Angle in °" 
       } elseif {$base1 != "" && $idBase1 != "" && $match1 != "" && $idMatch1 != "" && $base2 != "" && $idBase2 != "" && $match2 != "" && $idMatch2 != ""} {
           set listP [::curvespackage::plotBases angl 1]
           if {$base2 != ""} {
@@ -188,7 +188,7 @@ proc ::curvespackage::Histograms {type} {
               puts $file1 [lindex $list1 $i]
             }
             close $file1
-            ::curvespackage::gnuPlotting $name1 "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)"
+            ::curvespackage::gnuPlotting $name1 "anglVar_$base1\($idBase1\)_$match1\($idMatch1\)" "Angle in °" 
 
             #second list 
             set name2 "Ouput_Dat/anglVar_$base2\($idBase2\)_$match2\($idMatch2\).dat"
@@ -198,7 +198,7 @@ proc ::curvespackage::Histograms {type} {
               puts $file2 [lindex $list2 $i]
             }
             close $file2
-            ::curvespackage::gnuPlotting $name2 "anglVar_$base2\($idBase2\)_$match2\($idMatch2\)"
+            ::curvespackage::gnuPlotting $name2 "anglVar_$base2\($idBase2\)_$match2\($idMatch2\)" "Angle in °" 
         }
       }
     }
@@ -212,7 +212,7 @@ proc ::curvespackage::Histograms {type} {
           puts $file [lindex $listP $i]
         }
         close $file
-        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\($idMatch2\)"
+        ::curvespackage::gnuPlotting $name "distVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\($idMatch2\)" "Distance in Angstrom" 
       }
     }
     4angl {
@@ -224,7 +224,7 @@ proc ::curvespackage::Histograms {type} {
         puts $file [lindex $listP $i]
       }
       close $file
-      ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\)"
+      ::curvespackage::gnuPlotting $name "anglVar_$base1\($idBase1\)-$match1\($idMatch1\)_$base2\($idBase2\)-$match2\(idMatch2\)" "Angle in °" 
     }
   }
     default {
@@ -233,7 +233,7 @@ proc ::curvespackage::Histograms {type} {
   }
 }
 
-proc ::curvespackage::gnuPlotting {nameDat name} {
+proc ::curvespackage::gnuPlotting {nameDat name type} {
   set path [pwd]
   append path "/" 
   append path $nameDat 
@@ -249,8 +249,8 @@ proc ::curvespackage::gnuPlotting {nameDat name} {
   cd "GNU_Script"
 
   set rounding [::curvespackage::callRoundingChooser]
-  set test "exec gnuplot -c GNUScript.plt $rounding $savePath $path $name"
-                            #ARG0             #ARG1     #ARG2     #ARG3 #ARG4
+  set test "exec gnuplot -c GNUScript.plt $rounding $savePath $path $name $type" 
+                            #ARG0         #ARG1     #ARG2     #ARG3 #ARG4 #ARG5
   eval $test
   #if [catch eval $test] {
   #  puts "There's been a problem, check your histograms"
