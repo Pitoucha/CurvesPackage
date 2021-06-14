@@ -1,0 +1,47 @@
+body{ 
+	background-color: #F6F6F8;
+	font-family: monaco;
+} 
+
+
+h1{
+	color: black;
+	text-align:center; 
+}
+
+ul{
+	list-style-type: none;
+	background-color: #CDCBCD;
+	margin: 0; 
+	padding: 0;
+	width: 20%;
+	position:  fixed;
+
+}
+
+li a {
+  display: block;
+  text-align:center
+}
+
+li a:hover {
+  background-color: #2286AA;
+  color: white;
+}
+
+a{
+	color: black;
+  	outline: none;
+  	text-decoration: none;
+}
+
+.container {
+	margin-left: 20%;
+	padding: 0.5px 16px;
+}
+footer {
+	align-content: center;
+	background-color: #CDCBCD;
+	padding: 10px 20px;
+	columns: 3;
+}
