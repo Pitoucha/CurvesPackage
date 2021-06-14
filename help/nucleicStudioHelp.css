@@ -31,13 +31,25 @@ li a:hover {
 
 a{
 	color: black;
-  	outline: none;
-  	text-decoration: none;
+  outline: none;
+  text-decoration: none;
 }
 
 .container {
 	margin-left: 20%;
 	padding: 0.5px 16px;
+}
+
+.active {
+	background-color: #335571;
+  color: white;
+}
+
+.image {
+	width: 400px;
+  height: 300px;
+
+  style: vertical-align:middle
 }
 footer {
 	align-content: center;
