@@ -2676,10 +2676,8 @@ proc curvespackage::guaAxisAngle {} {
 }
 
 proc curvespackage::comO6N9 {} {
-  global M_PI
   variable w
   variable quaNum
-  variable nameAtomsGQuad
   
   # Set of variables determining the start, end and step of the calculations
   variable frameStart
@@ -2720,36 +2718,49 @@ proc curvespackage::comO6N9 {} {
     lappend xlist $i
   }
   
+  # for each i in 1 -> 4
   foreach i { 1 2 3 4 } {
+    #We get all the resids of the quartet
     set rx$i [$w.nb.tab2.gQuad.qua[set quaNum].resId$i get]
   }
   
+  #We select the O6 square
   set selO6 [atomselect top "resid $rx1 $rx2 $rx3 $rx4 and name O6"]
+  #We select the N9 square
   set selN9 [atomselect top "resid $rx1 $rx2 $rx3 $rx4 and name N9"]
   
+  #We create our empty list to store the results
   set listP {}
   
+  #For each selected frame
   for { set i $frameStart } { $i < $frameEnd } { set i [expr {$i + $step}] } {
-  
+    
+    #We update our selections
     $selO6 frame $i
     $selN9 frame $i
     $selO6 update
     $selN9 update
     
+    #We get the CoM of our selections
     set O6 [measure center $selO6 weight mass]
     set N9 [measure center $selN9 weight mass]
     
+    #We create our vector between the two squares' centers of mass
     set vectN9O6 [vecsub $N9 $O6]
     
+    #We get the vector length (distance between CoMs)
     set dist [veclength $vectN9O6]
     
+    #We add the result to our list
     lappend listP $dist
   
   }
   
+  #we delete our selection
   $selO6 delete
   $selN9 delete
   
+  #We create our graph
   set plothandle [multiplot -x $xlist -y $listP \
                     -xlabel "Frame" -ylabel "Distance" -title "Distance between the CoM of the O6 \"square\" and the CoM of the N9 \"square\" of the quartet $quaNum" \
                     -lines -linewidth 1 -linecolor blue \
