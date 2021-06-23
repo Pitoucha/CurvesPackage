@@ -539,7 +539,7 @@ proc ::nucleicanalysor::chargement {} {
     }
 
     #binding with a function that reacts to a selection of the combobox
-    #enable the function plot if at least two bases are selected (next one same)
+    #enable the function plot if at least two bases are selected 
     bind $w.nb.tab1.helix.resBase1.resIdBase1 <<ComboboxSelected>> {
       ::nucleicanalysor::selectWithResid 0
       ::nucleicanalysor::enableCommand 0
@@ -679,7 +679,7 @@ proc ::nucleicanalysor::listeResname {} {
   variable selectList
 
   #we get all the components of the mol loaded
-  set sel [atomselect top "all"]
+  set sel [atomselect top "nucleic"]
 
   #create the dict 
   set selectList [dict create]

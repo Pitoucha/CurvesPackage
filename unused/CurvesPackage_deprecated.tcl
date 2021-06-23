@@ -334,7 +334,7 @@ proc ::curvespackage::listeResname {} {
   variable mid 
   variable selectList
 
-  set sel [atomselect top "all"]
+  set sel [atomselect top "nucleic"]
 
   set selectList [dict create]
 

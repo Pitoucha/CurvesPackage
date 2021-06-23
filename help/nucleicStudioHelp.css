@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body{ 
 	background-color: #F6F6F8;
 	font-family: monaco;
@@ -29,13 +33,13 @@ li a:hover {
   color: white;
 }
 
-a{
+a {
 	color: black;
   outline: none;
   text-decoration: none;
 }
 
-.container {
+main {
 	margin-left: 20%;
 	padding: 0.5px 16px;
 }

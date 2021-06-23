@@ -6,120 +6,134 @@
 	<link rel="stylesheet" type="text/css" href="NucleicStudioHelp.css"/>
 
 	<script type="text/javascript">
-     function changeActive(id) {
-     	switch (id) {
-     		case '1':
-     		if(document.getElementById("1").classList.contains('notActive')) {
-     			document.getElementById("1").classList.remove("notActive")
-     			document.getElementById("1").classList.add('active');
-     		} else {
-     			document.getElementById("1").classList.remove("active")
-     			document.getElementById("1").classList.add('notActive');
-     		}
-     		break;
+	    let mainNavLinks = document.querySelectorAll("navBar ul li a");
+		let mainSections = document.querySelectorAll("main section");
 
-     		case '2':
-     		if(document.getElementById("2").classList.contains('notActive')) {
-     			document.getElementById("2").classList.remove("notActive")
-     			document.getElementById("2").classList.add('active');
-     		} else {
-     			document.getElementById("2").classList.remove("active")
-     			document.getElementById("2").classList.add('notActive');
-     		}
-     		break;  
-     	}
-     	
-     }
+		let lastId;
+		let cur = [];
+
+		window.addEventListener("scroll", event => {
+			let fromTop = window.scrollY;
+
+			mainNavLinks.forEach(link => {
+			let section = document.querySelector(link.hash);
+
+			if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
+			    link.classList.add("active");
+			} else {
+				link.classList.remove("active");
+			}
+		});
+	});
     </script>
 </head>
 <body>
 	<h1>Nucleic Analysor</h1>
 
 
-<div class="index">
+<navBar>
 	<ul>
-		<li><a id="1" class="active" href="#started">Get started</a></li>
-		<li><a id="2" class="notActive" href="#molecule">Loading a new molecule</a></li>
-		<li><a id="3" class="notActive"href="#trajectory">Loading a trajectory</a></li>
-		<li><a id="4" class="notActive" href="#helical">Single helical DNA </a></li>
-		<li><a id="5" class="notActive" href="#quad">GQuadruplex DNA</a></li>
-		<li><a id="6" class="notActive" href="#quartet">Single quartet</a></li>
-		<li><a id="7" class="notActive" href="#quartets">Multiple quartets</a></li>
+		<li><a class="active" id="1" href="#started">Get started</a></li>
+		<li><a id="2" href="#molecule">Loading a new molecule</a></li>
+		<li><a id="3" href="#trajectory">Loading a trajectory</a></li>
+		<li><a id="4" href="#helical">Single helical DNA </a></li>
+		<li><a id="5" href="#quad">GQuadruplex DNA</a></li>
+		<li><a id="6" href="#quartet">Single quartet</a></li>
+		<li><a id="7" href="#quartets">Multiple quartets</a></li>
 	</ul>
-</div>
+</navBar>
 
-<div class="container">
+<main>
+	<section id="started">
+		<h1>Get started</h1>
+		<p>	
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
 
-	<p id="started" onscroll="changeActive(1)">	
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
 
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
 
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
-
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
-	</p>
-
-	<p id="molecule" onscroll="changeActive(2)">
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-	</p>
-
-	<p id="trajectory">
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
-
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
-
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
-
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
-	</p>
-
-	<p id="helical"> 
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-		Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-	</p>
-
-	<p id="quad">
-		Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
-
-		Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
-
-		Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
-
-		Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
-	</p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
+		</p>
+	</section>
 	
-	<p id="quartet">
-		Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+	<section id="molecule">
+		<h1>Load your first molecule</h1>
+		<p>
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
 
-		Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
 
-		Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
 
-		Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
-	</p>
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
+		</p>
+	</section>
+	<section id="trajectory">
+		<h1>Load your first trajectory</h1>
+		<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
 
-	<p id="quartets">
-		Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
 
-		Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
 
-		Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu.
+		</p>
+	</section>
+	
+	<section id="helical">
+		<h1>Hecical DNA</h1>
+		<p> 
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
 
-		Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
-	</p>
-</div>
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
+
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
+
+			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
+		</p>
+	</section>
+
+	<section id="quad">
+		<h1>G-quadruplex DNA</h1>
+		<p>
+			Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
+
+			Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
+
+			Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
+
+			Duis sed nunc dapibus, elementum tellus vitae, pharetra mi. Integer mattis volutpat lectus, aliquet porta mauris. Fusce ultricies nisi eu augue congue mollis. Fusce pellentesque tristique consequat. Nunc magna erat, ultrices non felis nec, hendrerit volutpat nibh. Morbi id sapien eget dui elementum venenatis. Nulla viverra odio libero, quis sodales turpis pharetra volutpat. Nullam aliquam gravida ante, quis vulputate eros efficitur nec. Pellentesque mi mi, efficitur eu porta eget, tincidunt at dui. Sed mattis purus eget sodales congue. Nullam a nisl ut lorem ullamcorper posuere.
+		</p>
+	</section>
+
+	<section id="quartet">
+		<h1>Calculation on quartet</h1>
+		<p>
+			Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+
+			Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+
+			Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+
+			Quisque laoreet enim magna, sed dignissim risus vulputate a. Ut scelerisque metus eu aliquam pulvinar. Morbi lectus est, tincidunt eget sollicitudin non, facilisis non libero. Morbi non nisl tincidunt, facilisis mi vitae, vehicula neque. Cras euismod volutpat nisl nec euismod. Suspendisse pulvinar purus vel magna fermentum lacinia. Nunc varius varius faucibus. Pellentesque quis feugiat eros, nec semper orci. Nam suscipit non tellus ac faucibus. Suspendisse sed hendrerit massa.
+		</p>
+	</section>
+
+	<section id="quartets">
+		<h1>Multiple quartets</h1>
+		<p>
+			Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+
+			Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+
+			Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+
+			Aliquam fermentum molestie egestas. Donec sollicitudin, ligula sed viverra bibendum, nunc lacus posuere erat, quis aliquet ante risus aliquam odio. Phasellus hendrerit nunc vitae urna aliquet accumsan. Pellentesque et mi est. Vivamus sem lorem, pulvinar ultrices dignissim eu, pellentesque hendrerit lorem. Donec metus ex, luctus vitae felis in, pharetra ultricies mauris. Maecenas massa justo, condimentum ut lacinia nec, porta sit amet nulla. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse eget finibus lectus. Mauris rhoncus tristique elit, eu tristique risus suscipit vitae. Nam nec massa libero.
+		</p>
+	</section>
+</main>
 
 <footer>
     <div class="aboutUs"> About us </div>
