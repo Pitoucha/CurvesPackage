@@ -3,35 +3,14 @@
 <head>
 	<title>Nucleic Analysor</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="NucleicStudioHelp.css"/>
+	<link rel="stylesheet" type="text/css" href="NucleicAnalysorHelp.css"/>
 
-	<script type="text/javascript">
-	    let mainNavLinks = document.querySelectorAll("navBar ul li a");
-		let mainSections = document.querySelectorAll("main section");
-
-		let lastId;
-		let cur = [];
-
-		window.addEventListener("scroll", event => {
-			let fromTop = window.scrollY;
-
-			mainNavLinks.forEach(link => {
-			let section = document.querySelector(link.hash);
-
-			if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
-			    link.classList.add("active");
-			} else {
-				link.classList.remove("active");
-			}
-		});
-	});
-    </script>
 </head>
 <body>
 	<h1>Nucleic Analysor</h1>
 
 
-<navBar>
+<navBar id="navBar" >
 	<ul>
 		<li><a class="active" id="1" href="#started">Get started</a></li>
 		<li><a id="2" href="#molecule">Loading a new molecule</a></li>
@@ -43,7 +22,7 @@
 	</ul>
 </navBar>
 
-<main>
+<main  id="menu">
 	<section id="started">
 		<h1>Get started</h1>
 		<p>	

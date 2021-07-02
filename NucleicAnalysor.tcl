@@ -994,9 +994,11 @@ proc ::nucleicanalysor::matchList {} {
     set match [expr {$mid + 1 + $diff}]
     
     #verifies that the resname is one from a DNA residue
-    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
+    if {[regexp {^DA} $name1] || [regexp {^DT} $name1] || [regexp {^DC} $name1] || [regexp {^DG} $name1] || [regexp {^RA} $name1] || 
+    [regexp {^RU} $name1] || [regexp {^RC} $name1] || [regexp {^RG} $name1]} {
       dict for {id info} $selectList {
-        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
+        if {[regexp {^DA} $id] || [regexp {^DT} $id] || [regexp {^DC} $id] || [regexp {^DG} $id] || [regexp {^RA} $id] || 
+        [regexp {^RU} $id] || [regexp {^RC} $id] || [regexp {^RG} $id]} {
           append stc [split $info "\ "]
           append stc "\ "
         }
