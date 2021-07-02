@@ -5,15 +5,22 @@ html {
 body{ 
 	background-color: #F6F6F8;
 	font-family: monaco;
+	line-height: 22px;
 } 
 
 
 h1{
 	color: black;
 	text-align:center; 
+	font-size: 1.5em
 }
 
-ul{
+h2 {
+	color: black;
+	font-size: 1.3em
+}
+
+#navBar{
 	list-style-type: none;
 	background-color: #CDCBCD;
 	margin: 0; 
@@ -22,20 +29,51 @@ ul{
 	position:  fixed;
 }
 
-li a {
+a {
   display: block;
   text-align:center
 }
 
-li a:hover {
+a :not(.links){
+	color: black;
+  outline: none;
+  text-decoration: none;
+}
+
+a:link:not(.links) {
+	color:  black;
+	outline: none;
+  text-decoration: none;
+}
+
+a:visited:not(.links) {
+	color:  black;
+	outline: none;
+  text-decoration: none;
+}
+
+a:hover:not(.links) {
   background-color: #2286AA;
   color: white;
 }
 
-a {
-	color: black;
-  outline: none;
-  text-decoration: none;
+
+
+.links:not(.nav) {
+	color:#2286AA
+	text-align:center
+}
+
+.links:link:not(.nav) {
+	color: blue;
+}
+
+.links:visited:not(.nav) {
+	color: mediumpurple;
+}
+
+.links:hover:not(.nav) {
+	color: blue;
 }
 
 main {
@@ -48,12 +86,31 @@ main {
   color: white;
 }
 
-.image {
+img {
 	width: 400px;
-  height: 300px;
+  height: 350px;
 
   style: vertical-align:middle
 }
+
+.span1 {
+	font-family: monaco;
+	color: D7CBC1;
+	border-radius: 5px;
+	padding: 3px;
+	margin: 2px;
+	background-color: lightgray;
+	color:#2286AA;
+}
+
+.span2 {
+	font-family: monaco;
+	border-radius: 10px;
+	padding: 20px;
+	background-color: #CDCBCD;
+	color: #335571;
+}
+
 footer {
 	align-content: center;
 	background-color: #CDCBCD;

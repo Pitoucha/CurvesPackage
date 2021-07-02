@@ -7,45 +7,67 @@
 
 </head>
 <body>
-	<h1>Nucleic Analysor</h1>
+	<!--<h1>Nucleic Analysor</h1> -->
 
-
-<navBar id="navBar" >
-	<ul>
-		<li><a class="active" id="1" href="#started">Get started</a></li>
-		<li><a id="2" href="#molecule">Loading a new molecule</a></li>
-		<li><a id="3" href="#trajectory">Loading a trajectory</a></li>
-		<li><a id="4" href="#helical">Single helical DNA </a></li>
-		<li><a id="5" href="#quad">GQuadruplex DNA</a></li>
-		<li><a id="6" href="#quartet">Single quartet</a></li>
-		<li><a id="7" href="#quartets">Multiple quartets</a></li>
+<navBar>
+	<ul id="navBar" >
+		<li class="nav"><a class="active" id="1" href="#presentation">Nucleic Analysor</a></li>
+		<li class="nav"><a id="2" href="#started">Get started</a></li>
+		<li class="nav"><a id="3" href="#molecule">Loading a new molecule</a></li>
+		<li class="nav"><a id="4" href="#trajectory">Loading a trajectory</a></li>
+		<li class="nav"><a id="5" href="#helical">Single helical DNA </a></li>
+		<li class="nav"><a id="6" href="#quad">GQuadruplex DNA</a></li>
+		<li class="nav"><a id="7" href="#quartet">Single quartet</a></li>
+		<li class="nav"><a id="8" href="#quartets">Multiple quartets</a></li>
 	</ul>
 </navBar>
 
-<main  id="menu">
+<main>
+	<section>
+		<h1>Nucleic Anlaysor</h1>
+		<p>
+			Nucleic Analysor is a plugin who can used conjointly with VMD. It offers various analysis running on double helix DNA and G-Quadruplex DNA
+		</p>
+	</section>
 	<section id="started">
 		<h1>Get started</h1>
 		<p>	
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
+			<h2>Prerequisite</h2>
+			In order to use our plugin it's required that you already have this ?dependencies? installed 
+			<ul>
 
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
+				<li>
+					<p>A Linux or Mac distribution : at the time of the creation of this website, Nucleic Analysor isn't compatible with Windows, we are working on finding a solution in the near future
+					</p>
+				</li>
+				<li>
+					<p>VMD (1.9.3 version or later)</br>
+						<a class="links" href="https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD">https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD</a>
+					</p>
+				</li></br>
+				<li>
+					<p>GnuPlot Package (for creating Histograms)</br>
+						<a class="links" href="http://www.gnuplot.info/download.html">http://www.gnuplot.info/download.html</a>
+					</p>
+				</li>
+			</ul>
 
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
+			<h2>Installation</h2>
+			<p>
+				To install Nucleic Analysor, first you need to dowlad the package here </br>
+				<a class="links" style="" href="https://github.com/Pitoucha/NucleicAnalysor.git">https://github.com/Pitoucha/NucleicAnalysor.git</a></br>
 
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales urna vel dui malesuada, in iaculis nisi pharetra. Suspendisse imperdiet ac purus a tincidunt. Vestibulum aliquet sit amet risus vitae ullamcorper.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ornare lacus risus, ac placerat magna vestibulum et. Phasellus sapien odio, ultricies id molestie quis, pretium vel lorem. Nulla ullamcorper pulvinar dictum. Nullam pharetra vulputate gravida. Proin neque dolor, tincidunt non rutrum id, posuere vitae arcu. 
-		</p>
-	</section>
+				Once dowloaded, verify that it contains 2 folders named GNU_Script and Help, and two files named NucleicAnalysor.tcl and pkgIndex.tcl. 
+				Copy the folder<span class="span1">NucleicAnalysor</span>to VMD TCL plugin directory<span class="span1">$VMDDIR/plugins/noarch/tcl/</span></br></br>
+				Then insert the following line into<span class="span1">$VMDDIR/scripts/vmd/loadplugins.tcl</span>at line 152 :</br></br></br> 
+				<span class="span2">vmd_install_extension NucleicAnalysor nucleicanalysor_tk  "Analysis/Nucleic Analysor"</span> 
+			</p>
+	</section></br></br></br> 
 	
 	<section id="molecule">
 		<h1>Load your first molecule</h1>
 		<p>
-			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
-
-			Etiam nisl massa, mollis id faucibus ut, tristique id nisi. Praesent dapibus in ligula eget ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus placerat hendrerit nisi, sit amet blandit diam bibendum sed. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam dui turpis, bibendum eu pharetra sit amet, tincidunt a est. Curabitur porta, tellus in faucibus posuere, magna neque vestibulum ex, at tincidunt turpis mi eu diam. Maecenas euismod velit erat, vitae facilisis ligula luctus non. Vestibulum vel accumsan felis. Etiam dictum massa urna, nec finibus quam consectetur nec. Donec scelerisque quam in justo bibendum, eu dapibus dui imperdiet.
+			<img src="captures_aide/emplacement.gif"></img>
 		</p>
 	</section>
 	<section id="trajectory">
